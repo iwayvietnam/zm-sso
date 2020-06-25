@@ -1,0 +1,69 @@
+{
+    "name": "mezzio/mezzio-session-ext",
+    "description": "ext-session persistence adapter for mezzio-session",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "laminas",
+        "mezzio",
+        "components",
+        "ext-session",
+        "psr-7",
+        "session"
+    ],
+    "homepage": "https://mezzio.dev",
+    "support": {
+        "docs": "https://docs.mezzio.dev/mezzio-session-ext/",
+        "issues": "https://github.com/mezzio/mezzio-session-ext/issues",
+        "source": "https://github.com/mezzio/mezzio-session-ext",
+        "rss": "https://github.com/mezzio/mezzio-session-ext/releases.atom",
+        "chat": "https://laminas.dev/chat",
+        "forum": "https://discourse.laminas.dev"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.9.x-dev",
+            "dev-develop": "1.10.x-dev"
+        },
+        "laminas": {
+            "config-provider": "Mezzio\\Session\\Ext\\ConfigProvider"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-session": "*",
+        "dflydev/fig-cookies": "^2.0.1",
+        "laminas/laminas-zendframework-bridge": "^1.0",
+        "mezzio/mezzio-session": "^1.3"
+    },
+    "require-dev": {
+        "laminas/laminas-coding-standard": "~1.0.0",
+        "laminas/laminas-diactoros": "^1.6",
+        "phpunit/phpunit": "^9.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mezzio\\Session\\Ext\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MezzioTest\\Session\\Ext\\": "test/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
+    },
+    "replace": {
+        "zendframework/zend-expressive-session-ext": "^1.7.0"
+    }
+}
