@@ -22,11 +22,11 @@ return [
         ],
         'saml' => [
             'debug' => FALSE,
-            'user_name_attr' => 'email',
+            'uid_mapping' => 'email',
             'baseurl' => 'http://localhost:8080',
             // Service provider settings
             'sp' => [
-                'entityId' => 'http://localhost:8080',
+                'entityId' => 'http://localhost:8080/metadata',
                 'assertionConsumerService' => [
                     'url' => 'http://localhost:8080/login',
                 ],

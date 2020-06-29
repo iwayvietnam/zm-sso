@@ -28,18 +28,30 @@ abstract class BaseAuth implements AuthInterface
         $this->settings = $settings;
     }
 
-    public function getUserName(): string
+    public function getUserName(string $sessionId = NULL): string
     {
+        if (!empty($sessionId)) {
+            $hashedSessionId = hash('sha256', $sessionId);
+            $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
+            $rowset = $table->select([
+                'session_id' => $hashedSessionId,
+                'protocol' => $this->protocol,
+            ]);
+            if ($rowset->count()) {
+                $row = $rowset->current();
+                $this->userName = $row['user_name'];
+            }
+        }
         return $this->userName;
     }
 
     protected function saveSsoLogin($sessionId, array $data = []): void
     {
-        $this->logger->debug('Save sso session for %user_name% with id: %session_id%', [
-            'user_name' => $this->userName,
-            'session_id' => $hashedSessionId,
-        ]);
         $hashedSessionId = hash('sha256', $sessionId);
+        $this->logger->debug(strtr('save sso session for %user_name% with id: %session_id%', [
+            '%user_name%' => $this->userName,
+            '%session_id%' => $hashedSessionId,
+        ]));
         $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
         $rowset = $table->select([
             'session_id' => $hashedSessionId,
@@ -57,6 +69,21 @@ abstract class BaseAuth implements AuthInterface
                 $insert['data'] = json_encode($data);
             }
             $table->insert($insert);
+        }
+    }
+
+    protected function saveSsoLogout($sessionId)
+    {
+        $hashedSessionId = hash('sha256', $sessionId);
+        $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
+        $rowset = $table->select([
+            'session_id' => $hashedSessionId,
+            'protocol' => $this->protocol,
+        ]);
+        if ($rowset->count()) {
+            $row = $rowset->current();
+            $row['logout_time'] = time();
+            $row->save();
         }
     }
 

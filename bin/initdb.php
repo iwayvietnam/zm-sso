@@ -25,7 +25,7 @@ ini_set('memory_limit', '-1');
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Application\Init;
+use Application\Db\Init;
 
 $initDb = new Init(require __DIR__ . '/../config/config.php');
 $initDb->init();

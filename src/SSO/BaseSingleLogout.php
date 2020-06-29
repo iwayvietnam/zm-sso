@@ -14,35 +14,35 @@ use Laminas\Db\TableGateway\Feature\RowGatewayFeature;
  */
 abstract class BaseSingleLogout implements SingleLogoutInterface
 {
-    private $_adapter;
-    private $_api;
+    private $adapter;
+    private $api;
 
-    protected $_protocol;
-    protected $_settings = [];
+    protected $protocol;
+    protected $settings = [];
 
     public function __construct(AdapterInterface $adapter, SoapApi $api, array $settings = [])
     {
-        $this->_adapter = $adapter;
-        $this->_api = $api;
-        $this->_settings = $settings;
+        $this->adapter = $adapter;
+        $this->api = $api;
+        $this->settings = $settings;
     }
 
     protected function doLogout($sessionId)
     {
         $hashedSessionId = hash('sha256', $sessionId);
-        $table = new TableGateway('sso_login', $this->_adapter, , new RowGatewayFeature('id'));
-        $rowset = $table->select(
+        $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
+        $rowset = $table->select([
             'session_id' => $hashedSessionId,
-            'protocol' => $this->_protocol,
-        );
+            'protocol' => $this->protocol,
+        ]);
         if ($rowset->count()) {
             $row = $rowset->current();
             if (!empty($row['user_name'])) {
-                $this->_api->authByName(
-                    $this->_settings['zimbra']['admin_user'],
-                    $this->_settings['zimbra']['admin_password']
+                $this->api->authByName(
+                    $this->settings['zimbra']['admin_user'],
+                    $this->settings['zimbra']['admin_password']
                 );
-                $account = $this->_api->getAccount(new AccountSelector($row['user_name']), 'zimbraAuthTokenValidityValue');
+                $account = $this->api->getAccount(new AccountSelector($row['user_name']), 'zimbraAuthTokenValidityValue');
                 if (!empty($account->a)) {
                     $zimbraAuthTokenValidityValue = 0;
                     foreach ($account->a as $attr) {
@@ -50,7 +50,7 @@ abstract class BaseSingleLogout implements SingleLogoutInterface
                             $zimbraAuthTokenValidityValue = (int) $attr->_content;
                         }
                     }
-                    $this->_api->modifyAccount(
+                    $this->api->modifyAccount(
                         $account->id,
                         [new KeyValuePair('zimbraAuthTokenValidityValue', $zimbraAuthTokenValidityValue++)]
                     );

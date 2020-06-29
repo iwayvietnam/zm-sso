@@ -14,8 +14,6 @@ class OIDCAuth extends BaseAuth
 {
     private $oidcClient;
     private $isAuthenticated = FALSE;
-    private $accessToken = NULL;
-    private $idToken = NULL;
 
     public function __construct(Adapter $adapter, Logger $logger, array $settings = [])
     {
@@ -35,26 +33,38 @@ class OIDCAuth extends BaseAuth
     public function login(Request $request): ?string
     {
         if (!$this->isAuthenticated()) {
+            $session = $request->getAttribute('session');
             $this->isAuthenticated = $this->oidcClient->authenticate();
             $this->userName = $this->oidcClient->requestUserInfo('email');
-            $this->logger->debug('oidc login for %user_name% with %provider_url%', [
-                'user_name' => $this->userName,
-                'provider_url' => $this->settings['sso']['oidc']['provider_url'],
-            ]);
 
-            $this->accessToken = $this->oidcClient->getAccessToken();
-            $this->idToken = $this->oidcClient->getIdToken();
+            $accessToken = $this->oidcClient->getAccessToken();
+            $idToken = $this->oidcClient->getIdToken();
+            $session->set('accessToken', $accessToken);
+            $session->set('idToken', $idToken);
             $this->saveSsoLogin($this->accessToken);
+
+            $this->logger->debug(strtr('oidc login for %user_name% with %provider_url%', [
+                '%user_name%' => $this->userName,
+                '%provider_url%' => $this->settings['sso']['oidc']['provider_url'],
+            ]));
         }
     }
 
     public function logout(Request $request): ?string
     {
-        $this->logger->debug('oidc logout for %user_name% with %provider_url%', [
-            'user_name' => $this->userName,
-            'provider_url' => $this->settings['sso']['oidc']['provider_url'],
-        ]);
-        $this->oidcClient->signOut($this->accessToken, NULL);
+        $this->logger->debug(strtr('oidc logout for %user_name% with %provider_url%', [
+            '%user_name%' => $this->userName,
+            '%provider_url%' => $this->settings['sso']['oidc']['provider_url'],
+        ]));
+        $session = $request->getAttribute('session');
+        $accessToken = $session->get('accessToken');
+        $this->saveSsoLogout($accessToken);
+        $this->oidcClient->signOut($accessToken, NULL);
+    }
+
+    public function metadata(): ?string
+    {
+        return NULL;
     }
 
     public function isAuthenticated(): bool

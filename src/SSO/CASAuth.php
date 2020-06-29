@@ -15,41 +15,55 @@ class CASAuth extends BaseAuth
     {
         parent::__construct($adapter, $logger, $settings);
 
-        $version = $settings['sso']['cas']['version'];
+        $version = $settings['version'];
         \phpCAS::client(
             $version,
-            $settings['sso']['cas']['server_host'],
-            $settings['sso']['cas']['server_port'],
-            $settings['sso']['cas']['context']
+            $settings['server_host'],
+            $settings['server_port'],
+            $settings['context']
         );
 
         $protocols = \phpCAS::getSupportedProtocols();
         $this->protocol = !empty($protocols[$version]) ? $protocols[$version] : 'CAS';
-
-        \phpCAS::setPostAuthenticateCallback(function ($ticket)) {
-            $this->userName = \phpCAS::getUser();
-            $this->logger->debug('cas login for %user_name% with %server_host%', [
-                'user_name' => $this->userName,
-                'server_host' => $this->settings['sso']['cas']['server_host'],
-            ]);
-            $this->saveSsoLogin($ticket);
-        });
     }
 
     public function login(Request $request): ?string
     {
+        $redirectUrl = NULL;
         if (!$this->isAuthenticated()) {
+            $session = $request->getAttribute('session');
+            \phpCAS::setPostAuthenticateCallback(function ($ticket) use ($session) {
+                $this->userName = \phpCAS::getUser();
+                $session->set('casTicket', $ticket);
+                $this->saveSsoLogin($ticket);
+                $this->logger->debug(strtr('cas login for %user_name% with %server_host%', [
+                    '%user_name%' => $this->userName,
+                    '%server_host%' => $this->settings['server_host'],
+                ]));
+            });
             \phpCAS::forceAuthentication();
         }
+        return $redirectUrl;
     }
 
     public function logout(Request $request): ?string
     {
-        $this->logger->debug('cas logout for %user_name% with %server_host%', [
-            'user_name' => $this->userName,
-            'server_host' => $this->settings['sso']['cas']['server_host'],
-        ]);
-        \phpCAS::logout();
+        $redirectUrl = NULL;
+        if ($this->isAuthenticated()) {
+            $session = $request->getAttribute('session');
+            $this->logger->debug(strtr('cas logout for %user_name% with %server_host%', [
+                '%user_name%' => \phpCAS::getUser(),
+                '%server_host%' => $this->settings['server_host'],
+            ]));
+            $this->saveSsoLogout($session->get('casTicket'));
+            \phpCAS::logout();
+        }
+        return $redirectUrl;
+    }
+
+    public function metadata(): ?string
+    {
+        return NULL;
     }
 
     public function isAuthenticated(): bool

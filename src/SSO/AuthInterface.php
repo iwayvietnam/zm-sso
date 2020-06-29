@@ -12,5 +12,6 @@ interface AuthInterface
     function login(Request $request): ?string;
     function logout(Request $request): ?string;
     function isAuthenticated(): bool;
-    function getUserName(): string;
+    function getUserName(string $sessionId = NULL): string;
+    function metadata(): ?string;
 }

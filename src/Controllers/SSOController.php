@@ -31,4 +31,22 @@ class SSOController {
         $redirectUrl = $this->auth->logout($request);
         return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
+
+    public function metadata(Request $request, Response $response, array $args = []): Response
+    {
+        $metadata = $this->auth->metadata();
+        if (!empty($metadata)) {
+            if (simplexml_load_string($metadata)) {
+                $response = $response->withHeader('Content-Type', 'application/xml; charset=utf-8');
+            }
+            else {
+                json_decode($metadata);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $response = $response->withHeader('Content-Type', 'application/json; charset=utf-8');
+                }
+            }
+            $response->getBody()->write($metadata);
+        }
+        return $response;
+    }
 }

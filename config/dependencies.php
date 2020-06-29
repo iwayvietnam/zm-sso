@@ -44,21 +44,21 @@ return function (App $app) {
                 $auth = new CASAuth(
                     $container->get(AdapterInterface::class),
                     $container->get(LoggerInterface::class),
-                    $container->get('settings')
+                    $container->get('settings')['sso']['cas']
                 );
                 break;
             case 'saml':
                 $auth = new SAMLAuth(
                     $container->get(AdapterInterface::class),
                     $container->get(LoggerInterface::class),
-                    $container->get('settings')
+                    $container->get('settings')['sso']['saml']
                 );
                 break;
             default:
                 $auth = new OIDCAuth(
                     $container->get(AdapterInterface::class),
                     $container->get(LoggerInterface::class),
-                    $container->get('settings')
+                    $container->get('settings')['sso']['oidc']
                 );
                 break;
         }
@@ -67,7 +67,7 @@ return function (App $app) {
 
     $container->add(PreAuth::class, static function (ContainerInterface $container) {
         $settings = $container->get('settings')['zimbra'];
-        $preAuth = new PreAuth($settings['server_url'], $settings['preauth_key']);
+        $preAuth = new PreAuth($settings['server_url'], $settings['preauth_key'], $settings['domain']);
         return $preAuth;
     })->addArgument($container);
 
