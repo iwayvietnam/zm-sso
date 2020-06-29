@@ -19,13 +19,12 @@ abstract class BaseAuth implements AuthInterface
 
     protected $protocol;
     protected $userName;
-    protected $settings = [];
+    protected $uidMapping = 'uid';
 
-    public function __construct(Adapter $adapter, Logger $logger, array $settings = [])
+    public function __construct(Adapter $adapter, Logger $logger)
     {
         $this->adapter = $adapter;
         $this->logger = $logger;
-        $this->settings = $settings;
     }
 
     public function getUserName(string $sessionId = NULL): string
@@ -43,6 +42,16 @@ abstract class BaseAuth implements AuthInterface
             }
         }
         return $this->userName;
+    }
+
+    public function getUidMapping(): string
+    {
+        return $this->uidMapping;
+    }
+
+    public function setUidMapping($uidMapping): void
+    {
+        $this->uidMapping = trim($uidMapping);
     }
 
     protected function saveSsoLogin($sessionId, array $data = []): void

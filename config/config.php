@@ -9,20 +9,19 @@ return [
     ],
     'sso' => [
         'protocol' => 'saml',
+        'uidMapping' => 'email',
         'oidc' => [
-            'provider_url' => 'https://openid-connect.onelogin.com/oidc',
-            'client_id' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
-            'client_secret' => '1fb0d2a17b9d588ffd8d2f1fde35a30351f52c4ff23ed92ee45d67da35b565ce',
+            'providerURL' => 'https://openid-connect.onelogin.com/oidc',
+            'clientID' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
+            'clientSecret' => '1fb0d2a17b9d588ffd8d2f1fde35a30351f52c4ff23ed92ee45d67da35b565ce',
             'scopes' => [
                 'openid',
                 'email',
                 'profile',
             ],
-            'logout_url' => 'https://sso.quangnam.gov.vn/oidc/logout',
         ],
         'saml' => [
             'debug' => FALSE,
-            'uid_mapping' => 'email',
             'baseurl' => 'http://localhost:8080',
             // Service provider settings
             'sp' => [
@@ -48,19 +47,19 @@ return [
             ],
         ],
         'cas' => [
-            'server_host' => 'sso.quangnam.gov.vn',
-            'server_port' => 443,
+            'serverHost' => 'sso.quangnam.gov.vn',
+            'serverPort' => 443,
             'context' => '/cas',
             'version' => '3.0',
         ],
     ],
     'zimbra' => [
         'domain' => 'quangnam.gov.vn',
-        'preauth_key' => '749a8ffa97b5acf3f1ef7d9c384baae196b0af4e33a3acb3d87f2e3cdd75425d',
-        'server_url' => 'https://mail.quangnam.gov.vn',
-        'admin_soap_url' => 'https://mail.quangnam.gov.vn:7071/service/admin/soap',
-        'admin_user' => 'admin',
-        'admin_password' => '',
+        'preauthKey' => '749a8ffa97b5acf3f1ef7d9c384baae196b0af4e33a3acb3d87f2e3cdd75425d',
+        'serverUrl' => 'https://mail.quangnam.gov.vn',
+        'adminSoapUrl' => 'https://mail.quangnam.gov.vn:7071/service/admin/soap',
+        'adminUser' => 'admin',
+        'adminPassword' => '',
     ],
     'db' => [
         'driver' => 'Pdo_Mysql',

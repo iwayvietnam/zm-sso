@@ -12,9 +12,6 @@ return function (App $app) {
     // Add session middleware
     $app->add(new SessionMiddleware($container->get(SessionPersistenceInterface::class)));
 
-    // Add error middleware
-    $app->addErrorMiddleware($container->get('settings')['displayErrorDetails'], FALSE, FALSE);
-
     // Add body parsing middleware
     $app->addBodyParsingMiddleware();
 
@@ -23,4 +20,7 @@ return function (App $app) {
 
     // Add routing middleware
     $app->addRoutingMiddleware();
+
+    // Add error middleware
+    $app->addErrorMiddleware($container->get('settings')['displayErrorDetails'], FALSE, FALSE);
 };

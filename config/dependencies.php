@@ -4,7 +4,12 @@ use Application\SSO\AuthInterface;
 use Application\SSO\CASAuth;
 use Application\SSO\OIDCAuth;
 use Application\SSO\SAMLAuth;
+
 use Application\SSO\SingleLogoutInterface;
+use Application\SSO\CASSingleLogout;
+use Application\SSO\OIDCSingleLogout;
+use Application\SSO\SAMLSingleLogout;
+
 use Application\Zimbra\PreAuth;
 use Application\Zimbra\SoapApi;
 
@@ -19,61 +24,97 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 
+use Jumbojett\OpenIDConnectClient;
+use OneLogin\Saml2\Auth;
+
 return function (App $app) {
     $container = $app->getContainer();
 
     $container->add(SessionPersistenceInterface::class, PhpSessionPersistence::class);
 
-    $container->add(AdapterInterface::class, Adapter::class)->addArgument($container->get('settings')['db']);
+    $container->add(AdapterInterface::class, Adapter::class)
+        ->addArgument($container->get('settings')['db']);
 
-    $container->add(LoggerInterface::class, static function (ContainerInterface $container) {
-        $settings = $container->get('settings')['logger'];
+    $container->add(LoggerInterface::class, static function (array $settings) {
         $logger = new Logger($settings['name']);
         $logger->pushProcessor(new UidProcessor)
             ->pushHandler(new StreamHandler('php://stdout', $settings['level']))
             ->pushHandler(new StreamHandler($settings['path'], $settings['level']));
 
         return $logger;
-    })->addArgument($container);
+    })->addArgument($container->get('settings')['logger']);
 
-    $container->add(AuthInterface::class, static function (ContainerInterface $container) {
-        $settings = $container->get('settings')['sso'];
-        $protocol = $settings['protocol'];
-        switch ($protocol) {
-            case 'cas':
-                $auth = new CASAuth(
-                    $container->get(AdapterInterface::class),
-                    $container->get(LoggerInterface::class),
-                    $container->get('settings')['sso']['cas']
-                );
-                break;
-            case 'saml':
-                $auth = new SAMLAuth(
-                    $container->get(AdapterInterface::class),
-                    $container->get(LoggerInterface::class),
-                    $container->get('settings')['sso']['saml']
-                );
-                break;
-            default:
-                $auth = new OIDCAuth(
-                    $container->get(AdapterInterface::class),
-                    $container->get(LoggerInterface::class),
-                    $container->get('settings')['sso']['oidc']
-                );
-                break;
-        }
-        return $auth;
-    })->addArgument($container);
+    $zimbraSettings = $container->get('settings')['zimbra'];
+    $container->add(PreAuth::class)
+        ->addArguments([
+            $zimbraSettings['serverUrl'],
+            $zimbraSettings['preauthKey'],
+            $zimbraSettings['domain'],
+        ]);
 
-    $container->add(PreAuth::class, static function (ContainerInterface $container) {
-        $settings = $container->get('settings')['zimbra'];
-        $preAuth = new PreAuth($settings['server_url'], $settings['preauth_key'], $settings['domain']);
-        return $preAuth;
-    })->addArgument($container);
+    $container->add(SoapApi::class)
+        ->addArgument($zimbraSettings['adminSoapUrl'])
+        ->addMethodCall('addScope', [
+            $zimbraSettings['adminUser'],
+            $zimbraSettings['adminPassword'],
+        ]);
 
-    $container->add(SoapApi::class, static function (ContainerInterface $container) {
-        $settings = $container->get('settings')['zimbra'];
-        $api = new SoapApi($settings['admin_soap_url']);
-        return $api;
-    })->addArgument($container);
+    $protocol = $container->get('settings')['sso']['protocol'];
+    switch ($protocol) {
+        case 'cas':
+            $container->add(AuthInterface::class, CASAuth::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    $container->get('settings')['sso']['cas'],
+                ]);
+            $container->add(SingleLogoutInterface::class, CASSingleLogout::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    SoapApi::class,
+                ]);
+            break;
+        case 'oidc':
+            $settings = $container->get('settings')['sso']['oidc'];
+            $container->add(OpenIDConnectClient::class)
+                ->addArguments([
+                    $settings['providerURL'],
+                    $settings['clientID'],
+                    $settings['clientSecret'],
+                ])
+                ->addMethodCall('addScope', [$settings['scopes']]);
+            $container->add(AuthInterface::class, OIDCAuth::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    OpenIDConnectClient::class,
+                ])
+                ->addMethodCall('setUidMapping', [$container->get('settings')['sso']['uidMapping']]);
+            $container->add(SingleLogoutInterface::class, OIDCSingleLogout::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    SoapApi::class,
+                ]);
+            break;
+        default:
+            $container->add(Auth::class)
+                ->addArgument($container->get('settings')['sso']['saml']);
+            $container->add(AuthInterface::class, SAMLAuth::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    Auth::class,
+                ])
+                ->addMethodCall('setUidMapping', [$container->get('settings')['sso']['uidMapping']]);
+            $container->add(SingleLogoutInterface::class, SAMLSingleLogout::class)
+                ->addArguments([
+                    AdapterInterface::class,
+                    LoggerInterface::class,
+                    SoapApi::class,
+                    Auth::class,
+                ]);
+            break;
+    }
 };

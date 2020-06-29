@@ -5,6 +5,7 @@ namespace Application\SSO;
 use Application\Zimbra\SoapApi;
 use Laminas\Db\Adapter\Adapter;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface as Logger;
 
 /**
  * CAS single logout class
@@ -12,10 +13,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class CASSingleLogout extends BaseSingleLogout
 {
     
-    public function __construct(Adapter $adapter, SoapApi $api, array $settings = [])
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, $version = '3.0')
     {
-        parent::__construct($adapter, $api, $settings);
-        $version = $settings['sso']['cas']['version'];
+        parent::__construct($adapter, $logger, $api);
         $protocols = \phpCAS::getSupportedProtocols();
         $this->protocol = !empty($protocols[$version]) ? $protocols[$version] : 'CAS';
     }
@@ -24,7 +24,7 @@ class CASSingleLogout extends BaseSingleLogout
     {
         $targetUrl = NULL;
         $parsedBody = $request->getParsedBody();
-        if (isset($parsedBody['logoutRequest'])) {
+        if (!empty($parsedBody['logoutRequest'])) {
             $logoutRequest = utf8_encode(urldecode($parsedBody['logoutRequest']));
             $logoutRequestXml = new \SimpleXMLElement($logoutRequest);
             $namespaces = $logoutRequestXml->getNameSpaces();

@@ -5,26 +5,27 @@ namespace Application\SSO;
 use Application\Zimbra\AccountSelector;
 use Application\Zimbra\KeyValuePair;
 use Application\Zimbra\SoapApi;
-use Laminas\Db\Adapter\AdapterInterface;
+use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\TableGateway\Feature\RowGatewayFeature;
+use Psr\Log\LoggerInterface as Logger;
 
 /**
  * Base single logout class
  */
 abstract class BaseSingleLogout implements SingleLogoutInterface
 {
-    private $adapter;
-    private $api;
+    protected $adapter;
+    protected $logger;
+    protected $api;
 
     protected $protocol;
-    protected $settings = [];
 
-    public function __construct(AdapterInterface $adapter, SoapApi $api, array $settings = [])
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api)
     {
         $this->adapter = $adapter;
+        $this->logger = $logger;
         $this->api = $api;
-        $this->settings = $settings;
     }
 
     protected function doLogout($sessionId)
@@ -38,10 +39,6 @@ abstract class BaseSingleLogout implements SingleLogoutInterface
         if ($rowset->count()) {
             $row = $rowset->current();
             if (!empty($row['user_name'])) {
-                $this->api->authByName(
-                    $this->settings['zimbra']['admin_user'],
-                    $this->settings['zimbra']['admin_password']
-                );
                 $account = $this->api->getAccount(new AccountSelector($row['user_name']), 'zimbraAuthTokenValidityValue');
                 if (!empty($account->a)) {
                     $zimbraAuthTokenValidityValue = 0;

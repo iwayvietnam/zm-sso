@@ -15,10 +15,6 @@ return function (App $app) {
     $app->get('/logout', SSOController::class . ':logout');
     $app->get('/metadata', SSOController::class . ':metadata');
 
-    $app->get('/slo', function (Request $request, Response $response) {
-        return $response;
-    });
-    $app->post('/slo', function (Request $request, Response $response) {
-        return $response;
-    });
+    $app->get('/slo', SLOController::class . ':logout');
+    $app->post('/slo', SLOController::class . ':logout');
 };

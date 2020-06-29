@@ -16,11 +16,11 @@ class SAMLAuth extends BaseAuth
 {
     private $saml;
 
-    public function __construct(Adapter $adapter, Logger $logger, array $settings = [])
+    public function __construct(Adapter $adapter, Logger $logger, Auth $saml)
     {
-        parent::__construct($adapter, $logger, $settings);
+        parent::__construct($adapter, $logger);
         $this->protocol = 'SAML';
-        $this->saml = new Auth($settings);
+        $this->saml = $saml;
     }
 
     public function login(Request $request): ?string
@@ -34,7 +34,7 @@ class SAMLAuth extends BaseAuth
                 $sessionIndex = $this->saml->getSessionIndex();
                 $nameId = $this->saml->getNameId();
                 $attributes = $this->saml->getAttributes();
-                $this->userName = $attributes[$this->settings['uid_mapping']][0];
+                $this->userName = $attributes[$this->uidMapping][0];
                 $session->set('sessionIndex', $sessionIndex);
                 $session->set('nameId', $nameId);
                 $this->saveSsoLogin($sessionIndex, [
@@ -42,17 +42,19 @@ class SAMLAuth extends BaseAuth
                     'nameId' => $nameId,
                     'sessionExpiration' => $this->saml->getSessionExpiration(),
                 ]);
-                $this->logger->debug(strtr('saml login for %user_name% with %idp%', [
-                    '%user_name%' => $this->userName,
-                    '%idp%' => $this->settings['idp']['entityId'],
+                $idpData = $this->saml->getSettings()->getIdPData();
+                $this->logger->debug(strtr('saml login for %userName% with %idp%', [
+                    '%userName%' => $this->userName,
+                    '%idp%' => $idpData['entityId'],
                 ]));
             }
         }
         if (!$this->isAuthenticated()) {
             $redirectUrl = $this->saml->login(NULL, [], FALSE, FALSE, TRUE);
             $session->set('authNRequestID', $this->saml->getLastRequestID());
+            $idpData = $this->saml->getSettings()->getIdPData();
             $this->logger->debug(strtr('saml login to %idp% with %request_id%', [
-                '%idp%' => $this->settings['idp']['entityId'],
+                '%idp%' => $idpData['entityId'],
                 '%request_id%' => $this->saml->getLastRequestID(),
             ]));
         }
@@ -63,9 +65,10 @@ class SAMLAuth extends BaseAuth
     {
         $nameId = $request->getAttribute('session')->get('nameId');
         $sessionIndex = $request->getAttribute('session')->get('sessionIndex');
-        $this->logger->debug(strtr('saml logout for %user_name% with %idp%', [
-            '%user_name%' => $this->getUserName($sessionIndex),
-            '%idp%' => $this->settings['idp']['entityId'],
+        $idpData = $this->saml->getSettings()->getIdPData();
+        $this->logger->debug(strtr('saml logout for %userName% with %idp%', [
+            '%userName%' => $this->getUserName($sessionIndex),
+            '%idp%' => $idpData['entityId'],
         ]));
         $this->saveSsoLogout($sessionIndex);
         return $this->saml->logout(NULL, [], $nameId, $sessionIndex, TRUE);
@@ -74,6 +77,9 @@ class SAMLAuth extends BaseAuth
     public function metadata(): ?string
     {
         $settings = $this->saml->getSettings();
+        $this->logger->debug(strtr('saml metadata for service provider %sp%', [
+            '%sp%' => $settings->getSPData()['entityId'],
+        ]));
         $metadata = $settings->getSPMetadata();
         $errors = $settings->validateMetadata($metadata);
         return empty($errors) ? $metadata : NULL;

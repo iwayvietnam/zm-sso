@@ -3,8 +3,9 @@
 namespace Application\SSO;
 
 use Application\Zimbra\SoapApi;
-use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface as Logger;
 use OneLogin\Saml2\Auth;
 
 /**
@@ -12,13 +13,13 @@ use OneLogin\Saml2\Auth;
  */
 class SAMLSingleLogout extends BaseSingleLogout
 {
-    private $auth;
+    private $saml;
 
-    public function __construct(Adapter $adapter, SoapApi $api, array $settings = [])
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, Auth $saml)
     {
-        parent::__construct($adapter, $api, $settings);
+        parent::__construct($adapter, $logger, $api);
         $this->protocol = 'SAML';
-        $this->auth = new Auth($settings['sso']['saml']);
+        $this->saml = $saml;
     }
 
     public function logout(Request $request): ?string
@@ -27,8 +28,8 @@ class SAMLSingleLogout extends BaseSingleLogout
         if(!empty($parsedBody['SAMLRequest'])) {
             $_GET['SAMLRequest'] = $parsedBody['SAMLRequest'];
         }
-        $targetUrl = $this->auth->processSLO(TRUE, NULL, FALSE, NULL, TRUE);
-        if(!empty($targetUrl) && !$this->auth->getLastErrorReason()){
+        $targetUrl = $this->saml->processSLO(TRUE, NULL, FALSE, NULL, TRUE);
+        if(!empty($targetUrl) && !$this->saml->getLastErrorReason()){
             $sessionIndex = $request->getAttribute('session')->get('sessionIndex');
             if (!empty($sessionIndex)) {
                 $this->doLogout($sessionIndex);
