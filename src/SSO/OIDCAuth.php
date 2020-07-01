@@ -38,19 +38,19 @@ class OIDCAuth extends BaseAuth
             $session->set('idToken', $idToken);
             $this->saveSsoLogin($accessToken);
 
-            $this->logger->debug(strtr('oidc login for %userName% with %providerURL%', [
-                '%userName%' => $this->userName,
-                '%providerURL%' => $this->client->getProviderURL(),
-            ]));
+            $this->logger->debug('oidc login for {user_name} with {provider_url}', [
+                'user_name' => $this->userName,
+                'provider_url' => $this->client->getProviderURL(),
+            ]);
         }
     }
 
     public function logout(Request $request): ?string
     {
-        $this->logger->debug(strtr('oidc logout for %userName% with %providerURL%', [
-            '%userName%' => $this->userName,
-            '%providerURL%' => $this->client->getProviderURL(),
-        ]));
+        $this->logger->debug('oidc logout for {user_name} with {provider_url}', [
+            'user_name' => $this->userName,
+            'provider_url' => $this->client->getProviderURL(),
+        ]);
         $session = $request->getAttribute('session');
         $accessToken = $session->get('accessToken');
         $this->saveSsoLogout($accessToken);

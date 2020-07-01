@@ -57,16 +57,16 @@ abstract class BaseAuth implements AuthInterface
     protected function saveSsoLogin($sessionId, array $data = []): void
     {
         $hashedSessionId = hash('sha256', $sessionId);
-        $this->logger->debug(strtr('save sso session for %user_name% with id: %session_id%', [
-            '%user_name%' => $this->userName,
-            '%session_id%' => $hashedSessionId,
-        ]));
         $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
         $rowset = $table->select([
             'session_id' => $hashedSessionId,
             'protocol' => $this->protocol,
         ]);
         if ($rowset->count() == 0 && !empty($this->userName)) {
+            $this->logger->debug('save sso session login for {user_name} with id: {session_id}', [
+                'user_name' => $this->userName,
+                'session_id' => $hashedSessionId,
+            ]);
             $insert = [
                 'user_name' => $this->userName,
                 'session_id' => $hashedSessionId,
@@ -90,6 +90,10 @@ abstract class BaseAuth implements AuthInterface
             'protocol' => $this->protocol,
         ]);
         if ($rowset->count()) {
+            $this->logger->debug('save sso session logout for {user_name} with id: {session_id}', [
+                'user_name' => $row['user_name'],
+                'session_id' => $hashedSessionId,
+            ]);
             $row = $rowset->current();
             $row['logout_time'] = time();
             $row->save();

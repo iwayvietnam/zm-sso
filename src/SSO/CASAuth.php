@@ -39,10 +39,10 @@ class CASAuth extends BaseAuth
                 $this->userName = \phpCAS::getUser();
                 $session->set('casTicket', $ticket);
                 $this->saveSsoLogin($ticket);
-                $this->logger->debug(strtr('cas login for %userName% with %serverHost%', [
-                    '%userName%' => $this->userName,
-                    '%serverHost%' => $this->settings['serverHost'],
-                ]));
+                $this->logger->debug('cas login for {user_name} with {server_host}', [
+                    'user_name' => $this->userName,
+                    'server_host' => $this->settings['serverHost'],
+                ]);
             });
             \phpCAS::forceAuthentication();
         }
@@ -54,10 +54,10 @@ class CASAuth extends BaseAuth
         $redirectUrl = NULL;
         if ($this->isAuthenticated()) {
             $session = $request->getAttribute('session');
-            $this->logger->debug(strtr('cas logout for %userName% with %serverHost%', [
-                '%userName%' => \phpCAS::getUser(),
-                '%serverHost%' => $this->settings['serverHost'],
-            ]));
+            $this->logger->debug('cas logout for {user_name} with {server_host}', [
+                'user_name' => \phpCAS::getUser(),
+                'server_host' => $this->settings['serverHost'],
+            ]);
             $this->saveSsoLogout($session->get('casTicket'));
             \phpCAS::logout();
         }

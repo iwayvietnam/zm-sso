@@ -18,8 +18,9 @@ use Laminas\Db\Adapter\AdapterInterface;
 use Mezzio\Session\SessionPersistenceInterface;
 use Mezzio\Session\Ext\PhpSessionPersistence;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Monolog\Processor\UidProcessor;
+use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
@@ -36,12 +37,12 @@ return function (App $app) {
         ->addArgument($container->get('settings')['db']);
 
     $container->add(LoggerInterface::class, static function (array $settings) {
-        $logger = new Logger($settings['name']);
-        $logger->pushProcessor(new UidProcessor)
-            ->pushHandler(new StreamHandler('php://stdout', $settings['level']))
-            ->pushHandler(new StreamHandler($settings['path'], $settings['level']));
-
-        return $logger;
+        return new Logger($settings['name'], [
+            new StreamHandler('php://stdout', $settings['level']),
+            new RotatingFileHandler($settings['path'], 0, $settings['level']),
+        ], [
+            new PsrLogMessageProcessor,
+        ]);
     })->addArgument($container->get('settings')['logger']);
 
     $zimbraSettings = $container->get('settings')['zimbra'];
@@ -79,8 +80,8 @@ return function (App $app) {
             $settings = $container->get('settings')['sso']['oidc'];
             $container->add(OpenIDConnectClient::class)
                 ->addArguments([
-                    $settings['providerURL'],
-                    $settings['clientID'],
+                    $settings['providerUrl'],
+                    $settings['clientId'],
                     $settings['clientSecret'],
                 ])
                 ->addMethodCall('addScope', [$settings['scopes']]);

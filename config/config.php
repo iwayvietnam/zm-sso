@@ -3,16 +3,16 @@
 return [
     'displayErrorDetails' => TRUE, // Should be set to false in production
     'logger' => [
-        'name' => 'zimbra-sso-application',
+        'name' => 'zimbra-sso',
         'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-        'level' => \Monolog\Logger::DEBUG,
+        'level' => \Psr\Log\LogLevel::DEBUG,
     ],
     'sso' => [
         'protocol' => 'saml',
         'uidMapping' => 'email',
         'oidc' => [
-            'providerURL' => 'https://openid-connect.onelogin.com/oidc',
-            'clientID' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
+            'providerUrl' => 'https://openid-connect.onelogin.com/oidc',
+            'clientId' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
             'clientSecret' => '1fb0d2a17b9d588ffd8d2f1fde35a30351f52c4ff23ed92ee45d67da35b565ce',
             'scopes' => [
                 'openid',
