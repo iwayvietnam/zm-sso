@@ -23,13 +23,19 @@ class SSOController {
         if ($this->auth->isAuthenticated()) {
             $redirectUrl = $this->preAuth->generatePreauthURL($this->auth->getUserName());
         }
-        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        if (!empty($redirectUrl)) {
+            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        }
+        return $response;
     }
 
     public function logout(Request $request, Response $response, array $args = []): Response
     {
         $redirectUrl = $this->auth->logout($request);
-        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        if (!empty($redirectUrl)) {
+            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        }
+        return $response;
     }
 
     public function metadata(Request $request, Response $response, array $args = []): Response

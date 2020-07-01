@@ -16,7 +16,10 @@ class SLOController {
 
     public function logout(Request $request, Response $response, array $args = []): Response
     {
-        $this->slo->logout();
+        $redirectUrl = $this->slo->logout();
+        if (!empty($redirectUrl)) {
+            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        }
         return $response;
     }
 }
