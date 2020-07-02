@@ -8,6 +8,7 @@ use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface as Logger;
 use OneLogin\Saml2\Auth;
+use Slim\Routing\RouteContext;
 
 /**
  * SAML authentication class
@@ -23,9 +24,64 @@ class SAMLAuthentication extends BaseAuthentication implements SAMLAuthenticatio
         $this->saml = $saml;
     }
 
+    public function metadata(): ?string
+    {
+        $settings = $this->saml->getSettings();
+        $this->logger->debug('saml metadata for service provider {sp}', [
+            'sp' => $settings->getSPData()['entityId'],
+        ]);
+        $metadata = $settings->getSPMetadata();
+        $errors = $settings->validateMetadata($metadata);
+        return empty($errors) ? $metadata : NULL;
+    }
+
     public function login(Request $request): ?string
     {
-        $redirectUrl = NULL;
+        $session = $request->getAttribute('session');
+        $redirectUrl = $this->saml->login(NULL, [], FALSE, FALSE, TRUE);
+        $session->set('authNRequestID', $this->saml->getLastRequestID());
+        $idpData = $this->saml->getSettings()->getIdPData();
+        $this->logger->debug('saml login to {idp} with {request_id}', [
+            'idp' => $idpData['entityId'],
+            'request_id' => $this->saml->getLastRequestID(),
+        ]);
+        return $redirectUrl;
+    }
+
+    public function logout(Request $request): ?string
+    {
+        $nameId = $request->getAttribute('session')->get('nameId');
+        $sessionIndex = $request->getAttribute('session')->get('sessionIndex');
+        $idpData = $this->saml->getSettings()->getIdPData();
+        $this->logger->debug('saml logout for {user_name} with {idp}', [
+            'user_name' => $this->getUserName($sessionIndex),
+            'idp' => $idpData['entityId'],
+        ]);
+        $this->saveSsoLogout($sessionIndex);
+        return $this->saml->logout(NULL, [], $nameId, $sessionIndex, TRUE);
+    }
+
+    public function singleLogout(Request $request): ?string
+    {
+        $parsedBody = $request->getParsedBody();
+        if(!empty($parsedBody['SAMLRequest'])) {
+            $_GET['SAMLRequest'] = $parsedBody['SAMLRequest'];
+        }
+        $targetUrl = $this->saml->processSLO(TRUE, NULL, FALSE, NULL, TRUE);
+        if(!empty($targetUrl) && !$this->saml->getLastErrorReason()){
+            $sessionIndex = $request->getAttribute('session')->get('sessionIndex');
+            if (!empty($sessionIndex)) {
+                $this->doLogout($sessionIndex);
+            }
+        }
+        if (empty($targetUrl)) {
+            $targetUrl = RouteContext::fromRequest($request)->getBasePath();
+        }
+        return $targetUrl;
+    }
+
+    public function assertionConsumerService(Request $request): ?string
+    {
         $session = $request->getAttribute('session');
         if ($request->getMethod() === RequestMethodInterface::METHOD_POST) {
             $requestID = $session->get('authNRequestID');
@@ -49,40 +105,7 @@ class SAMLAuthentication extends BaseAuthentication implements SAMLAuthenticatio
                 ]);
             }
         }
-        if (!$this->isAuthenticated()) {
-            $redirectUrl = $this->saml->login(NULL, [], FALSE, FALSE, TRUE);
-            $session->set('authNRequestID', $this->saml->getLastRequestID());
-            $idpData = $this->saml->getSettings()->getIdPData();
-            $this->logger->debug('saml login to {idp} with {request_id}', [
-                'idp' => $idpData['entityId'],
-                'request_id' => $this->saml->getLastRequestID(),
-            ]);
-        }
-        return $redirectUrl;
-    }
-
-    public function logout(Request $request): ?string
-    {
-        $nameId = $request->getAttribute('session')->get('nameId');
-        $sessionIndex = $request->getAttribute('session')->get('sessionIndex');
-        $idpData = $this->saml->getSettings()->getIdPData();
-        $this->logger->debug('saml logout for {user_name} with {idp}', [
-            'user_name' => $this->getUserName($sessionIndex),
-            'idp' => $idpData['entityId'],
-        ]);
-        $this->saveSsoLogout($sessionIndex);
-        return $this->saml->logout(NULL, [], $nameId, $sessionIndex, TRUE);
-    }
-
-    public function metadata(): ?string
-    {
-        $settings = $this->saml->getSettings();
-        $this->logger->debug('saml metadata for service provider {sp}', [
-            'sp' => $settings->getSPData()['entityId'],
-        ]);
-        $metadata = $settings->getSPMetadata();
-        $errors = $settings->validateMetadata($metadata);
-        return empty($errors) ? $metadata : NULL;
+        return RouteContext::fromRequest($request)->getBasePath();
     }
 
     public function isAuthenticated(): bool

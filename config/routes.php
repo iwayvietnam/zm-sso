@@ -19,23 +19,27 @@ return function (App $app) {
     $app->get('/', HomeController::class . ':index');
 
     $app->group('/saml', function (RouteCollectorProxy $group) {
+        $group->get('/metadata', SAMLController::class . ':metadata');
         $group->get('/login', SAMLController::class . ':login');
         $group->get('/logout', SAMLController::class . ':logout');
-        $group->get('/metadata', SAMLController::class . ':metadata');
-        $group->post('/acs', SAMLController::class . ':acs');
+        $group->post('/acs', SAMLController::class . ':assertionConsumerService');
 
-        $group->get('/slo', SLOController::class . ':logout');
-        $group->post('/slo', SLOController::class . ':logout');
+        $group->get('/slo', SAMLController::class . ':singleLogout');
+        $group->post('/slo', SAMLController::class . ':singleLogout');
     });
 
     $app->group('/cas', function (RouteCollectorProxy $group) {
         $group->get('/login', CASController::class . ':login');
         $group->get('/logout', CASController::class . ':logout');
+        $group->post('/slo', CASController::class . ':singleLogout');
     });
 
     $app->group('/oidc', function (RouteCollectorProxy $group) {
         $group->get('/login', OIDCController::class . ':login');
         $group->get('/logout', OIDCController::class . ':logout');
+
+        $group->get('/slo', OIDCController::class . ':singleLogout');
+        $group->post('/slo', OIDCController::class . ':singleLogout');
     });
 
     $app->get('/login', SSOController::class . ':login');

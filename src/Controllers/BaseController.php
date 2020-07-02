@@ -1,58 +1,46 @@
 <?php declare(strict_types=1);
 
-namespace Application\SSO;
+namespace Application\Controllers;
+
+use Application\Zimbra\AccountSelector;
+use Application\Zimbra\KeyValuePair;
+use Application\Zimbra\SoapApi;
 
 use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\TableGateway\Feature\RowGatewayFeature;
-use Psr\Log\LoggerInterface as Logger;
 
-/**
- * Base authentication class
- */
-abstract class BaseAuthentication implements AuthenticationInterface
-{
+use Psr\Log\LoggerInterface as Logger;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+
+abstract class BaseController {
+
+    /**
+     * @var Adapter
+     */
     protected $adapter;
+
+    /**
+     * @var Logger
+     */
     protected $logger;
 
-    protected $protocol;
-    protected $userName;
-    protected $uidMapping = 'uid';
+    /**
+     * @var SoapApi
+     */
+    protected $api;
 
-    public function __construct(Adapter $adapter, Logger $logger)
+    protected $protocol;
+
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api)
     {
         $this->adapter = $adapter;
         $this->logger = $logger;
+        $this->api = $api;
     }
 
-    public function getUserName(string $sessionId = NULL): string
-    {
-        if (!empty($sessionId)) {
-            $hashedSessionId = hash('sha256', $sessionId);
-            $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
-            $rowset = $table->select([
-                'session_id' => $hashedSessionId,
-                'protocol' => $this->protocol,
-            ]);
-            if ($rowset->count()) {
-                $row = $rowset->current();
-                $this->userName = $row['user_name'];
-            }
-        }
-        return $this->userName;
-    }
-
-    public function getUidMapping(): string
-    {
-        return $this->uidMapping;
-    }
-
-    public function setUidMapping($uidMapping): void
-    {
-        $this->uidMapping = trim($uidMapping);
-    }
-
-    protected function saveSsoLogin($sessionId, array $data = []): void
+    protected function saveSsoLogin($sessionId, $userName, array $data = []): void
     {
         $hashedSessionId = hash('sha256', $sessionId);
         $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
@@ -60,9 +48,9 @@ abstract class BaseAuthentication implements AuthenticationInterface
             'session_id' => $hashedSessionId,
             'protocol' => $this->protocol,
         ]);
-        if ($rowset->count() == 0 && !empty($this->userName)) {
+        if ($rowset->count() == 0 && !empty($userName)) {
             $this->logger->debug('save sso session login for {user_name} with id: {session_id}', [
-                'user_name' => $this->userName,
+                'user_name' => $userName,
                 'session_id' => $hashedSessionId,
             ]);
             $insert = [
@@ -95,6 +83,37 @@ abstract class BaseAuthentication implements AuthenticationInterface
             $row = $rowset->current();
             $row['logout_time'] = time();
             $row->save();
+        }
+    }
+
+    protected function zimbraLogout($sessionId)
+    {
+        $hashedSessionId = hash('sha256', $sessionId);
+        $table = new TableGateway('sso_login', $this->adapter, new RowGatewayFeature('id'));
+        $rowset = $table->select([
+            'session_id' => $hashedSessionId,
+            'protocol' => $this->protocol,
+        ]);
+        if ($rowset->count()) {
+            $row = $rowset->current();
+            if (!empty($row['user_name'])) {
+                $account = $this->api->getAccount(new AccountSelector($row['user_name']), 'zimbraAuthTokenValidityValue');
+                if (!empty($account->a)) {
+                    $zimbraAuthTokenValidityValue = 0;
+                    foreach ($account->a as $attr) {
+                        if ($attr->n === 'zimbraAuthTokenValidityValue') {
+                            $zimbraAuthTokenValidityValue = (int) $attr->_content;
+                        }
+                    }
+                    $this->api->modifyAccount(
+                        $account->id,
+                        [new KeyValuePair('zimbraAuthTokenValidityValue', $zimbraAuthTokenValidityValue++)]
+                    );
+
+                    $row['logout_time'] = time();
+                    $row->save();
+                }
+            }
         }
     }
 

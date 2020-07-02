@@ -21,7 +21,7 @@ return [
             ],
         ],
         'saml' => [
-            'debug' => FALSE,
+            'debug' => TRUE,
             'baseurl' => 'http://localhost:8080',
             // Service provider settings
             'sp' => [
