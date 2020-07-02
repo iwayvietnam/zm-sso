@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface as Logger;
 /**
  * CAS authentication class
  */
-class CASAuthentication extends BaseAuthentication
+class CASAuthentication extends BaseAuthentication implements CASAuthenticationInterface
 {
     private $settings;
 
@@ -63,11 +63,6 @@ class CASAuthentication extends BaseAuthentication
             \phpCAS::logout();
         }
         return $redirectUrl;
-    }
-
-    public function metadata(): ?string
-    {
-        return NULL;
     }
 
     public function isAuthenticated(): bool

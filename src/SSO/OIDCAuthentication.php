@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface as Logger;
 /**
  * OIDC authentication class
  */
-class OIDCAuthentication extends BaseAuthentication
+class OIDCAuthentication extends BaseAuthentication implements OIDCAuthenticationInterface
 {
     private $client;
     private $isAuthenticated = FALSE;
@@ -55,11 +55,6 @@ class OIDCAuthentication extends BaseAuthentication
         $accessToken = $session->get('accessToken');
         $this->saveSsoLogout($accessToken);
         $this->client->signOut($accessToken, NULL);
-    }
-
-    public function metadata(): ?string
-    {
-        return NULL;
     }
 
     public function isAuthenticated(): bool

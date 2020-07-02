@@ -12,7 +12,7 @@ use OneLogin\Saml2\Auth;
 /**
  * SAML authentication class
  */
-class SAMLAuthentication extends BaseAuthentication
+class SAMLAuthentication extends BaseAuthentication implements SAMLAuthenticationInterface
 {
     private $saml;
 

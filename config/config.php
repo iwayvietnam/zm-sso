@@ -27,10 +27,11 @@ return [
             'sp' => [
                 'entityId' => 'http://localhost:8080/metadata',
                 'assertionConsumerService' => [
-                    'url' => 'http://localhost:8080/login',
+                    'url' => 'http://localhost:8080/saml/acs',
+                    'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 ],
                 'singleLogoutService' => [
-                    'url' => 'http://localhost:8080/slo',
+                    'url' => 'http://localhost:8080/saml/slo',
                     'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 ],
             ],
@@ -39,9 +40,11 @@ return [
                 'entityId' => 'http://www.simplesaml.vn/saml2/idp/metadata.php',
                 'singleSignOnService' => [
                     'url' => 'http://www.simplesaml.vn/saml2/idp/SSOService.php',
+                    'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 ],
                 'singleLogoutService' => [
                     'url' => 'http://www.simplesaml.vn/saml2/idp/SingleLogoutService.php',
+                    'binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
                 ],
                 'x509cert' => 'MIIFFzCCA3+gAwIBAgIUfdMOq2XRa2PWcmAVhM3hHqVv9n8wDQYJKoZIhvcNAQELBQAwgZoxCzAJBgNVBAYTAlZOMQ4wDAYDVQQIDAVIYW5vaTEOMAwGA1UEBwwFSGFub2kxFTATBgNVBAoMDGlXYXkgVmlldG5hbTEUMBIGA1UECwwLU2ltcGxlIFNBTUwxGjAYBgNVBAMMEXd3dy5zaW1wbGVzYW1sLnZuMSIwIAYJKoZIhvcNAQkBFhNhZG1pbkBzaW1wbGVzYW1sLnZuMB4XDTIwMDYyMzA3MzgyNFoXDTMwMDYyMzA3MzgyNFowgZoxCzAJBgNVBAYTAlZOMQ4wDAYDVQQIDAVIYW5vaTEOMAwGA1UEBwwFSGFub2kxFTATBgNVBAoMDGlXYXkgVmlldG5hbTEUMBIGA1UECwwLU2ltcGxlIFNBTUwxGjAYBgNVBAMMEXd3dy5zaW1wbGVzYW1sLnZuMSIwIAYJKoZIhvcNAQkBFhNhZG1pbkBzaW1wbGVzYW1sLnZuMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAz6o7YnwnaUvXdrVOO44mG9Bif7RlscqqaECP6X13dYG01khIrsMeQD0PaHr6PxfuocagNzFmjFRPUgwHBTOGrnKEyVGC1V+B07AQkDGnSPh1qFbqxWh4AN6xl6p2i1sQEGkqvpjreeFz+uHY2wNSC6HgF6x/WdDCoiG3OsGBDLa3PHgulW+eGddv74HP1ElaniN1/pkn65PziZUGWXDxko4JUy49+S+gxzWlIwpwOeHdGcYa3M4zdPE5gm+rSq/XdXP/guavjHEZfv87aWfGDqaDouv9K8ZgdgLdmItSSb7l/K1maunlulDRy1knPPKzw50IqctyYKNM45n8LxyfBvjrYvg6bzP51iiw3FRNSnyBhb9jtGUEWymgmN97rpZiVHwfq2P6cYtD8yiutTs8m6/oLMzbIKIip5yaoyHnc9SS3FgccYGEmN+8+n8KSahQednTTA3glXa101z9CuU88rE18Mdnuixkm9Zd1mU4Mg88udFULHhfsrM1drD6eRnfAgMBAAGjUzBRMB0GA1UdDgQWBBRSLMfNlPWM1ANqgdjH3lAft1ovdDAfBgNVHSMEGDAWgBRSLMfNlPWM1ANqgdjH3lAft1ovdDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4IBgQBfh+DVBHHKG7Xd7YMil+3royQN8punqe4TzPSUeKSrlw0Fa8lzRJ9OkDgn0VI32NEfCN6D26ctKfNl2qyvXjtAvkyuPTMvLdZN/WWYEGTJwtjNUVUjq/ISdODQ7as8icilDwdHs+SBdi5Pnfc4ouRCcCNRXv7QRFH1P3oOpMVkqagRgUJwwq10KwoPm6pHXrVmf3vlEXe3oabwloMozQy77HHnEpwGVIpD1zp/XYdC+1EPW8QGjQpFrCD18zlotCEwRn+LkJFF4usqfYk0qvSnhS7XrDTVyMP9KLdeuSqETbQU2Cd3p1eUF/fU79p1G4leM0UmFNp5p86xPtXxHVM/yK1MLrqWEbY0ID61QuOYVdQmHc51Sh8qkwHh4/GkfEWIY44n6bhL4+PdIuBCBav6xWtumqDLEA0mYFVK8Zuqc+HOmJaBwv6ZKdQGp9bnxndgz42+CYtejCBb1mI7fZq5VNzW+leIpOp5+DlRYOdXWCdzD5fhgc7icj/KpVzXIbk=',
             ],
