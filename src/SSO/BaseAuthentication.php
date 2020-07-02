@@ -10,9 +10,9 @@ use Mezzio\Session\SessionInterface;
 use Psr\Log\LoggerInterface as Logger;
 
 /**
- * Base auth class
+ * Base authentication class
  */
-abstract class BaseAuth implements AuthInterface
+abstract class BaseAuthentication implements AuthenticationInterface
 {
     protected $adapter;
     protected $logger;

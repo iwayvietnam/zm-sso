@@ -7,9 +7,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface as Logger;
 
 /**
- * CAS auth class
+ * CAS authentication class
  */
-class CASAuth extends BaseAuth
+class CASAuthentication extends BaseAuthentication
 {
     private $settings;
 
@@ -35,7 +35,7 @@ class CASAuth extends BaseAuth
         $redirectUrl = NULL;
         if (!$this->isAuthenticated()) {
             $session = $request->getAttribute('session');
-            \phpCAS::setPostAuthenticateCallback(function ($ticket) use ($session) {
+            \phpCAS::setPostAuthenticateCallback(function ($ticket, $session) {
                 $this->userName = \phpCAS::getUser();
                 $session->set('casTicket', $ticket);
                 $this->saveSsoLogin($ticket);
@@ -43,7 +43,8 @@ class CASAuth extends BaseAuth
                     'user_name' => $this->userName,
                     'server_host' => $this->settings['serverHost'],
                 ]);
-            });
+            },
+            [$session]);
             \phpCAS::forceAuthentication();
         }
         return $redirectUrl;

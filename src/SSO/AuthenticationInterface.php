@@ -5,9 +5,9 @@ namespace Application\SSO;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
- * AuthInterface interface
+ * Authentication interface
  */
-interface AuthInterface
+interface AuthenticationInterface
 {
     function login(Request $request): ?string;
     function logout(Request $request): ?string;

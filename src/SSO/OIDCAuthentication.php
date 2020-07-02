@@ -8,9 +8,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface as Logger;
 
 /**
- * OIDC auth class
+ * OIDC authentication class
  */
-class OIDCAuth extends BaseAuth
+class OIDCAuthentication extends BaseAuthentication
 {
     private $client;
     private $isAuthenticated = FALSE;

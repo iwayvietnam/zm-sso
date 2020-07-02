@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-use Application\SSO\AuthInterface;
-use Application\SSO\CASAuth;
-use Application\SSO\OIDCAuth;
-use Application\SSO\SAMLAuth;
+use Application\SSO\AuthenticationInterface;
+use Application\SSO\CASAuthentication;
+use Application\SSO\OIDCAuthentication;
+use Application\SSO\SAMLAuthentication;
 
 use Application\SSO\SingleLogoutInterface;
 use Application\SSO\CASSingleLogout;
@@ -63,7 +63,7 @@ return function (App $app) {
     $protocol = $container->get('settings')['sso']['protocol'];
     switch ($protocol) {
         case 'cas':
-            $container->add(AuthInterface::class, CASAuth::class)
+            $container->add(AuthenticationInterface::class, CASAuthentication::class)
                 ->addArguments([
                     AdapterInterface::class,
                     LoggerInterface::class,
@@ -74,6 +74,7 @@ return function (App $app) {
                     AdapterInterface::class,
                     LoggerInterface::class,
                     SoapApi::class,
+                    $container->get('settings')['sso']['cas'],
                 ]);
             break;
         case 'oidc':
@@ -85,7 +86,7 @@ return function (App $app) {
                     $settings['clientSecret'],
                 ])
                 ->addMethodCall('addScope', [$settings['scopes']]);
-            $container->add(AuthInterface::class, OIDCAuth::class)
+            $container->add(AuthenticationInterface::class, OIDCAuthentication::class)
                 ->addArguments([
                     AdapterInterface::class,
                     LoggerInterface::class,
@@ -102,7 +103,7 @@ return function (App $app) {
         default:
             $container->add(Auth::class)
                 ->addArgument($container->get('settings')['sso']['saml']);
-            $container->add(AuthInterface::class, SAMLAuth::class)
+            $container->add(AuthenticationInterface::class, SAMLAuthentication::class)
                 ->addArguments([
                     AdapterInterface::class,
                     LoggerInterface::class,

@@ -7,6 +7,7 @@ use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface as Logger;
 use OneLogin\Saml2\Auth;
+use Slim\Routing\RouteContext;
 
 /**
  * SAML single logout class
@@ -36,7 +37,7 @@ class SAMLSingleLogout extends BaseSingleLogout
             }
         }
         if (empty($targetUrl)) {
-            # code...
+            $targetUrl = RouteContext::fromRequest($request)->getBasePath();
         }
         return $targetUrl;
     }

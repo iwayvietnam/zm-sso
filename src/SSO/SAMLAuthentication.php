@@ -10,9 +10,9 @@ use Psr\Log\LoggerInterface as Logger;
 use OneLogin\Saml2\Auth;
 
 /**
- * SAML auth class
+ * SAML authentication class
  */
-class SAMLAuth extends BaseAuth
+class SAMLAuthentication extends BaseAuthentication
 {
     private $saml;
 
