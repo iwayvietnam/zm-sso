@@ -5,7 +5,6 @@ namespace Application\Db;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Ddl\{CreateTable, Column, Constraint, Index};
 use Laminas\Db\Sql\Sql;
-
 use Monolog\Handler\{StreamHandler, RotatingFileHandler};
 use Monolog\Logger;
 

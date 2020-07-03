@@ -112,10 +112,7 @@ class SAMLController extends BaseController {
             $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
         }
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function singleLogout(Request $request, Response $response, array $args = []): Response
