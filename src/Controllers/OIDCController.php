@@ -39,7 +39,7 @@ class OIDCController {
         $session->set('oidc.accessToken', $accessToken);
         $session->set('oidc.idToken', $idToken);
         $session->set('oidc.userName', $userName);
-        $this->saveSsoLogin($accessToken, $userName,[
+        $this->saveSsoLogin($idToken, $userName,[
             'tokenResponse' => $tokenResponse,
         ]);
 
@@ -63,14 +63,14 @@ class OIDCController {
     public function logout(Request $request, Response $response, array $args = []): Response
     {
         $session = $request->getAttribute('session');
-        $accessToken = $session->get('oidc.accessToken');
+        $idToken = $session->get('oidc.idToken');
         $userName = $session->get('oidc.userName');
-        $this->saveSsoLogout($accessToken);
+        $this->saveSsoLogout($idToken);
         $this->logger->debug('oidc logout for {user_name} with {provider_url}', [
             'user_name' => $userName,
             'provider_url' => $this->client->getProviderURL(),
         ]);
-        $this->client->signOut($accessToken, NULL);
+        $this->client->signOut($idToken, NULL);
 
         $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
         return $response->withHeader('Location', $redirectUrl)->withStatus(302);

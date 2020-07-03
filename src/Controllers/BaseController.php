@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class BaseController {
-
     /**
      * @var Adapter
      */
@@ -104,6 +103,9 @@ abstract class BaseController {
                         if ($attr->n === 'zimbraAuthTokenValidityValue') {
                             $zimbraAuthTokenValidityValue = (int) $attr->_content;
                         }
+                    }
+                    if ($zimbraAuthTokenValidityValue >= 99) {
+                        $zimbraAuthTokenValidityValue = 0;
                     }
                     $this->api->modifyAccount(
                         $account->id,
