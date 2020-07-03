@@ -1,0 +1,4 @@
+* Generate a self signed certificate without passphrase for private key
+```sh
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 10000 -nodes
+```
