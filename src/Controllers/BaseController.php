@@ -2,17 +2,11 @@
 
 namespace Application\Controllers;
 
-use Application\Zimbra\AccountSelector;
-use Application\Zimbra\KeyValuePair;
-use Application\Zimbra\SoapApi;
-
+use Application\Zimbra\{AccountSelector, KeyValuePair, SoapApi};
 use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\Db\TableGateway\Feature\RowGatewayFeature;
-
 use Psr\Log\LoggerInterface as Logger;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class BaseController {
     /**

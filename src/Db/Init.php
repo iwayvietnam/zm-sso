@@ -3,15 +3,11 @@
 namespace Application\Db;
 
 use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Sql\Ddl\CreateTable;
-use Laminas\Db\Sql\Ddl\Column;
-use Laminas\Db\Sql\Ddl\Constraint;
-use Laminas\Db\Sql\Ddl\Index;
+use Laminas\Db\Sql\Ddl\{CreateTable, Column, Constraint, Index};
 use Laminas\Db\Sql\Sql;
 
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\{StreamHandler, RotatingFileHandler};
 use Monolog\Logger;
-use Monolog\Processor\UidProcessor;
 
 class Init {
     private $logger;
@@ -21,9 +17,8 @@ class Init {
     public function __construct(array $settings = [])
     {
         $this->logger = new Logger($settings['logger']['name']);
-        $this->logger->pushProcessor(new UidProcessor)
-            ->pushHandler(new StreamHandler('php://stdout', $settings['logger']['level']))
-            ->pushHandler(new StreamHandler($settings['logger']['path'], $settings['logger']['level']));
+        $this->logger->pushHandler(new StreamHandler('php://stdout', $settings['logger']['level']))
+            ->pushHandler(new RotatingFileHandler($settings['logger']['path'], 0, $settings['logger']['level']));
         $this->adapter = new Adapter($settings['db']);
         $this->sql = new Sql($this->adapter);
     }

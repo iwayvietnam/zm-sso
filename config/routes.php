@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
 
-use Application\Controllers\HomeController;
-use Application\Controllers\CASController;
-use Application\Controllers\OIDCController;
-use Application\Controllers\SAMLController;
+use Application\Controllers\{HomeController, CASController, OIDCController, SAMLController};
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 

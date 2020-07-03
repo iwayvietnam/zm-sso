@@ -2,8 +2,7 @@
 
 namespace Application\Controllers;
 
-use Application\Zimbra\PreAuth;
-use Application\Zimbra\SoapApi;
+use Application\Zimbra\{PreAuth, SoapApi};
 use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;

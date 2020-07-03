@@ -1,22 +1,17 @@
 <?php declare(strict_types=1);
 
-use Application\Zimbra\PreAuth;
-use Application\Zimbra\SoapApi;
-
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\AdapterInterface;
+use Application\Zimbra\{PreAuth, SoapApi};
+use Jumbojett\OpenIDConnectClient;
+use Laminas\Db\Adapter\{Adapter, AdapterInterface};
 use Mezzio\Session\SessionPersistenceInterface;
 use Mezzio\Session\Ext\PhpSessionPersistence;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\RotatingFileHandler;
+use Monolog\Handler\{StreamHandler, RotatingFileHandler};
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Slim\App;
-
-use Jumbojett\OpenIDConnectClient;
 use OneLogin\Saml2\Auth;
+use Slim\App;
 
 return function (App $app) {
     $container = $app->getContainer();

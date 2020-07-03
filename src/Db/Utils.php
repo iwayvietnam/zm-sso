@@ -2,7 +2,7 @@
 
 namespace Application\Db;
 
-use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\{Adapter, AdapterInterface};
 
 /**
  * Utils class.
@@ -17,7 +17,7 @@ class Utils {
      * @param  Adapter $adapter
      * @return bool
      */
-    public static function tableExists($table, Adapter $adapter)
+    public static function tableExists($table, AdapterInterface $adapter)
     {
         $exists = [];
         if (empty($exists[$table])) {
@@ -37,7 +37,7 @@ class Utils {
      * @param  Adapter $adapter
      * @return bool
      */
-    public static function indexExists($table, $index, Adapter $adapter)
+    public static function indexExists($table, $index, AdapterInterface $adapter)
     {
         $exists = [];
         if (empty($exists[$table . $index])) {
@@ -57,7 +57,7 @@ class Utils {
      * @param  Adapter $adapter
      * @return bool
      */
-    public static function columnExists($table, $column, Adapter $adapter)
+    public static function columnExists($table, $column, AdapterInterface $adapter)
     {
         return in_array($column, static::listColumns($table, $adapter));
     }
@@ -68,7 +68,7 @@ class Utils {
      * @param  Adapter $adapter
      * @return array
      */
-    public static function listColumns($table, Adapter $adapter)
+    public static function listColumns($table, AdapterInterface $adapter)
     {
         $columns = [];
         if (empty($columns[$table])) {
@@ -91,7 +91,7 @@ class Utils {
      * @param  Adapter $adapter
      * @return mixed
      */
-    public static function getColumn($table, $column, Adapter $adapter)
+    public static function getColumn($table, $column, AdapterInterface $adapter)
     {
         $columns = [];
         if (empty($columns[$table . $column])) {
