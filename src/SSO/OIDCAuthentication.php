@@ -20,7 +20,7 @@ class OIDCAuthentication extends BaseAuthentication implements OIDCAuthenticatio
         parent::__construct($adapter, $logger);
         $this->protocol = 'OIDC';
 
-        $this->client = new $client;
+        $this->client = $client;
         $this->client->setVerifyHost(FALSE);
         $this->client->setVerifyPeer(FALSE);
     }

@@ -135,6 +135,8 @@ class SAMLController extends BaseController {
         if(!empty($redirectUrl) && !$this->auth->getLastErrorReason()){
             $sessionIndex = $session->get('saml.sessionIndex');
             if (!empty($sessionIndex)) {
+                $settings = $request->getAttribute('settings');
+                $this->api->authByName($settings['zimbra']['adminUser'], $settings['zimbra']['adminPassword']);
                 $this->zimbraLogout($sessionIndex);
             }
         }

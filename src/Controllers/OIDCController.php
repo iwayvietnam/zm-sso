@@ -2,57 +2,82 @@
 
 namespace Application\Controllers;
 
-use Application\SSO\AuthInterface;
 use Application\Zimbra\PreAuth;
+use Application\Zimbra\SoapApi;
+use Jumbojett\OpenIDConnectClient;
+use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface as Logger;
+use Slim\Exception\HttpInternalServerErrorException;
+use Slim\Routing\RouteContext;
 
 class OIDCController {
-	private $auth;
+	private $client;
     private $preAuth;
 
-    public function __construct(AuthInterface $auth, PreAuth $preAuth)
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, OpenIDConnectClient $client, PreAuth $preAuth)
     {
-    	$this->auth = $auth;
-        $this->preAuth = $preAuth;
+        parent::__construct($adapter, $logger, $api);
+        $this->client = $client;
+        $this->client->setVerifyHost(FALSE);
+        $this->client->setVerifyPeer(FALSE);
+        $this->protocol = 'OIDC';
     }
 
     public function login(Request $request, Response $response, array $args = []): Response
     {
-        $redirectUrl = $this->auth->login($request);
-        if ($this->auth->isAuthenticated()) {
+        $settings = $request->getAttribute('settings');
+        $session = $request->getAttribute('session');
+
+        $isAuthenticated = $this->client->authenticate();
+        $userName = $this->client->requestUserInfo($settings['sso']['uidMapping']);
+
+        $accessToken = $this->client->getAccessToken();
+        $idToken = $this->client->getIdToken();
+        $tokenResponse = $this->client->getTokenResponse();
+        $session->set('oidc.accessToken', $accessToken);
+        $session->set('oidc.idToken', $idToken);
+        $session->set('oidc.userName', $userName);
+        $this->saveSsoLogin($accessToken, $userName,[
+            'tokenResponse' => $tokenResponse,
+        ]);
+
+        $this->logger->debug('oidc login for {user_name} with {provider_url}', [
+            'user_name' => $userName,
+            'provider_url' => $this->client->getProviderURL(),
+        ]);
+
+        if ($isAuthenticated) {
             $redirectUrl = $this->preAuth->generatePreauthURL($this->auth->getUserName());
         }
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
+        else {
+            $this->logger->info('oidc authenticate to {provider_url} failed', [
+                'provider_url' => $this->client->getProviderURL(),
+            ]);
+            $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
         }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function logout(Request $request, Response $response, array $args = []): Response
     {
-        $redirectUrl = $this->auth->logout($request);
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        $session = $request->getAttribute('session');
+        $accessToken = $session->get('oidc.accessToken');
+        $userName = $session->get('oidc.userName');
+        $this->saveSsoLogout($accessToken);
+        $this->logger->debug('oidc logout for {user_name} with {provider_url}', [
+            'user_name' => $userName,
+            'provider_url' => $this->client->getProviderURL(),
+        ]);
+        $this->client->signOut($accessToken, NULL);
+
+        $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
-    public function metadata(Request $request, Response $response, array $args = []): Response
+    public function singleLogout(Request $request, Response $response, array $args = []): Response
     {
-        $metadata = $this->auth->metadata();
-        if (!empty($metadata)) {
-            if (simplexml_load_string($metadata)) {
-                $response = $response->withHeader('Content-Type', 'application/xml; charset=utf-8');
-            }
-            else {
-                json_decode($metadata);
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    $response = $response->withHeader('Content-Type', 'application/json; charset=utf-8');
-                }
-            }
-            $response->getBody()->write($metadata);
-        }
         return $response;
     }
 }

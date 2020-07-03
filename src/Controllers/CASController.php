@@ -35,8 +35,9 @@ class CASController {
                     'user_name' => $this->userName,
                     'server_host' => $this->settings['serverHost'],
                 ]);
-            },
-            [$session]);
+            },[
+                $session,
+            ]);
             \phpCAS::forceAuthentication();
         }
         else {
@@ -75,9 +76,12 @@ class CASController {
         $this->initializeCAS($request);
         $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
 
-        \phpCAS::setSingleSignoutCallback(function ($ticket) {
+        \phpCAS::setSingleSignoutCallback(function ($ticket, $settings) {
+            $this->api->authByName($settings['adminUser'], $settings['adminPassword']);
             $this->zimbraLogout($ticket);
-        });
+        },[
+            $request->getAttribute('settings')['zimbra'],
+        ]);
         \phpCAS::handleLogoutRequests();
 
         if (!empty($redirectUrl)) {

@@ -4,16 +4,8 @@ use Application\Controllers\HomeController;
 use Application\Controllers\CASController;
 use Application\Controllers\OIDCController;
 use Application\Controllers\SAMLController;
-
-use Application\Controllers\SSOController;
-use Application\Controllers\SLOController;
-
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
-
-use OneLogin\Saml2\Auth;
 
 return function (App $app) {
     $app->get('/', HomeController::class . ':index');
@@ -41,12 +33,4 @@ return function (App $app) {
         $group->get('/slo', OIDCController::class . ':singleLogout');
         $group->post('/slo', OIDCController::class . ':singleLogout');
     });
-
-    $app->get('/login', SSOController::class . ':login');
-    $app->post('/login', SSOController::class . ':login');
-    $app->get('/logout', SSOController::class . ':logout');
-    $app->get('/metadata', SSOController::class . ':metadata');
-
-    $app->get('/slo', SLOController::class . ':logout');
-    $app->post('/slo', SLOController::class . ':logout');
 };

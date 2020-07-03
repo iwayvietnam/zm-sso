@@ -1,15 +1,5 @@
 <?php declare(strict_types=1);
 
-use Application\SSO\AuthenticationInterface;
-use Application\SSO\CASAuthentication;
-use Application\SSO\OIDCAuthentication;
-use Application\SSO\SAMLAuthentication;
-
-use Application\SSO\SingleLogoutInterface;
-use Application\SSO\CASSingleLogout;
-use Application\SSO\OIDCSingleLogout;
-use Application\SSO\SAMLSingleLogout;
-
 use Application\Zimbra\PreAuth;
 use Application\Zimbra\SoapApi;
 
@@ -30,6 +20,7 @@ use OneLogin\Saml2\Auth;
 
 return function (App $app) {
     $container = $app->getContainer();
+    $settings = $container->get('settings');
 
     $container->add(SessionPersistenceInterface::class, PhpSessionPersistence::class);
 
@@ -43,80 +34,25 @@ return function (App $app) {
         ], [
             new PsrLogMessageProcessor,
         ]);
-    })->addArgument($container->get('settings')['logger']);
+    })->addArgument($settings['logger']);
 
-    $zimbraSettings = $container->get('settings')['zimbra'];
     $container->add(PreAuth::class)
         ->addArguments([
-            $zimbraSettings['serverUrl'],
-            $zimbraSettings['preauthKey'],
-            $zimbraSettings['domain'],
+            $settings['zimbra']['serverUrl'],
+            $settings['zimbra']['preauthKey'],
+            $settings['zimbra']['domain'],
         ]);
 
     $container->add(SoapApi::class)
-        ->addArgument($zimbraSettings['adminSoapUrl'])
-        ->addMethodCall('addScope', [
-            $zimbraSettings['adminUser'],
-            $zimbraSettings['adminPassword'],
-        ]);
+        ->addArgument($settings['zimbra']['adminSoapUrl']);
 
-    $protocol = $container->get('settings')['sso']['protocol'];
-    switch ($protocol) {
-        case 'cas':
-            $container->add(AuthenticationInterface::class, CASAuthentication::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    $container->get('settings')['sso']['cas'],
-                ]);
-            $container->add(SingleLogoutInterface::class, CASSingleLogout::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    SoapApi::class,
-                    $container->get('settings')['sso']['cas'],
-                ]);
-            break;
-        case 'oidc':
-            $settings = $container->get('settings')['sso']['oidc'];
-            $container->add(OpenIDConnectClient::class)
-                ->addArguments([
-                    $settings['providerUrl'],
-                    $settings['clientId'],
-                    $settings['clientSecret'],
-                ])
-                ->addMethodCall('addScope', [$settings['scopes']]);
-            $container->add(AuthenticationInterface::class, OIDCAuthentication::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    OpenIDConnectClient::class,
-                ])
-                ->addMethodCall('setUidMapping', [$container->get('settings')['sso']['uidMapping']]);
-            $container->add(SingleLogoutInterface::class, OIDCSingleLogout::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    SoapApi::class,
-                ]);
-            break;
-        default:
-            $container->add(Auth::class)
-                ->addArgument($container->get('settings')['sso']['saml']);
-            $container->add(AuthenticationInterface::class, SAMLAuthentication::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    Auth::class,
-                ])
-                ->addMethodCall('setUidMapping', [$container->get('settings')['sso']['uidMapping']]);
-            $container->add(SingleLogoutInterface::class, SAMLSingleLogout::class)
-                ->addArguments([
-                    AdapterInterface::class,
-                    LoggerInterface::class,
-                    SoapApi::class,
-                    Auth::class,
-                ]);
-            break;
-    }
+    $container->add(OpenIDConnectClient::class)
+        ->addArguments([
+            $settings['sso']['oidc']['providerUrl'],
+            $settings['sso']['oidc']['clientId'],
+            $settings['sso']['oidc']['clientSecret'],
+        ])
+        ->addMethodCall('addScope', [$settings['sso']['oidc']['scopes']]);
+    $container->add(Auth::class)
+        ->addArgument($settings['sso']['saml']);
 };
