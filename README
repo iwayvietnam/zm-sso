@@ -2,3 +2,9 @@
 ```sh
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 10000 -nodes
 ```
+
+* SAML Tools
+https://www.samltool.com/online_tools.php
+
+* OpenID Connect Logout
+https://medium.com/@robert.broeckelmann/openid-connect-logout-eccc73df758f
