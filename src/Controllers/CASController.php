@@ -44,10 +44,7 @@ class CASController {
             $redirectUrl = $this->preAuth->generatePreauthURL($this->auth->getUserName());
         }
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function logout(Request $request, Response $response, array $args = []): Response
@@ -65,10 +62,7 @@ class CASController {
             \phpCAS::logout();
         }
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function singleLogout(Request $request, Response $response, array $args = []): Response
@@ -84,10 +78,7 @@ class CASController {
         ]);
         \phpCAS::handleLogoutRequests();
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     private function isAuthenticated(): bool

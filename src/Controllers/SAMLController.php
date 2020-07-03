@@ -56,30 +56,25 @@ class SAMLController extends BaseController {
             'request_id' => $this->auth->getLastRequestID(),
         ]);
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function logout(Request $request, Response $response, array $args = []): Response
     {
         $session = $request->getAttribute('session');
+        $userName = $session->get('saml.userName');
         $nameId = $session->get('saml.nameId');
         $sessionIndex = $session->get('saml.sessionIndex');
         $idpData = $this->auth->getSettings()->getIdPData();
         $this->logger->debug('saml logout for {user_name} with {idp}', [
-            'user_name' => $this->getUserName($sessionIndex),
+            'user_name' => $userName,
             'idp' => $idpData['entityId'],
         ]);
         $this->saveSsoLogout($sessionIndex);
         $redirectUrl = $this->auth->logout(NULL, [], $nameId, $sessionIndex, TRUE);
         $session->set('saml.logoutRequestId', $this->auth->getLastRequestID());
 
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 
     public function assertionConsumerService(Request $request, Response $response, array $args = []): Response
@@ -94,6 +89,7 @@ class SAMLController extends BaseController {
             $userName = $attributes[$settings['sso']['uidMapping']][0];
             $session->set('saml.sessionIndex', $sessionIndex);
             $session->set('saml.nameId', $this->auth->getNameId());
+            $session->set('saml.userName', $userName);
             $this->saveSsoLogin($sessionIndex, $userName, $attributes);
             $idpData = $this->auth->getSettings()->getIdPData();
             $this->logger->debug('saml user attributes send by {idp}: {attributes}', [
@@ -153,13 +149,9 @@ class SAMLController extends BaseController {
             }
         }
 
-
         if (empty($redirectUrl)) {
             $redirectUrl = RouteContext::fromRequest($request)->getBasePath();
         }
-        if (!empty($redirectUrl)) {
-            $response = $response->withHeader('Location', $redirectUrl)->withStatus(302);
-        }
-        return $response;
+        return $response->withHeader('Location', $redirectUrl)->withStatus(302);
     }
 }
