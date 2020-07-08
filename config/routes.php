@@ -28,6 +28,6 @@ return function (App $app) {
         $group->get('/logout', OIDCController::class . ':logout');
 
         $group->get('/slo', OIDCController::class . ':singleLogout');
-        $group->post('/slo', OIDCController::class . ':singleLogout');
+        $group->post('/bcLogout', OIDCController::class . ':backChannelLogout');
     });
 };

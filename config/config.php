@@ -59,12 +59,12 @@ return [
         ],
     ],
     'zimbra' => [
-        'domain' => 'quangnam.gov.vn',
-        'preauthKey' => '749a8ffa97b5acf3f1ef7d9c384baae196b0af4e33a3acb3d87f2e3cdd75425d',
-        'serverUrl' => 'https://mail.quangnam.gov.vn',
-        'adminSoapUrl' => 'https://mail.quangnam.gov.vn:7071/service/admin/soap',
+        'domain' => 'example.com',
+        'preauthKey' => 'a0da41ec227155e5515493cf0250448bbe8da77c83ca3481581e0a9238d48f5a',
+        'serverUrl' => 'https://mail.example.com',
+        'adminSoapUrl' => 'https://mail.example.com:7071/service/admin/soap',
         'adminUser' => 'admin',
-        'adminPassword' => '',
+        'adminPassword' => 's#cr3t',
     ],
     'db' => [
         'driver' => 'Pdo_Mysql',

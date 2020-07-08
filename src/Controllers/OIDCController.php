@@ -3,7 +3,7 @@
 namespace Application\Controllers;
 
 use Application\Zimbra\{PreAuth, SoapApi};
-use Jumbojett\OpenIDConnectClient;
+use Application\Oidc\OidcClient;
 use Laminas\Db\Adapter\AdapterInterface as Adapter;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,10 +12,17 @@ use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Routing\RouteContext;
 
 class OIDCController {
+    /**
+     * @var OidcClient
+     */
 	private $client;
+
+    /**
+     * @var PreAuth
+     */
     private $preAuth;
 
-    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, OpenIDConnectClient $client, PreAuth $preAuth)
+    public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, OidcClient $client, PreAuth $preAuth)
     {
         parent::__construct($adapter, $logger, $api);
         $this->client = $client;
@@ -28,6 +35,7 @@ class OIDCController {
     {
         $settings = $request->getAttribute('settings');
         $session = $request->getAttribute('session');
+        $this->client->setSession($session);
 
         $isAuthenticated = $this->client->authenticate();
         $userName = $this->client->requestUserInfo($settings['sso']['uidMapping']);
@@ -62,6 +70,8 @@ class OIDCController {
     public function logout(Request $request, Response $response, array $args = []): Response
     {
         $session = $request->getAttribute('session');
+        $this->client->setSession($session);
+
         $idToken = $session->get('oidc.idToken');
         $userName = $session->get('oidc.userName');
         $this->saveSsoLogout($idToken);
@@ -77,6 +87,9 @@ class OIDCController {
 
     public function singleLogout(Request $request, Response $response, array $args = []): Response
     {
+        $session = $request->getAttribute('session');
+        $this->client->setSession($session);
+
         return $response;
     }
 }

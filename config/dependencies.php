@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Application\Zimbra\{PreAuth, SoapApi};
-use Jumbojett\OpenIDConnectClient;
+use Application\Oidc\OidcClient;
 use Laminas\Db\Adapter\{Adapter, AdapterInterface};
 use Mezzio\Session\SessionPersistenceInterface;
 use Mezzio\Session\Ext\PhpSessionPersistence;
@@ -41,7 +41,7 @@ return function (App $app) {
     $container->add(SoapApi::class)
         ->addArgument($settings['zimbra']['adminSoapUrl']);
 
-    $container->add(OpenIDConnectClient::class)
+    $container->add(OidcClient::class)
         ->addArguments([
             $settings['sso']['oidc']['providerUrl'],
             $settings['sso']['oidc']['clientId'],

@@ -13,7 +13,14 @@ use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Routing\RouteContext;
 
 class SAMLController extends BaseController {
+    /**
+     * @var Auth
+     */
     private $auth;
+
+    /**
+     * @var PreAuth
+     */
     private $preAuth;
 
     public function __construct(Adapter $adapter, Logger $logger, SoapApi $api, Auth $auth, PreAuth $preAuth)
