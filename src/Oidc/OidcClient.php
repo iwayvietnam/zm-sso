@@ -4,6 +4,7 @@ namespace Application\Oidc;
 
 use Jumbojett\OpenIDConnectClient;
 use Mezzio\Session\SessionInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use function session_status;
 use function session_write_close;
 use const PHP_SESSION_ACTIVE;
@@ -11,6 +12,10 @@ use const PHP_SESSION_ACTIVE;
 class OidcClient extends OpenIDConnectClient {
 
     private $session
+
+    public function singleSignOut(Request $request)
+    {
+    }
 
     public function getSession()
     {

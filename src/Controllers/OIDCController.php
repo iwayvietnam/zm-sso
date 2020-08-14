@@ -89,6 +89,7 @@ class OIDCController {
     {
         $session = $request->getAttribute('session');
         $this->client->setSession($session);
+        $this->client->singleSignOut($request);
 
         return $response;
     }

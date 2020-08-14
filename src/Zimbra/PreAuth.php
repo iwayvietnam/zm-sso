@@ -21,7 +21,7 @@ class PreAuth {
         $this->serverUrl = trim($serverUrl, '/');
         $this->key = $key;
         $this->domain = trim($domain);
-        $this->timestamp = (int) $timestamp < 0 ? time() * 1000 : (int) $timestamp;
+        $this->timestamp = (int) $timestamp > 0 ? (int) $timestamp : time() * 1000;
         $this->expires = (int) $expires < 0 ? 0 : (int) $expires;
     }
 
@@ -42,7 +42,7 @@ class PreAuth {
         }
         $preauth = hash_hmac('sha1', $account . '|name|' . $this->expires . '|' . $this->timestamp, $this->key);
         $preauthURL = strtr(
-            '%serverUrl%/service/preauth/?account=%account%&by=name&timestamp=%timestamp%&expires=%expires%preauth=%preauth%',
+            '%serverUrl%/service/preauth/?account=%account%&by=name&timestamp=%timestamp%&expires=%expires%&preauth=%preauth%',
             [
                 '%serverUrl%' => $this->serverUrl,
                 '%account%' => $account,

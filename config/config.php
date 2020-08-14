@@ -10,16 +10,6 @@ return [
     'sso' => [
         'protocol' => 'saml',
         'uidMapping' => 'email',
-        'oidc' => [
-            'providerUrl' => 'https://openid-connect.onelogin.com/oidc',
-            'clientId' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
-            'clientSecret' => '1fb0d2a17b9d588ffd8d2f1fde35a30351f52c4ff23ed92ee45d67da35b565ce',
-            'scopes' => [
-                'openid',
-                'email',
-                'profile',
-            ],
-        ],
         'saml' => [
             'debug' => TRUE,
             'baseurl' => 'http://localhost:8080',
@@ -56,6 +46,16 @@ return [
             'serverPort' => 443,
             'context' => '/cas',
             'version' => '3.0',
+        ],
+        'oidc' => [
+            'providerUrl' => 'https://openid-connect.onelogin.com/oidc',
+            'clientId' => '5fac5d50-966a-0138-fc18-0ac688641284172270',
+            'clientSecret' => '1fb0d2a17b9d588ffd8d2f1fde35a30351f52c4ff23ed92ee45d67da35b565ce',
+            'scopes' => [
+                'openid',
+                'email',
+                'profile',
+            ],
         ],
     ],
     'zimbra' => [
