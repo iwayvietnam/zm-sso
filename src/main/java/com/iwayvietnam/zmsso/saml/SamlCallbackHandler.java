@@ -62,7 +62,7 @@ public class SamlCallbackHandler extends SamlBaseHandler {
             manager.save(true, (SAML2Profile) profile.get(), true);
             try {
                 String token = credentials.get().getSessionIndex();
-                singleLogin(request, response, profile.get().getUsername(), token, SSOProtocol.ZM_SSO_CAS);
+                singleLogin(request, response, profile.get().getUsername(), token, SSOProtocol.ZM_SSO_SAML);
             } catch (ServiceException e) {
                 throw new ServletException(e);
             }
