@@ -25,8 +25,8 @@ package com.iwayvietnam.zmsso.oidc;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.oidc.credentials.OidcCredentials;
 import org.pac4j.oidc.profile.OidcProfile;
 
 import javax.servlet.ServletException;
@@ -53,7 +53,7 @@ public class OidcCallbackHandler extends OidcBaseHandler {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         final JEEContext context = new JEEContext(request, response);
-        final Optional<Credentials> credentials = client.getCredentials(context);
+        final Optional<OidcCredentials> credentials = client.getCredentials(context);
         final Optional<OidcProfile> profile = client.getUserProfile(credentials.orElse(null), context);
         ProfileManager<OidcProfile> manager = new ProfileManager<>(context);
         if (profile.isPresent()) {

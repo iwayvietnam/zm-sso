@@ -22,13 +22,19 @@
  */
 package com.iwayvietnam.zmsso.oidc;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -47,11 +53,21 @@ public class OidcSloHandler extends OidcBaseHandler {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        final JEEContext context = new JEEContext(request, response);
         try {
-            String ssoToken = "";
-            singleLogout(ssoToken);
-        } catch (ServiceException e) {
+            final Optional<String> logoutToken = context.getRequestParameter("logout_token");
+            String sid;
+            if (logoutToken.isPresent()) {
+                final JWT jwt = JWTParser.parse(logoutToken.get());
+                sid = (String) jwt.getJWTClaimsSet().getClaim(Pac4jConstants.OIDC_CLAIM_SESSIONID);
+            } else {
+                sid = context.getRequestParameter(Pac4jConstants.OIDC_CLAIM_SESSIONID).orElse(null);
+            }
+            singleLogout(sid);
+        } catch (ServiceException | ParseException e) {
             throw new ServletException(e);
         }
+        context.setResponseHeader("Cache-Control", "no-cache, no-store");
+        context.setResponseHeader("Pragma", "no-cache");
     }
 }

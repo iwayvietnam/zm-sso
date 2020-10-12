@@ -96,7 +96,6 @@ public final class SettingsBuilder {
         );
         cfg.setServiceProviderEntityId(prop.get(PropertiesConstants.SAML_SERVICE_PROVIDER_ENTITY_ID));
         cfg.setAuthnRequestBindingType(prop.get(PropertiesConstants.SAML_AUTHN_REQUEST_BINDING_TYPE));
-
         return new SAML2Client(cfg);
     }
 

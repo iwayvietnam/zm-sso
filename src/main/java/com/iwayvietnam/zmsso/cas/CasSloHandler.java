@@ -22,7 +22,11 @@
  */
 package com.iwayvietnam.zmsso.cas;
 
+import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.cas.config.CasConfiguration;
+import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.util.CommonHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,5 +50,17 @@ public class CasSloHandler extends CasBaseHandler {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        final JEEContext context = new JEEContext(request, response);
+        if (isBackLogoutRequest(context)) {
+            try {
+                final String logoutMessage = context.getRequestParameter(CasConfiguration.LOGOUT_REQUEST_PARAMETER).get();
+                final String ticket = CommonHelper.substringBetween(logoutMessage, CasConfiguration.SESSION_INDEX_TAG + ">", "</");
+                singleLogout(ticket);
+            } catch (ServiceException e) {
+                throw new ServletException(e);
+            }
+        }
+        context.setResponseHeader("Cache-Control", "no-cache, no-store");
+        context.setResponseHeader("Pragma", "no-cache");
     }
 }

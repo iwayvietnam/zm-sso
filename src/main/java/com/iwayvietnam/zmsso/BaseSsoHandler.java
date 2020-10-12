@@ -63,13 +63,13 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         pac4jConfig = SettingsBuilder.build();
     }
 
-    protected boolean isLogin(AuthToken authToken) throws IOException {
+    protected boolean isLogin(AuthToken authToken) {
         final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        return optional.isPresent() && !authToken.isExpired();
+        return optional.isPresent() && !authToken.isExpired() && authToken.isRegistered();
     }
 
     protected void doLogin(HttpServletRequest request, HttpServletResponse response, Client client) throws IOException, ServiceException {
-        final AuthToken authToken = AuthUtil.getAuthTokenFromCookie(request, response);
+        AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLogin(authToken)) {
             final JEEContext context = new JEEContext(request, response);
             RedirectionAction action;

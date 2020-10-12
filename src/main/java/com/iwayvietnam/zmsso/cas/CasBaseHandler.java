@@ -25,6 +25,12 @@ package com.iwayvietnam.zmsso.cas;
 import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.cas.client.CasClient;
+import org.pac4j.cas.config.CasConfiguration;
+import org.pac4j.core.context.ContextHelper;
+import org.pac4j.core.context.HttpConstants;
+import org.pac4j.core.context.WebContext;
+
+import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -35,5 +41,16 @@ public class CasBaseHandler  extends BaseSsoHandler {
     public CasBaseHandler () throws ExtensionException {
         super();
         client = pac4jConfig.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No client found"));
+    }
+
+    protected boolean isBackLogoutRequest(final WebContext context) {
+        return ContextHelper.isPost(context)
+                && !isMultipartRequest(context)
+                && context.getRequestParameter(CasConfiguration.LOGOUT_REQUEST_PARAMETER).isPresent();
+    }
+
+    protected boolean isMultipartRequest(final WebContext context) {
+        final Optional<String> contentType = context.getRequestHeader(HttpConstants.CONTENT_TYPE_HEADER);
+        return contentType.isPresent() && contentType.get().toLowerCase().startsWith("multipart");
     }
 }
