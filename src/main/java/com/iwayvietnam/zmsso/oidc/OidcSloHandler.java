@@ -1,17 +1,48 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zm SSO is the the  Zimbra Collaboration Open Source Edition extension Single Sign On authentication to the Zimbra Web Client.
+ * Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ * ***** END LICENSE BLOCK *****
+ *
+ * Zimbra Hierarchical Address Book
+ *
+ * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
+ */
 package com.iwayvietnam.zmsso.oidc;
 
-import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class OidcSloHandler extends BaseSsoHandler {
+/**
+ * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
+ */
+public class OidcSloHandler extends OidcBaseHandler {
+    public static final String SLO_HANDLER_PATH = "oidc/slo";
+
+    public OidcSloHandler() throws ExtensionException {
+        super();
+    }
+
     @Override
     public String getPath() {
-        return OidcSsoConstants.SLO_HANDLER_PATH;
+        return SLO_HANDLER_PATH;
     }
 
     @Override
