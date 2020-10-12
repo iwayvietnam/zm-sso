@@ -23,9 +23,15 @@
 package com.iwayvietnam.zmsso.oidc;
 
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.session.SessionStore;
+import org.pac4j.core.exception.http.HttpAction;
+import org.pac4j.core.exception.http.NoContentAction;
+import org.pac4j.core.exception.http.RedirectionAction;
+import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.oidc.profile.OidcProfile;
 
@@ -33,6 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -55,13 +62,31 @@ public class OidcLogoutHandler extends OidcBaseHandler {
         ProfileManager<OidcProfile> manager = new ProfileManager<>(context);
         manager.setConfig(pac4jConfig);
 
-        OidcProfile profile = manager.get(true).get();
+        HttpAction action = NoContentAction.INSTANCE;
         try {
-            clearAuthToken(request, response, profile.getIdTokenString());
-            manager.logout();
+            Optional<OidcProfile> profile = manager.get(true);
+            if (profile.isPresent()) {
+                clearAuthToken(request, response, profile.get().getIdTokenString());
+                manager.logout();
+                final SessionStore sessionStore = context.getSessionStore();
+                if (sessionStore != null) {
+                    final boolean removed = sessionStore.destroySession(context);
+                    if (!removed) {
+                        ZimbraLog.extensions.error("Unable to destroy the web session. The session store may not support this feature");
+                    }
+                } else {
+                    ZimbraLog.extensions.error("No session store available for this web context");
+                }
+                final Optional<RedirectionAction> logoutAction = client.getLogoutAction(context, profile.get(), null);
+                if (logoutAction.isPresent()) {
+                    action = logoutAction.get();
+                }
+            }
         } catch (AuthTokenException | ServiceException e) {
             throw new ServletException(e);
         }
+
+        JEEHttpActionAdapter.INSTANCE.adapt(action, context);
     }
 
     @Override

@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso.cas;
 
-import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;

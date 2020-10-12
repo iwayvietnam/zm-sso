@@ -23,12 +23,17 @@
 package com.iwayvietnam.zmsso.cas;
 
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.cas.profile.CasProfile;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.credentials.TokenCredentials;
 import org.pac4j.core.exception.http.HttpAction;
+import org.pac4j.core.exception.http.NoContentAction;
+import org.pac4j.core.exception.http.RedirectionAction;
+import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.profile.ProfileManager;
 
 import javax.servlet.ServletException;
@@ -59,15 +64,31 @@ public class CasLogoutHandler extends CasBaseHandler {
         ProfileManager<CasProfile> manager = new ProfileManager<>(context);
         final Optional<TokenCredentials> credentials = client.getCredentials(context);
         manager.setConfig(pac4jConfig);
-        final List<CasProfile> profiles = manager.getAll(true);
 
-        HttpAction action;
+        HttpAction action = NoContentAction.INSTANCE;
         try {
             clearAuthToken(request, response, credentials.get().getToken());
-            manager.logout();
+            Optional<CasProfile> profile = manager.get(true);
+            if (profile.isPresent()) {
+                manager.logout();
+                final SessionStore sessionStore = context.getSessionStore();
+                if (sessionStore != null) {
+                    final boolean removed = sessionStore.destroySession(context);
+                    if (!removed) {
+                        ZimbraLog.extensions.error("Unable to destroy the web session. The session store may not support this feature");
+                    }
+                } else {
+                    ZimbraLog.extensions.error("No session store available for this web context");
+                }
+                final Optional<RedirectionAction> logoutAction = client.getLogoutAction(context, profile.get(), null);
+                if (logoutAction.isPresent()) {
+                    action = logoutAction.get();
+                }
+            }
         } catch (AuthTokenException | ServiceException e) {
             throw new ServletException(e);
         }
+        JEEHttpActionAdapter.INSTANCE.adapt(action, context);
     }
 
     @Override
