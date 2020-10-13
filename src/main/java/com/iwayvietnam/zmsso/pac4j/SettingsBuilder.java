@@ -24,19 +24,13 @@ package com.iwayvietnam.zmsso.pac4j;
 
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
-import com.zimbra.cs.util.Zimbra;
 import org.pac4j.cas.client.CasClient;
-import org.pac4j.cas.config.CasConfiguration;
-import org.pac4j.cas.config.CasProtocol;
 import org.pac4j.config.client.PropertiesConfigFactory;
-import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
-import org.pac4j.saml.config.SAML2Configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,48 +62,6 @@ public final class SettingsBuilder {
             ZimbraLog.extensions.error(e);
         }
         return properties;
-    }
-
-    private static CasClient loadCasSetting() {
-        final Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
-        final String loginUrl = prop.get(PropertiesConstants.CAS_LOGIN_URL);
-        final CasProtocol protocol = CasProtocol.valueOf(prop.get(PropertiesConstants.CAS_PROTOCOL));
-        final CasConfiguration cfg = new CasConfiguration(loginUrl, protocol);
-        cfg.setLogoutHandler(new ZmLogoutHandler());
-        final CasClient client = new CasClient(cfg);
-        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
-        return client;
-    }
-
-    private static OidcClient loadOidcSetting() {
-        final Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
-        final OidcConfiguration cfg = new OidcConfiguration();
-        cfg.setClientId(prop.get(PropertiesConstants.OIDC_ID));
-        cfg.setSecret(prop.get(PropertiesConstants.OIDC_SECRET));
-        cfg.setDiscoveryURI(prop.get(PropertiesConstants.OIDC_DISCOVERY_URI));
-        cfg.setScope(prop.get(PropertiesConstants.OIDC_SCOPE));
-        cfg.setUseNonce(true);
-        cfg.setLogoutHandler(new ZmLogoutHandler());
-
-        final OidcClient client = new OidcClient(cfg);
-        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
-        return client;
-    }
-
-    private static SAML2Client loadSamlSetting() {
-        final Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
-        final SAML2Configuration cfg = new SAML2Configuration(
-            prop.get(PropertiesConstants.SAML_KEYSTORE_PATH),
-            prop.get(PropertiesConstants.SAML_KEYSTORE_PASSWORD),
-            prop.get(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD),
-            prop.get(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH)
-        );
-        cfg.setServiceProviderEntityId(prop.get(PropertiesConstants.SAML_SERVICE_PROVIDER_ENTITY_ID));
-        cfg.setAuthnRequestBindingType(prop.get(PropertiesConstants.SAML_AUTHN_REQUEST_BINDING_TYPE));
-        cfg.setLogoutHandler(new ZmLogoutHandler());
-        final SAML2Client client = new SAML2Client(cfg);
-        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
-        return client;
     }
 
     public static Config build() throws ExtensionException {
