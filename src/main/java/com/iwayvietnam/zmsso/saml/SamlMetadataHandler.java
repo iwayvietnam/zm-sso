@@ -33,7 +33,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class SamlMetadataHandler extends SamlBaseHandler {
-    public static final String METADATA_HANDLER_PATH = "saml";
+    private static final String METADATA_HANDLER_PATH = "saml";
 
     public SamlMetadataHandler() throws ExtensionException {
         super();
@@ -45,7 +45,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         client.init();
         response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
         response.getWriter().flush();
@@ -53,7 +53,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         doPost(request, response);
     }
 }

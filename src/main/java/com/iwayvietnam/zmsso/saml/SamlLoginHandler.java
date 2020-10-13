@@ -34,7 +34,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class SamlLoginHandler extends SamlBaseHandler {
-    public static final String LOGIN_HANDLER_PATH = "saml/login";
+    private static final String LOGIN_HANDLER_PATH = "saml/login";
 
     public SamlLoginHandler() throws ExtensionException {
         super();
@@ -46,7 +46,7 @@ public class SamlLoginHandler extends SamlBaseHandler {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doLogin(request, response, client);
         } catch (ServiceException e) {
@@ -55,7 +55,7 @@ public class SamlLoginHandler extends SamlBaseHandler {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         doPost(request, response);
     }
 }

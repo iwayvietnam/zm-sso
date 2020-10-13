@@ -45,6 +45,7 @@ import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
+ * Logout url:  https://yourzimbraserver.com/?loginOp=logout
  */
 public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
     protected static final Provisioning prov = Provisioning.getInstance();

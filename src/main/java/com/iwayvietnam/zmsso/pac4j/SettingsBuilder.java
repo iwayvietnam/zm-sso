@@ -22,7 +22,9 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
+import com.zimbra.cs.util.Zimbra;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.cas.config.CasProtocol;
@@ -50,36 +52,32 @@ public final class SettingsBuilder {
     private static String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     private static String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
 
-    private static String CAS_CALLBACK_URL = "cas.callbackUrl";
-    private static String OIDC_CALLBACK_URL = "oidc.callbackUrl";
-    private static String SAML_CALLBACK_URL = "saml.callbackUrl";
-
-    private static Map<String, String> properties = new HashMap<>();
+    private final static Map<String, String> properties = new HashMap<>();
     private static Client defaultClient;
 
     private static Map<String, String> loadProperties(String propFileName) {
-        ClassLoader classLoader = SettingsBuilder.class.getClassLoader();
-        Properties prop = new Properties();
-        InputStream inputStream = classLoader.getResourceAsStream(propFileName);
+        final ClassLoader classLoader = SettingsBuilder.class.getClassLoader();
+        final Properties prop = new Properties();
+        final InputStream inputStream = classLoader.getResourceAsStream(propFileName);
         try {
             prop.load(inputStream);
             for (String key: prop.stringPropertyNames()) {
                 properties.put(key, prop.getProperty(key));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            ZimbraLog.extensions.error(e);
         }
         return properties;
     }
 
-    private static CasClient loadCasSetting(){
-        Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
-        String loginUrl = prop.get(PropertiesConstants.CAS_LOGIN_URL);
-        CasProtocol protocol = CasProtocol.valueOf(prop.get(PropertiesConstants.CAS_PROTOCOL));
-        CasConfiguration cfg = new CasConfiguration(loginUrl, protocol);
+    private static CasClient loadCasSetting() {
+        final Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
+        final String loginUrl = prop.get(PropertiesConstants.CAS_LOGIN_URL);
+        final CasProtocol protocol = CasProtocol.valueOf(prop.get(PropertiesConstants.CAS_PROTOCOL));
+        final CasConfiguration cfg = new CasConfiguration(loginUrl, protocol);
         cfg.setLogoutHandler(new ZmLogoutHandler());
-        CasClient client = new CasClient(cfg);
-        client.setCallbackUrl(prop.get(CAS_CALLBACK_URL));
+        final CasClient client = new CasClient(cfg);
+        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
         return client;
     }
 
@@ -94,13 +92,13 @@ public final class SettingsBuilder {
         cfg.setLogoutHandler(new ZmLogoutHandler());
 
         final OidcClient client = new OidcClient(cfg);
-        client.setCallbackUrl(prop.get(OIDC_CALLBACK_URL));
+        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
         return client;
     }
 
     private static SAML2Client loadSamlSetting() {
         final Map<String, String> prop = loadProperties(ZM_SSO_SETTINGS_FILE);
-        SAML2Configuration cfg = new SAML2Configuration(
+        final SAML2Configuration cfg = new SAML2Configuration(
             prop.get(PropertiesConstants.SAML_KEYSTORE_PATH),
             prop.get(PropertiesConstants.SAML_KEYSTORE_PASSWORD),
             prop.get(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD),
@@ -109,8 +107,8 @@ public final class SettingsBuilder {
         cfg.setServiceProviderEntityId(prop.get(PropertiesConstants.SAML_SERVICE_PROVIDER_ENTITY_ID));
         cfg.setAuthnRequestBindingType(prop.get(PropertiesConstants.SAML_AUTHN_REQUEST_BINDING_TYPE));
         cfg.setLogoutHandler(new ZmLogoutHandler());
-        SAML2Client client = new SAML2Client(cfg);
-        client.setCallbackUrl(prop.get(SAML_CALLBACK_URL));
+        final SAML2Client client = new SAML2Client(cfg);
+        client.setCallbackUrl(prop.get(ZM_SSO_CALLBACK_URL));
         return client;
     }
 
