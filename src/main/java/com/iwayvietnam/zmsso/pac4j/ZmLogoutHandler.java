@@ -31,35 +31,44 @@ import com.zimbra.cs.account.Account;
 import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.account.Provisioning;
+import com.zimbra.cs.account.auth.AuthContext;
+import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
+    protected static final Provisioning prov = Provisioning.getInstance();
+    public static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
+    public static final String USER_AGENT_HEADER = "User-Agent";
 
     @Override
     public void recordSession(final C context, final String key) {
         super.recordSession(context, key);
+        getProfileManager(context).get(true).ifPresent(profile -> {
+            try {
+                singleLogin(context, profile.getUsername(), key, profile.getClientName());
+            } catch (ServiceException e) {
+                ZimbraLog.extensions.error(e);
+            }
+        });
     }
 
     @Override
     public void destroySessionFront(final C context, final String key) {
-        if (context instanceof JEEContext) {
-            JEEContext jCxt = (JEEContext) context;
-            try {
-                clearAuthToken(jCxt.getNativeRequest(), jCxt.getNativeResponse(), key);
-            } catch (AuthTokenException | ServiceException e) {
-                ZimbraLog.extensions.error(e);
-            }
+        try {
+            clearAuthToken(context, key);
+        } catch (AuthTokenException | ServiceException e) {
+            ZimbraLog.extensions.error(e);
         }
         super.destroySessionFront(context, key);
     }
@@ -74,27 +83,57 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
         super.destroySessionBack(context, key);
     }
 
-    private void clearAuthToken(HttpServletRequest request, HttpServletResponse response, String key) throws AuthTokenException, ServiceException {
-        AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
-        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        if (optional.isPresent()) {
-            authToken.encode(request, response, true);
-            authToken.deRegister();
-        }
-        ZimbraCookie.clearCookie(response, ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
-        String accountId = DbSsoSession.ssoSessionLogout(key);
-        ZimbraLog.extensions.debug(String.format("SSO session logout for account id: %s", accountId));
+    private void singleLogin(final C context, String accountName, String ssoToken, String client) throws ServiceException {
+        Map<String, Object> authCtxt = new HashMap<>();
+        String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(null);
+        String remoteIp = context.getRemoteAddr();
+        String userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
+
+        authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);
+        authCtxt.put(AuthContext.AC_ACCOUNT_NAME_PASSEDIN, accountName);
+        authCtxt.put(AuthContext.AC_USER_AGENT, userAgent);
+
+        Account account = prov.getAccountByName(accountName);
+        prov.ssoAuthAccount(account, AuthContext.Protocol.soap, authCtxt);
+        AuthToken authToken = AuthProvider.getAuthToken(account, false);
+        setAuthTokenCookie(context, authToken);
+
+        DbSsoSession.ssoSessionLogin(account, ssoToken, client, origIp, remoteIp, userAgent);
     }
 
-    private void singleLogout(String key) throws ServiceException {
-        String accountId = DbSsoSession.ssoSessionLogout(key);
-        if (!StringUtil.isNullOrEmpty(accountId)) {
-            Account account = Provisioning.getInstance().getAccountById(accountId);
-            int validityValue = account.getAuthTokenValidityValue();
-            if (validityValue > 99) {
-                validityValue = 0;
+    private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
+        final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
+        if (context instanceof JEEContext) {
+            final JEEContext jeeCxt = (JEEContext) context;
+            authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
+        }
+    }
+
+    private void clearAuthToken(final C context, final String key) throws AuthTokenException, ServiceException {
+        if (context instanceof JEEContext) {
+            final JEEContext jeeCxt = (JEEContext) context;
+            final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
+            final Optional<AuthToken> optional = Optional.ofNullable(authToken);
+            if (optional.isPresent()) {
+                authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
+                authToken.deRegister();
             }
-            account.setAuthTokenValidityValue(validityValue + 1);
+            ZimbraCookie.clearCookie(jeeCxt.getNativeResponse(), ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
+            final String accountId = DbSsoSession.ssoSessionLogout(key);
+            ZimbraLog.extensions.debug(String.format("SSO session logout for account id: %s", accountId));
+        }
+    }
+
+    private void singleLogout(final String key) throws ServiceException {
+        final String accountId = DbSsoSession.ssoSessionLogout(key);
+        if (!StringUtil.isNullOrEmpty(accountId)) {
+            final Account account = prov.getAccountById(accountId);
+            final int validityValue = account.getAuthTokenValidityValue();
+            if (validityValue > 99) {
+                account.setAuthTokenValidityValue(1);
+            } else {
+                account.setAuthTokenValidityValue(validityValue + 1);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS sso_session (
     sso_token        VARCHAR(255) NOT NULL,
     account_id       VARCHAR(127) NOT NULL,
     account_name     VARCHAR(255) NOT NULL,
-    protocol         VARCHAR(32),
+    protocol         VARCHAR(64),
     origin_client_ip VARCHAR(64),
     remote_ip        VARCHAR(64),
     user_agent       VARCHAR(255),

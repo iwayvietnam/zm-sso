@@ -29,11 +29,11 @@ import org.pac4j.saml.client.SAML2Client;
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class SamlBaseHandler  extends BaseSsoHandler {
+public class SamlBaseHandler extends BaseSsoHandler {
     protected final SAML2Client client;
 
     public SamlBaseHandler() throws ExtensionException {
         super();
-        client = pac4jConfig.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No client found"));
+        client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No client found"));
     }
 }

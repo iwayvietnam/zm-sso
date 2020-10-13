@@ -20,52 +20,33 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.cas;
+package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.cas.profile.CasProfile;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.credentials.TokenCredentials;
-import org.pac4j.core.profile.ProfileManager;
-import org.pac4j.core.profile.UserProfile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class CasCallbackHandler extends CasBaseHandler {
-    public static final String CALLBACK_HANDLER_PATH = "oidc/callback";
-
-    public CasCallbackHandler() throws ExtensionException {
-        super();
-    }
-
+public class LoginHandler extends BaseSsoHandler {
+    public static final String LOGIN_HANDLER_PATH = "login";
 
     @Override
     public String getPath() {
-        return CALLBACK_HANDLER_PATH;
+        return LOGIN_HANDLER_PATH;
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        final JEEContext context = new JEEContext(request, response);
-        Optional<TokenCredentials> credentials = client.getCredentials(context);
-        final Optional<UserProfile> profile = client.getUserProfile(credentials.orElse(null), context);
-        ProfileManager<CasProfile> manager = new ProfileManager<>(context);
-        if (profile.isPresent()) {
-            manager.save(true, (CasProfile) profile.get(), true);
-            try {
-                String token = credentials.get().getToken();
-                singleLogin(request, response, profile.get().getUsername(), token, SSOProtocol.ZM_SSO_CAS);
-            } catch (ServiceException e) {
-                throw new ServletException(e);
-            }
+        try {
+            doLogin(request, response, SettingsBuilder.defaultClient());
+        } catch (ServiceException e) {
+            throw new ServletException(e);
         }
     }
 

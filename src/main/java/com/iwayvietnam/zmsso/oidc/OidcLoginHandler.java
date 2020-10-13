@@ -22,8 +22,10 @@
  */
 package com.iwayvietnam.zmsso.oidc;
 
+import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.oidc.client.OidcClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,11 +35,13 @@ import java.io.IOException;
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class OidcLoginHandler extends OidcBaseHandler {
+public class OidcLoginHandler extends BaseSsoHandler {
     public static final String LOGIN_HANDLER_PATH = "oidc/login";
+    protected OidcClient client;
 
     public OidcLoginHandler() throws ExtensionException {
         super();
+        client = config.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No client found"));
     }
 
     @Override

@@ -45,21 +45,14 @@ public class ZmSsoExtension implements ZimbraExtension {
     public void init() throws ExtensionException, ServiceException {
         DbSsoSession.createSsoSessionTable();
 
-        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
-        ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
-        ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
-        ExtensionDispatcherServlet.register(this, new SamlLogoutHandler());
-        ExtensionDispatcherServlet.register(this, new SamlSloHandler());
+        ExtensionDispatcherServlet.register(this, new LoginHandler());
+        ExtensionDispatcherServlet.register(this, new CallbackHandler());
+        ExtensionDispatcherServlet.register(this, new LogoutHandler());
 
         ExtensionDispatcherServlet.register(this, new CasLoginHandler());
-        ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
-        ExtensionDispatcherServlet.register(this, new CasLogoutHandler());
-        ExtensionDispatcherServlet.register(this, new CasSloHandler());
-
         ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
-        ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
-        ExtensionDispatcherServlet.register(this, new OidcLogoutHandler());
-        ExtensionDispatcherServlet.register(this, new OidcSloHandler());
+        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
+        ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.zimbra.common.util.ZimbraCookie;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
 import com.zimbra.cs.account.auth.AuthContext;
+import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 import com.zimbra.cs.httpclient.URLUtil;
 import com.zimbra.cs.service.AuthProvider;
@@ -53,14 +54,14 @@ import java.util.Optional;
  */
 public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected static final Provisioning prov = Provisioning.getInstance();
-    protected final Config pac4jConfig;
+    protected final Config config;
 
     public enum SSOProtocol {
         ZM_SSO_SAML, ZM_SSO_CAS, ZM_SSO_OIDC
     }
 
-    public BaseSsoHandler() {
-        pac4jConfig = SettingsBuilder.build();
+    public BaseSsoHandler() throws ExtensionException {
+        config = SettingsBuilder.build();
     }
 
     protected boolean isLogin(AuthToken authToken) {

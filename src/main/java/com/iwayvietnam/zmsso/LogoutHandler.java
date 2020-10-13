@@ -20,10 +20,12 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.saml;
+package com.iwayvietnam.zmsso;
 
-import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.engine.DefaultLogoutLogic;
+import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
+import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,21 +35,23 @@ import java.io.IOException;
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class SamlSloHandler extends SamlBaseHandler {
-    public static final String SLO_HANDLER_PATH = "saml/slo";
-
-    public SamlSloHandler() throws ExtensionException {
-        super();
-    }
+public class LogoutHandler extends BaseSsoHandler {
+    public static final String LOGOUT_HANDLER_PATH = "logout";
 
     @Override
     public String getPath() {
-        return SLO_HANDLER_PATH;
+        return LOGOUT_HANDLER_PATH;
     }
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        String logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
+        boolean localLogout = true;
+        boolean destroySession = true;
+        boolean centralLogout = true;
         final JEEContext context = new JEEContext(request, response);
+        DefaultLogoutLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
     }
 
     @Override

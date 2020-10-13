@@ -20,13 +20,13 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.cas;
+package com.iwayvietnam.zmsso;
 
-import com.zimbra.common.service.ServiceException;
-import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.cas.config.CasConfiguration;
+import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.util.CommonHelper;
+import org.pac4j.core.engine.DefaultCallbackLogic;
+import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
+import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,31 +36,25 @@ import java.io.IOException;
 /**
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class CasSloHandler extends CasBaseHandler {
-    public static final String SLO_HANDLER_PATH = "cas/slo";
-
-    public CasSloHandler() throws ExtensionException {
-        super();
-    }
+public class CallbackHandler extends BaseSsoHandler {
+    public static final String CALLBACK_HANDLER_PATH = "callback";
 
     @Override
     public String getPath() {
-        return SLO_HANDLER_PATH;
+        return CALLBACK_HANDLER_PATH;
+    }
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        boolean saveInSession = true;
+        boolean multiProfile = true;
+        boolean renewSession = false;
+        final JEEContext context = new JEEContext(request, response);
+        DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, SettingsBuilder.defaultClient().getName());
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        final JEEContext context = new JEEContext(request, response);
-        if (isBackLogoutRequest(context)) {
-            try {
-                final String logoutMessage = context.getRequestParameter(CasConfiguration.LOGOUT_REQUEST_PARAMETER).get();
-                final String ticket = CommonHelper.substringBetween(logoutMessage, CasConfiguration.SESSION_INDEX_TAG + ">", "</");
-                singleLogout(ticket);
-            } catch (ServiceException e) {
-                throw new ServletException(e);
-            }
-        }
-        context.setResponseHeader("Cache-Control", "no-cache, no-store");
-        context.setResponseHeader("Pragma", "no-cache");
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        doPost(request, response);
     }
 }
