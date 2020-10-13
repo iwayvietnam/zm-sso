@@ -84,27 +84,27 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
         super.destroySessionBack(context, key);
     }
 
-    private void singleLogin(final C context, String accountName, String ssoToken, String client) throws ServiceException {
-        Map<String, Object> authCtxt = new HashMap<>();
-        String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(null);
-        String remoteIp = context.getRemoteAddr();
-        String userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
+    private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
+        final Map<String, Object> authCtxt = new HashMap<>();
+        final String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(context.getRemoteAddr());
+        final String remoteIp = context.getRemoteAddr();
+        final String userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
 
         authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);
         authCtxt.put(AuthContext.AC_ACCOUNT_NAME_PASSEDIN, accountName);
         authCtxt.put(AuthContext.AC_USER_AGENT, userAgent);
 
-        Account account = prov.getAccountByName(accountName);
+        final Account account = prov.getAccountByName(accountName);
         prov.ssoAuthAccount(account, AuthContext.Protocol.soap, authCtxt);
-        AuthToken authToken = AuthProvider.getAuthToken(account, false);
+        final AuthToken authToken = AuthProvider.getAuthToken(account, false);
         setAuthTokenCookie(context, authToken);
 
-        DbSsoSession.ssoSessionLogin(account, ssoToken, client, origIp, remoteIp, userAgent);
+        DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
     }
 
     private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
-        final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
         if (context instanceof JEEContext) {
+            final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
             final JEEContext jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
         }
@@ -128,6 +128,7 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
     private void singleLogout(final String key) throws ServiceException {
         final String accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
+            ZimbraLog.extensions.debug(String.format("SSO single logout for account id: %s", accountId));
             final Account account = prov.getAccountById(accountId);
             final int validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {
