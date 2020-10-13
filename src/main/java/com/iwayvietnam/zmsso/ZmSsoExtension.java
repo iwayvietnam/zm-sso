@@ -1,6 +1,6 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * Zm SSO is the the  Zimbra Collaboration Open Source Edition extension Single Sign On authentication to the Zimbra Web Client.
+ * Zm SSO is the Zimbra Collaboration Open Source Edition extension for single sign-on authentication to the Zimbra Web Client.
  * Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  * ***** END LICENSE BLOCK *****
  *
- * Zimbra Hierarchical Address Book
+ * Zimbra Single Sign On
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
@@ -31,6 +31,7 @@ import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ZimbraExtension;
 
 /**
+ * Zimbra Single Sign On oExtension
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ZmSsoExtension implements ZimbraExtension {
@@ -51,8 +52,8 @@ public class ZmSsoExtension implements ZimbraExtension {
 
         ExtensionDispatcherServlet.register(this, new CasLoginHandler());
         ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
-        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
         ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
+        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
     }
 
     @Override
