@@ -39,6 +39,7 @@ import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -48,10 +49,12 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public abstract class BaseSsoHandler extends ExtensionHttpHandler {
+    protected static final String SSO_CLIENT_NAME_SESSION_ATTR = "sso.ClientName";
+
     protected final Config config;
 
     public BaseSsoHandler() throws ExtensionException {
-        config = SettingsBuilder.build();
+        config = SettingsBuilder.buildConfig();
     }
 
     protected boolean isLogin(final AuthToken authToken) {
@@ -62,6 +65,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLogin(authToken)) {
+            final HttpSession session = request.getSession();
+            session.setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final JEEContext context = new JEEContext(request, response);
             RedirectionAction action;
 

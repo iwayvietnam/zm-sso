@@ -23,6 +23,7 @@
 package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
+import com.zimbra.common.util.StringUtil;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultCallbackLogic;
@@ -32,6 +33,7 @@ import org.pac4j.core.util.Pac4jConstants;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -49,14 +51,20 @@ public class CallbackHandler extends BaseSsoHandler {
     public String getPath() {
         return CALLBACK_HANDLER_PATH;
     }
+
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        final HttpSession session = request.getSession();
+        String clientName = session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString();
+        if (StringUtil.isNullOrEmpty(clientName)) {
+            clientName = SettingsBuilder.defaultClient().getName();
+        }
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final boolean saveInSession = true;
-        final boolean multiProfile = true;
-        final boolean renewSession = false;
+        final boolean saveInSession = SettingsBuilder.saveInSession();
+        final boolean multiProfile = SettingsBuilder.multiProfile();
+        final boolean renewSession = SettingsBuilder.renewSession();
         final JEEContext context = new JEEContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, SettingsBuilder.defaultClient().getName());
+        DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, clientName);
     }
 
     @Override

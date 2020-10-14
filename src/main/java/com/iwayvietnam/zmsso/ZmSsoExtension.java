@@ -31,7 +31,7 @@ import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ZimbraExtension;
 
 /**
- * Zimbra Single Sign On oExtension
+ * Zimbra Single Sign On Extension
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ZmSsoExtension implements ZimbraExtension {

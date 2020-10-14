@@ -53,6 +53,11 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
     public static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
     public static final String USER_AGENT_HEADER = "User-Agent";
 
+    /**
+     * Associates a key with the current web session.
+     * @param context the web context
+     * @param key the key
+     */
     @Override
     public void recordSession(final C context, final String key) {
         super.recordSession(context, key);
@@ -65,6 +70,11 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
         });
     }
 
+    /**
+     * Destroys the current web session for the given key for a front channel logout.
+     * @param context the web context
+     * @param key the key
+     */
     @Override
     public void destroySessionFront(final C context, final String key) {
         try {
@@ -75,6 +85,11 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
         super.destroySessionFront(context, key);
     }
 
+    /**
+     * Destroys the current web session for the given key for a back channel logout.
+     * @param context the web context
+     * @param key the key
+     */
     @Override
     public void destroySessionBack(final C context, final String key) {
         try {

@@ -22,7 +22,13 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
+import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraCookie;
+import com.zimbra.cs.account.AuthToken;
+import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.extension.ExtensionException;
+import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
@@ -32,6 +38,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * SSO Logout Handler
@@ -51,11 +58,16 @@ public class LogoutHandler extends BaseSsoHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        try {
+            clearAuthToken(request, response);
+        } catch (ServiceException | AuthTokenException e) {
+            throw new ServletException(e);
+        }
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final String logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
-        final boolean localLogout = true;
-        final boolean destroySession = true;
-        final boolean centralLogout = true;
+        final boolean localLogout = SettingsBuilder.localLogout();
+        final boolean destroySession = SettingsBuilder.destroySession();
+        final boolean centralLogout = SettingsBuilder.centralLogout();
         final JEEContext context = new JEEContext(request, response);
         DefaultLogoutLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
     }
@@ -63,5 +75,15 @@ public class LogoutHandler extends BaseSsoHandler {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         doPost(request, response);
+    }
+
+    private void clearAuthToken(final HttpServletRequest request, final HttpServletResponse response) throws ServiceException, AuthTokenException {
+        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
+        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
+        if (optional.isPresent()) {
+            authToken.encode(request, response, true);
+            authToken.deRegister();
+        }
+        ZimbraCookie.clearCookie(response, ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
     }
 }
