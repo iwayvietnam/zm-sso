@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
-import com.iwayvietnam.zmsso.DbSsoSession;
+import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraCookie;

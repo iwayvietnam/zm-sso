@@ -21,5 +21,32 @@
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
 -->
 <project name="zm-sso" default="jar" basedir=".">
+    <description>
+        Build file for the Zm SSO.
+    </description>
+
+    <property name="version" value="1.0.0"/>
+    <property name="release" value="1"/>
+    <property name="lib"     value="lib/"/>
+    <property name="build"   value="build/"/>
+    <property name="dist"    value="dist/"/>
+    <property name="src"     value="src/"/>
+    <property name="jar"     value="zm-hab-${version}-${release}.jar"/>
+    <property name="javac.source" value="1.8"/>
+    <property name="javac.target" value="1.8"/>
+
+    <path id="libraries">
+        <fileset dir="${lib}" >
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <mkdir dir="${build}"/>
+        <delete dir="${dist}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+
     <target name="jar"></target>
 </project>

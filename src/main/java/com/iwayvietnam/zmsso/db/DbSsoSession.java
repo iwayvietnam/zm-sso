@@ -20,7 +20,7 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso;
+package com.iwayvietnam.zmsso.db;
 
 import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
