@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Zimbra-Extension-Name: sso
+Zimbra-Extension-Class: com.iwayvietnam.zmsso.ZmSsoExtension
+Implementation-Vendor: iWay Vietnam
+Implementation-Title: Single Sign On for Zimbra (Zm SSO)
+Implementation-Version: 1.0.0
+Created-By: iWay Vietnam
