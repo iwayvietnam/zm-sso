@@ -35,6 +35,6 @@ public abstract class SamlBaseHandler extends BaseSsoHandler {
 
     public SamlBaseHandler() throws ExtensionException {
         super();
-        client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No client found"));
+        client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No saml client found"));
     }
 }

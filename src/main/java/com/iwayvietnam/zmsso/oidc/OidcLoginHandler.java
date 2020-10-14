@@ -42,7 +42,7 @@ public class OidcLoginHandler extends BaseSsoHandler {
 
     public OidcLoginHandler() throws ExtensionException {
         super();
-        client = config.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No client found"));
+        client = config.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No oidc client found"));
     }
 
     @Override

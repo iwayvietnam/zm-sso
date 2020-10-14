@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
@@ -99,6 +100,7 @@ public final class SettingsBuilder {
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             OidcConfiguration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
+            cfg.setPreferredJwsAlgorithm(JWSAlgorithm.RS256);
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             SAML2Configuration cfg = client.getConfiguration();

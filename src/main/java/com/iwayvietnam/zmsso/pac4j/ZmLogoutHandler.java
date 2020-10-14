@@ -46,12 +46,12 @@ import java.util.Optional;
 /**
  * Pac4j Logout Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
- * Logout url:  https://yourzimbraserver.com/?loginOp=logout
+ * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
-    protected static final Provisioning prov = Provisioning.getInstance();
-    public static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
-    public static final String USER_AGENT_HEADER = "User-Agent";
+public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
+    private static final Provisioning prov = Provisioning.getInstance();
+    private static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
+    private static final String USER_AGENT_HEADER = "User-Agent";
 
     /**
      * Associates a key with the current web session.
@@ -102,8 +102,8 @@ public class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<
 
     private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
         final Map<String, Object> authCtxt = new HashMap<>();
-        final String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(context.getRemoteAddr());
         final String remoteIp = context.getRemoteAddr();
+        final String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
         final String userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
 
         authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);

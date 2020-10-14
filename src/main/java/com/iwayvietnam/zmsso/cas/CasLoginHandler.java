@@ -42,7 +42,7 @@ public class CasLoginHandler extends BaseSsoHandler {
 
     public CasLoginHandler() throws ExtensionException {
         super();
-        client = config.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No client found"));
+        client = config.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
     }
 
     @Override
