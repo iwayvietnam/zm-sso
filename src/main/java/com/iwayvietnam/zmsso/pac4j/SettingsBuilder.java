@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
