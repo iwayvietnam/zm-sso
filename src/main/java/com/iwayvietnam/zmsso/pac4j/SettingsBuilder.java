@@ -64,7 +64,10 @@ public final class SettingsBuilder {
 
     private static final String ZM_SSO_SAML_AUTHN_REQUEST_SIGNED = "saml.authnRequestSigned";
     private static final String ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED = "saml.spLogoutRequestSigned";
+    private static final String ZM_SSO_SAML_SP_METADATA_GENERATION = "saml.spMetadataGeneration";
+    private static final String ZM_SSO_SAML_SP_KEYSTORE_GENERATION = "saml.spKeystoreGeneration";
 
+    private static final String ZM_SSO_OIDC_WITH_STATE = "oidc.withState";
 
     private static final Map<String, String> properties = new HashMap<>();
     private static Client<Credentials> defaultClient;
@@ -100,13 +103,15 @@ public final class SettingsBuilder {
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             OidcConfiguration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
-            cfg.setPreferredJwsAlgorithm(JWSAlgorithm.RS256);
+            cfg.setWithState(loadBooleanProperty(ZM_SSO_OIDC_WITH_STATE));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             SAML2Configuration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));
             cfg.setSpLogoutRequestSigned(loadBooleanProperty(ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED));
+            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_METADATA_GENERATION));
+            cfg.setForceKeystoreGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_KEYSTORE_GENERATION));
         });
 
         defaultClient = config.getClients().findClient(loadStringProperty(ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> new ExtensionException("No pac4j client found"));
@@ -118,27 +123,27 @@ public final class SettingsBuilder {
         return defaultClient;
     }
 
-    public static boolean saveInSession() {
+    public static Boolean saveInSession() {
         return saveInSession;
     }
 
-    public static boolean multiProfile() {
+    public static Boolean multiProfile() {
         return multiProfile;
     }
 
-    public static boolean renewSession() {
+    public static Boolean renewSession() {
         return renewSession;
     }
 
-    public static boolean localLogout() {
+    public static Boolean localLogout() {
         return localLogout;
     }
 
-    public static boolean destroySession() {
+    public static Boolean destroySession() {
         return destroySession;
     }
 
-    public static boolean centralLogout() {
+    public static Boolean centralLogout() {
         return centralLogout;
     }
 
