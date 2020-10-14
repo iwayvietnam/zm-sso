@@ -5,22 +5,22 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 
 ## Building Java extension
 ### Requirement
-* JDK 1.8 or newer.
+* JDK 11 or newer.
 * Apache Maven 3.5 or newer.
 * Apache Ant 1.x
 
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell script
-dnf -y install java-1.8.0-openjdk java-1.8.0-openjdk-devel maven ant git
+dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell script
-yum -y install java-1.8.0-openjdk java-1.8.0-openjdk-devel maven ant git
+yum -y install java-11-openjdk java-11-openjdk-devel maven ant git
 ```
 * On Debian or Ubuntu
 ```shell script
-apt install -y openjdk-8-jdk maven ant git
+apt install -y openjdk-11-jdk maven ant git
 ```
 
 ### Clone code from git repository
