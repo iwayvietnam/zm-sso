@@ -34,7 +34,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class SamlMetadataHandler extends SamlBaseHandler {
-    private static final String METADATA_HANDLER_PATH = "saml";
+    private static final String METADATA_HANDLER_PATH = "saml/metadata";
 
     public SamlMetadataHandler() throws ExtensionException {
         super();
