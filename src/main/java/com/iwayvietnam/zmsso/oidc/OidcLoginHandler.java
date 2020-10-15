@@ -38,7 +38,7 @@ import java.io.IOException;
  */
 public class OidcLoginHandler extends BaseSsoHandler {
     private static final String LOGIN_HANDLER_PATH = "oidc/login";
-    private OidcClient client;
+    private final OidcClient client;
 
     public OidcLoginHandler() throws ExtensionException {
         super();

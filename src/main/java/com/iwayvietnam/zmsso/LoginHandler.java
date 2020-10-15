@@ -38,10 +38,6 @@ import java.io.IOException;
 public class LoginHandler extends BaseSsoHandler {
     private static final String LOGIN_HANDLER_PATH = "login";
 
-    public LoginHandler() throws ExtensionException {
-        super();
-    }
-
     @Override
     public String getPath() {
         return LOGIN_HANDLER_PATH;

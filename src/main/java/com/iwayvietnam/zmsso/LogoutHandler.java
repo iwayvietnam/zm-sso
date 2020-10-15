@@ -47,10 +47,6 @@ import java.util.Optional;
 public class LogoutHandler extends BaseSsoHandler {
     private static final String LOGOUT_HANDLER_PATH = "logout";
 
-    public LogoutHandler() throws ExtensionException {
-        super();
-    }
-
     @Override
     public String getPath() {
         return LOGOUT_HANDLER_PATH;

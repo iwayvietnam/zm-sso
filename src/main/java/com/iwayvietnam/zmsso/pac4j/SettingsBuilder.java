@@ -22,16 +22,15 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
-import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.credentials.Credentials;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.OidcConfiguration;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -69,7 +69,8 @@ public final class SettingsBuilder {
     private static final String ZM_SSO_OIDC_WITH_STATE = "oidc.withState";
 
     private static final Map<String, String> properties = new HashMap<>();
-    private static Client<Credentials> defaultClient;
+    private static final Config config;
+    private static final Optional<Client> defaultClient;
 
     private static final Boolean saveInSession;
     private static final Boolean multiProfile;
@@ -81,6 +82,8 @@ public final class SettingsBuilder {
 
     static {
         loadProperties();
+        config = buildConfig();
+
         saveInSession = loadBooleanProperty(ZM_SSO_SAVE_IN_SESSION);
         multiProfile = loadBooleanProperty(ZM_SSO_MULTI_PROFILE);
         renewSession = loadBooleanProperty(ZM_SSO_RENEW_SESSION);
@@ -88,38 +91,16 @@ public final class SettingsBuilder {
         localLogout = loadBooleanProperty(ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(ZM_SSO_DESTROY_SESSION);
         centralLogout = loadBooleanProperty(ZM_SSO_CENTRAL_LOGOUT);
+
+        defaultClient = config.getClients().findClient(loadStringProperty(ZM_SSO_DEFAULT_CLIENT));
     }
 
-    public static Config buildConfig() throws ExtensionException {
-        final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
-        final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(ZM_SSO_CALLBACK_URL), properties);
-        final Config config =  factory.build();
-
-        config.getClients().findClient(CasClient.class).ifPresent(client -> {
-            CasConfiguration cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-        });
-        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
-            OidcConfiguration cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-            cfg.setWithState(loadBooleanProperty(ZM_SSO_OIDC_WITH_STATE));
-        });
-        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
-            SAML2Configuration cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-            cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));
-            cfg.setSpLogoutRequestSigned(loadBooleanProperty(ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED));
-            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_METADATA_GENERATION));
-            cfg.setForceKeystoreGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_KEYSTORE_GENERATION));
-        });
-
-        defaultClient = config.getClients().findClient(loadStringProperty(ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> new ExtensionException("No pac4j client found"));
-
+    public static Config getConfig() {
         return config;
     }
 
-    public static Client<Credentials> defaultClient() {
-        return defaultClient;
+    public static Client defaultClient() throws ServiceException {
+        return defaultClient.orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
     }
 
     public static Boolean saveInSession() {
@@ -144,6 +125,31 @@ public final class SettingsBuilder {
 
     public static Boolean centralLogout() {
         return centralLogout;
+    }
+
+    private static Config buildConfig() {
+        final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
+        final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(ZM_SSO_CALLBACK_URL), properties);
+        final Config config = factory.build();
+
+        config.getClients().findClient(CasClient.class).ifPresent(client -> {
+            final CasConfiguration cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
+        });
+        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+            final OidcConfiguration cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
+            cfg.setWithState(loadBooleanProperty(ZM_SSO_OIDC_WITH_STATE));
+        });
+        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+            final SAML2Configuration cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
+            cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));
+            cfg.setSpLogoutRequestSigned(loadBooleanProperty(ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED));
+            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_METADATA_GENERATION));
+            cfg.setForceKeystoreGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_KEYSTORE_GENERATION));
+        });
+        return config;
     }
 
     private static void loadProperties() {

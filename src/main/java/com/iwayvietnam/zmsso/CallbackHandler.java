@@ -23,8 +23,7 @@
 package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
-import com.zimbra.common.util.StringUtil;
-import com.zimbra.cs.extension.ExtensionException;
+import com.zimbra.common.service.ServiceException;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
@@ -44,10 +43,6 @@ import java.util.Optional;
 public class CallbackHandler extends BaseSsoHandler {
     private static final String CALLBACK_HANDLER_PATH = "callback";
 
-    public CallbackHandler() throws ExtensionException {
-        super();
-    }
-
     @Override
     public String getPath() {
         return CALLBACK_HANDLER_PATH;
@@ -56,7 +51,12 @@ public class CallbackHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         final HttpSession session = request.getSession();
-        final String clientName = Optional.ofNullable(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString()).orElse(SettingsBuilder.defaultClient().getName());
+        final String clientName;
+        try {
+            clientName = Optional.ofNullable(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString()).orElse(SettingsBuilder.defaultClient().getName());
+        } catch (ServiceException e) {
+            throw new ServletException(e);
+        }
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final boolean saveInSession = SettingsBuilder.saveInSession();
         final boolean multiProfile = SettingsBuilder.multiProfile();

@@ -53,8 +53,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected final Config config;
 
-    public BaseSsoHandler() throws ExtensionException {
-        config = SettingsBuilder.buildConfig();
+    public BaseSsoHandler() {
+        config = SettingsBuilder.getConfig();
     }
 
     protected boolean isLogin(final AuthToken authToken) {

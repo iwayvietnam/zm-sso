@@ -79,7 +79,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     public void destroySessionFront(final C context, final String key) {
         try {
             clearAuthToken(context, key);
-        } catch (AuthTokenException | ServiceException e) {
+        } catch (ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
         super.destroySessionFront(context, key);
@@ -124,17 +124,22 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
             final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
             final JEEContext jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
+            ZimbraLog.extensions.debug(String.format("Set auth token cookie for account id: %s", authToken.getAccountId()));
         }
     }
 
-    private void clearAuthToken(final C context, final String key) throws AuthTokenException, ServiceException {
+    private void clearAuthToken(final C context, final String key) throws ServiceException {
         if (context instanceof JEEContext) {
             final JEEContext jeeCxt = (JEEContext) context;
             final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
             final Optional<AuthToken> optional = Optional.ofNullable(authToken);
             if (optional.isPresent()) {
                 authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
-                authToken.deRegister();
+                try {
+                    authToken.deRegister();
+                } catch (AuthTokenException e) {
+                    throw ServiceException.FAILURE(e.getMessage(), e);
+                }
             }
             ZimbraCookie.clearCookie(jeeCxt.getNativeResponse(), ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
             final String accountId = DbSsoSession.ssoSessionLogout(key);

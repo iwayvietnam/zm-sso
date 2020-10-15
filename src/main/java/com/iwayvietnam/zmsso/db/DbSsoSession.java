@@ -43,20 +43,20 @@ import java.sql.SQLException;
  */
 public final class DbSsoSession {
     public static void createSsoSessionTable() throws ServiceException {
-        ZimbraLog.extensions.debug("createSsoSessionTable()");
+        ZimbraLog.dbconn.debug("Create sso session table");
         final File file = new File(LC.zimbra_db_directory.value() + "/sso_session.sql");
         final DbPool.DbConnection conn = DbPool.getConnection();
         try {
             final String script = new String(ByteUtil.getContent(file));
             DbUtil.executeScript(conn, new StringReader(script));
         } catch (SQLException | IOException ex) {
-            throw ServiceException.FAILURE("createSsoSessionTable()", ex);
+            throw ServiceException.FAILURE("Create sso session table", ex);
         }
     }
 
     public static void ssoSessionLogin(final Account account, final String ssoToken, final String protocol, final String origIp, final String remoteIp, final String userAgent) throws ServiceException {
         final String hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        ZimbraLog.extensions.debug(String.format("ssoSessionLogin(%s, %s)", account.getId(), hashedToken));
+        ZimbraLog.dbconn.debug(String.format("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken));
         final DbResults results = DbUtil.executeQuery("SELECT account_id FROM sso_session WHERE sso_token = ?", hashedToken);
         if (!results.next() && !StringUtil.isNullOrEmpty(hashedToken)) {
             final String sql = "INSERT INTO sso_session (sso_token, account_id, account_name, protocol, origin_client_ip, remote_ip, user_agent, login_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -67,7 +67,7 @@ public final class DbSsoSession {
 
     public static String ssoSessionLogout(final String ssoToken) throws ServiceException {
         final String hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        ZimbraLog.extensions.debug(String.format("ssoSessionLogout(%s)", hashedToken));
+        ZimbraLog.dbconn.debug(String.format("Update sso session logout with hashed token %s", hashedToken));
         final DbResults results = DbUtil.executeQuery("SELECT account_id, logout_at FROM sso_session WHERE sso_token = ?", hashedToken);
         if (results.next()) {
             if (results.isNull("logout_at")) {
