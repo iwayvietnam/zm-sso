@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
@@ -37,6 +38,7 @@ import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -49,7 +51,7 @@ import java.util.Properties;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class SettingsBuilder {
-    private static final String ZM_SSO_SETTINGS_FILE = "sso.pac4j.properties";
+    private static final String ZM_SSO_SETTINGS_FILE = "conf/sso.pac4j.properties";
     private static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     private static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
 
@@ -153,10 +155,9 @@ public final class SettingsBuilder {
     }
 
     private static void loadProperties() {
-        final ClassLoader classLoader = SettingsBuilder.class.getClassLoader();
         final Properties prop = new Properties();
-        final InputStream inputStream = classLoader.getResourceAsStream(ZM_SSO_SETTINGS_FILE);
         try {
+            final InputStream inputStream = new FileInputStream(LC.zimbra_home.value() + "/conf/" + ZM_SSO_SETTINGS_FILE);
             prop.load(inputStream);
             for (String key: prop.stringPropertyNames()) {
                 properties.put(key, prop.getProperty(key));

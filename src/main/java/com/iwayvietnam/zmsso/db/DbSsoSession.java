@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso.db;
 
-import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ByteUtil;
 import com.zimbra.common.util.StringUtil;
@@ -32,8 +31,8 @@ import com.zimbra.cs.db.DbPool;
 import com.zimbra.cs.db.DbResults;
 import com.zimbra.cs.db.DbUtil;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 
@@ -42,15 +41,28 @@ import java.sql.SQLException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class DbSsoSession {
+    private static final String scriptFile = "sso_session.sql";
+
     public static void createSsoSessionTable() throws ServiceException {
         ZimbraLog.dbconn.debug("Create sso session table");
-        final File file = new File(LC.zimbra_db_directory.value() + "/sso_session.sql");
-        final DbPool.DbConnection conn = DbPool.getConnection();
-        try {
-            final String script = new String(ByteUtil.getContent(file));
-            DbUtil.executeScript(conn, new StringReader(script));
-        } catch (SQLException | IOException ex) {
-            throw ServiceException.FAILURE("Create sso session table", ex);
+        ClassLoader classLoader = DbSsoSession.class.getClassLoader();
+        try (final InputStream inputStream = classLoader.getResourceAsStream(scriptFile)) {
+            if (inputStream != null) {
+                final String script = new String(inputStream.readAllBytes());
+                final DbPool.DbConnection conn = DbPool.getConnection();
+                DbUtil.executeScript(conn, new StringReader(script));
+            } else {
+                final String errorMsg = String.format("Script file '%s' not found in the classpath", scriptFile);
+                ZimbraLog.extensions.error(errorMsg);
+                throw ServiceException.NOT_FOUND(errorMsg);
+            }
+        } catch (IOException e) {
+            ZimbraLog.extensions.error(e);
+            final String errorMsg = String.format("Script file '%s' cannot be loaded.", scriptFile);
+            throw ServiceException.FAILURE(errorMsg, e);
+        }  catch (SQLException e) {
+            ZimbraLog.extensions.error(e);
+            throw ServiceException.FAILURE("Create sso session table", e);
         }
     }
 
