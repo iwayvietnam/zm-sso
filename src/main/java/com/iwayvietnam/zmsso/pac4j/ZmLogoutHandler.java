@@ -106,6 +106,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         final String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
         final String userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
 
+        authCtxt.put(AuthContext.AC_ORIGINATING_CLIENT_IP, origIp);
         authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);
         authCtxt.put(AuthContext.AC_ACCOUNT_NAME_PASSEDIN, accountName);
         authCtxt.put(AuthContext.AC_USER_AGENT, userAgent);

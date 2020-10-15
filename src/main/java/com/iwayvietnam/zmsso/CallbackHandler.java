@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * SSO Callback Handler
@@ -55,10 +56,7 @@ public class CallbackHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         final HttpSession session = request.getSession();
-        String clientName = session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString();
-        if (StringUtil.isNullOrEmpty(clientName)) {
-            clientName = SettingsBuilder.defaultClient().getName();
-        }
+        final String clientName = Optional.ofNullable(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString()).orElse(SettingsBuilder.defaultClient().getName());
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final boolean saveInSession = SettingsBuilder.saveInSession();
         final boolean multiProfile = SettingsBuilder.multiProfile();
