@@ -3,6 +3,13 @@ Zimbra Single Sign On (Zm SSO)
 Zm SSO is the Zimbra Collaboration Open Source Edition extension for single sign-on authentication to the Zimbra Web Client.  
 Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserved.
 
+* Using framework: [https://www.pac4j.org](pac4j) is an easy and powerful security engine for Java to authenticate users,
+get their profiles and manage authorizations in order to secure web applications and web services.
+* Supported authentication mechanisms: 
+[http://www.pac4j.org/docs/clients/saml.html](SAML)
+- [http://www.pac4j.org/docs/clients/cas.html](CAS)
+- [http://www.pac4j.org/docs/clients/openid-connect.html](OpenID Connect)
+
 ## Building Java extension
 ### Requirement
 * JDK 11 or newer.
