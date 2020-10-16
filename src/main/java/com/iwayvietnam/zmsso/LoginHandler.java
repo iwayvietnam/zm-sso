@@ -36,7 +36,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class LoginHandler extends BaseSsoHandler {
-    private static final String LOGIN_HANDLER_PATH = "login";
+    private static final String LOGIN_HANDLER_PATH = "/sso/login";
 
     @Override
     public String getPath() {

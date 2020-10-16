@@ -27,6 +27,7 @@ import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.iwayvietnam.zmsso.oidc.*;
 import com.iwayvietnam.zmsso.saml.*;
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionDispatcherServlet;
 import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ZimbraExtension;
@@ -36,7 +37,7 @@ import com.zimbra.cs.extension.ZimbraExtension;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ZmSsoExtension implements ZimbraExtension {
-    private static final String EXTENSION_NAME = "sso";
+    private static final String EXTENSION_NAME = "com_iwayvietnam_zmsso";
 
     @Override
     public String getName() {
@@ -45,20 +46,26 @@ public class ZmSsoExtension implements ZimbraExtension {
 
     @Override
     public void init() throws ExtensionException, ServiceException {
+        ZimbraLog.extensions.info("Create sso session table");
         DbSsoSession.createSsoSessionTable();
 
+        ZimbraLog.extensions.info("Register sso handlers");
         ExtensionDispatcherServlet.register(this, new LoginHandler());
         ExtensionDispatcherServlet.register(this, new CallbackHandler());
         ExtensionDispatcherServlet.register(this, new LogoutHandler());
 
+        ZimbraLog.extensions.info("Register sso login handlers");
         ExtensionDispatcherServlet.register(this, new CasLoginHandler());
         ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
         ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
+
+        ZimbraLog.extensions.info("Register saml metadata handlers");
         ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
     }
 
     @Override
     public void destroy() {
+        ZimbraLog.extensions.info("Unregister sso extension");
         ExtensionDispatcherServlet.unregister(this);
     }
 }

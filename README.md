@@ -11,22 +11,22 @@ get their profiles and manage authorizations in order to secure web applications
 
 ## Building Java extension
 ### Requirement
-* JDK 11 or newer.
+* JDK 8 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
 
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell script
-dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git
+dnf -y install java-8-openjdk java-8-openjdk-devel maven ant git
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell script
-yum -y install java-11-openjdk java-11-openjdk-devel maven ant git
+yum -y install java-8-openjdk java-8-openjdk-devel maven ant git
 ```
 * On Debian or Ubuntu
 ```shell script
-apt install -y openjdk-11-jdk maven ant git
+apt install -y openjdk-8-jdk maven ant git
 ```
 
 ### Clone code from git repository
@@ -53,7 +53,7 @@ mvn clean package
 The output should be like this:
 ```
 --- maven-jar-plugin:3.0.2:jar (default-jar) @ zm-hab ---
-Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-1.0.0.jar
+Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-1.0.0-1.jar
 ```
 
 ### Build rpm package

@@ -30,6 +30,7 @@ import com.zimbra.cs.account.Account;
 import com.zimbra.cs.db.DbPool;
 import com.zimbra.cs.db.DbResults;
 import com.zimbra.cs.db.DbUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +49,7 @@ public final class DbSsoSession {
         ClassLoader classLoader = DbSsoSession.class.getClassLoader();
         try (final InputStream inputStream = classLoader.getResourceAsStream(scriptFile)) {
             if (inputStream != null) {
-                final String script = new String(inputStream.readAllBytes());
+                final String script = new String(IOUtils.toByteArray(inputStream));
                 final DbPool.DbConnection conn = DbPool.getConnection();
                 DbUtil.executeScript(conn, new StringReader(script));
             } else {

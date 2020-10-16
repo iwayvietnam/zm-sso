@@ -15,8 +15,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.fork>true</maven.compiler.fork>
-        <maven.compiler.executable>javac</maven.compiler.executable>
+        <!--maven.compiler.fork>true</maven.compiler.fork>
+        <maven.compiler.executable>javac</maven.compiler.executable-->
         <pac4j.version>4.1.0</pac4j.version>
         <zimbra.version>8.8.15_GA_3928</zimbra.version>
     </properties>
@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-saml</artifactId>
+            <artifactId>pac4j-saml-opensamlv3</artifactId>
             <version>${pac4j.version}</version>
         </dependency>
         <dependency>
@@ -87,10 +87,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
-                <configuration>
-                    <source>9</source>
-                    <target>9</target>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>

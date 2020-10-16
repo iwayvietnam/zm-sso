@@ -26,6 +26,12 @@ import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import org.opensaml.core.config.ConfigurationService;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
@@ -37,6 +43,7 @@ import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
+import org.springframework.core.io.Resource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,7 +58,7 @@ import java.util.Properties;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class SettingsBuilder {
-    private static final String ZM_SSO_SETTINGS_FILE = "conf/sso.pac4j.properties";
+    private static final String ZM_SSO_SETTINGS_FILE = "sso.pac4j.properties";
     private static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     private static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
 
@@ -84,6 +91,7 @@ public final class SettingsBuilder {
 
     static {
         loadProperties();
+        initParserPool();
         config = buildConfig();
 
         saveInSession = loadBooleanProperty(ZM_SSO_SAVE_IN_SESSION);
@@ -129,21 +137,70 @@ public final class SettingsBuilder {
         return centralLogout;
     }
 
+    private static void initParserPool() {
+        ZimbraLog.extensions.debug("Initializing OpenSAML parserPool");
+        XMLObjectProviderRegistry registry;
+        synchronized (ConfigurationService.class) {
+            registry = ConfigurationService.get(XMLObjectProviderRegistry.class);
+            if (registry == null) {
+                registry = new XMLObjectProviderRegistry();
+                ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
+            }
+        }
+
+        try {
+            InitializationService.initialize();
+        } catch (final InitializationException e) {
+            throw new RuntimeException("Exception initializing OpenSAML", e);
+        }
+
+        try {
+            BasicParserPool parserPool = new BasicParserPool();
+            parserPool.setMaxPoolSize(100);
+            parserPool.setCoalescing(true);
+            parserPool.setIgnoreComments(true);
+            parserPool.setNamespaceAware(true);
+            parserPool.setExpandEntityReferences(false);
+            parserPool.setXincludeAware(false);
+            parserPool.setIgnoreElementContentWhitespace(true);
+
+            final Map<String, Object> builderAttributes = new HashMap<String, Object>();
+            parserPool.setBuilderAttributes(builderAttributes);
+
+            final Map<String, Boolean> features = new HashMap<>();
+            features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
+            features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
+            features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
+            features.put("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
+
+            parserPool.setBuilderFeatures(features);
+            parserPool.initialize();
+            registry.setParserPool(parserPool);
+        } catch (final ComponentInitializationException e) {
+            throw new RuntimeException("Exception initializing parserPool", e);
+        }
+    }
+
     private static Config buildConfig() {
+        ZimbraLog.extensions.debug("Build Pac4J config");
         final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
         final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(ZM_SSO_CALLBACK_URL), properties);
         final Config config = factory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
+            ZimbraLog.extensions.debug("Config cas client");
             final CasConfiguration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+            ZimbraLog.extensions.debug("Config oidc client");
             final OidcConfiguration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setWithState(loadBooleanProperty(ZM_SSO_OIDC_WITH_STATE));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+            ZimbraLog.extensions.debug("Config saml client");
             final SAML2Configuration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));
@@ -157,6 +214,7 @@ public final class SettingsBuilder {
     private static void loadProperties() {
         final Properties prop = new Properties();
         try {
+            ZimbraLog.extensions.debug("Load config properties");
             final InputStream inputStream = new FileInputStream(LC.zimbra_home.value() + "/conf/" + ZM_SSO_SETTINGS_FILE);
             prop.load(inputStream);
             for (String key: prop.stringPropertyNames()) {

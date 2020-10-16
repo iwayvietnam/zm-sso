@@ -41,7 +41,7 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class CallbackHandler extends BaseSsoHandler {
-    private static final String CALLBACK_HANDLER_PATH = "callback";
+    private static final String CALLBACK_HANDLER_PATH = "/sso/callback";
 
     @Override
     public String getPath() {

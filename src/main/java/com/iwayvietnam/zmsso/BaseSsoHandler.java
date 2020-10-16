@@ -64,15 +64,19 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLogin(authToken)) {
+            ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             final HttpSession session = request.getSession();
             session.setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final JEEContext context = new JEEContext(request, response);
             RedirectionAction action;
 
             try {
+                ZimbraLog.extensions.debug("Try to get redirection action");
                 final Optional<RedirectionAction> actionOpt = client.getRedirectionAction(context);
                 action = actionOpt.get();
+                ZimbraLog.extensions.debug("Got redirection action");
             } catch (final RedirectionAction e) {
+                ZimbraLog.extensions.error(e);
                 action = e;
             }
 
@@ -97,7 +101,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             throw ServiceException.INVALID_REQUEST(String.format("Cannot redirect to non-secure protocol: %s", redirectUrl), null);
         }
 
-        ZimbraLog.extensions.debug(String.format("SSO Login - redirecting (with auth token) to: %s", redirectUrl));
+        ZimbraLog.extensions.debug(String.format("SSO login - redirecting (with auth token) to: %s", redirectUrl));
         response.sendRedirect(redirectUrl);
     }
 

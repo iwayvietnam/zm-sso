@@ -22,7 +22,9 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.core.exception.TechnicalException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +36,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class SamlMetadataHandler extends SamlBaseHandler {
-    private static final String METADATA_HANDLER_PATH = "saml/metadata";
+    private static final String METADATA_HANDLER_PATH = "/saml/metadata";
 
     public SamlMetadataHandler() throws ExtensionException {
         super();
@@ -47,10 +49,14 @@ public class SamlMetadataHandler extends SamlBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        client.init();
-        response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
-        response.getWriter().flush();
-        response.setStatus(HttpServletResponse.SC_OK);
+        try {
+            client.init();
+            response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
+            response.getWriter().flush();
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (final TechnicalException e) {
+            ZimbraLog.extensions.error(e);
+        }
     }
 
     @Override
