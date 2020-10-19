@@ -47,7 +47,7 @@ public class LoginHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doLogin(request, response, SettingsBuilder.defaultClient());
-        } catch (ServiceException e) {
+        } catch (final ServiceException e) {
             throw new ServletException(e);
         }
     }

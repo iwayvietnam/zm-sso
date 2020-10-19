@@ -54,7 +54,7 @@ public class OidcLoginHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doLogin(request, response, client);
-        } catch (ServiceException e) {
+        } catch (final ServiceException e) {
             throw new ServletException(e);
         }
     }

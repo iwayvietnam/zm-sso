@@ -64,7 +64,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         getProfileManager(context).get(true).ifPresent(profile -> {
             try {
                 singleLogin(context, profile.getUsername(), key, profile.getClientName());
-            } catch (ServiceException e) {
+            } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
             }
         });
@@ -79,7 +79,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     public void destroySessionFront(final C context, final String key) {
         try {
             clearAuthToken(context, key);
-        } catch (ServiceException e) {
+        } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
         super.destroySessionFront(context, key);
@@ -94,7 +94,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     public void destroySessionBack(final C context, final String key) {
         try {
             singleLogout(key);
-        } catch (ServiceException e) {
+        } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
         super.destroySessionBack(context, key);
@@ -137,7 +137,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
                 authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
                 try {
                     authToken.deRegister();
-                } catch (AuthTokenException e) {
+                } catch (final AuthTokenException e) {
                     throw ServiceException.FAILURE(e.getMessage(), e);
                 }
             }

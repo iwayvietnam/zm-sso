@@ -56,6 +56,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (final TechnicalException e) {
             ZimbraLog.extensions.error(e);
+            throw new ServletException(e);
         }
     }
 

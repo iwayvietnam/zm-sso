@@ -45,10 +45,10 @@ public final class DbSsoSession {
     private static final String scriptFile = "sso_session.sql";
 
     public static void createSsoSessionTable() throws ServiceException {
-        ZimbraLog.dbconn.debug("Create sso session table");
         ClassLoader classLoader = DbSsoSession.class.getClassLoader();
         try (final InputStream inputStream = classLoader.getResourceAsStream(scriptFile)) {
             if (inputStream != null) {
+                ZimbraLog.dbconn.debug("Create sso session table");
                 final String script = new String(IOUtils.toByteArray(inputStream));
                 final DbPool.DbConnection conn = DbPool.getConnection();
                 DbUtil.executeScript(conn, new StringReader(script));
@@ -57,11 +57,11 @@ public final class DbSsoSession {
                 ZimbraLog.extensions.error(errorMsg);
                 throw ServiceException.NOT_FOUND(errorMsg);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             ZimbraLog.extensions.error(e);
             final String errorMsg = String.format("Script file '%s' cannot be loaded.", scriptFile);
             throw ServiceException.FAILURE(errorMsg, e);
-        }  catch (SQLException e) {
+        }  catch (final SQLException e) {
             ZimbraLog.extensions.error(e);
             throw ServiceException.FAILURE("Create sso session table", e);
         }
@@ -69,9 +69,9 @@ public final class DbSsoSession {
 
     public static void ssoSessionLogin(final Account account, final String ssoToken, final String protocol, final String origIp, final String remoteIp, final String userAgent) throws ServiceException {
         final String hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        ZimbraLog.dbconn.debug(String.format("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken));
         final DbResults results = DbUtil.executeQuery("SELECT account_id FROM sso_session WHERE sso_token = ?", hashedToken);
         if (!results.next() && !StringUtil.isNullOrEmpty(hashedToken)) {
+            ZimbraLog.dbconn.debug(String.format("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken));
             final String sql = "INSERT INTO sso_session (sso_token, account_id, account_name, protocol, origin_client_ip, remote_ip, user_agent, login_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             final int loginAt = (int) (System.currentTimeMillis() / 1000L);
             DbUtil.executeUpdate(sql, hashedToken, account.getId(), account.getName(), protocol, origIp, remoteIp, userAgent, loginAt);
@@ -80,10 +80,10 @@ public final class DbSsoSession {
 
     public static String ssoSessionLogout(final String ssoToken) throws ServiceException {
         final String hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        ZimbraLog.dbconn.debug(String.format("Update sso session logout with hashed token %s", hashedToken));
         final DbResults results = DbUtil.executeQuery("SELECT account_id, logout_at FROM sso_session WHERE sso_token = ?", hashedToken);
         if (results.next()) {
             if (results.isNull("logout_at")) {
+                ZimbraLog.dbconn.debug(String.format("Update sso session logout with hashed token %s", hashedToken));
                 final String sql = "UPDATE sso_session SET logout_at = ? WHERE sso_token = ?";
                 final int logoutAt = (int) (System.currentTimeMillis() / 1000L);
                 DbUtil.executeUpdate(sql, logoutAt, hashedToken);

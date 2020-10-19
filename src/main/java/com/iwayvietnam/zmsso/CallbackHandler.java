@@ -54,7 +54,7 @@ public class CallbackHandler extends BaseSsoHandler {
         final String clientName;
         try {
             clientName = Optional.ofNullable(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString()).orElse(SettingsBuilder.defaultClient().getName());
-        } catch (ServiceException e) {
+        } catch (final ServiceException e) {
             throw new ServletException(e);
         }
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
