@@ -31,10 +31,18 @@ import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.config.GlobalParserPoolInitializer;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
+import org.opensaml.saml.config.impl.SAMLConfigurationInitializer;
+import org.opensaml.xmlsec.config.DecryptionParserPool;
+import org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer;
+import org.opensaml.xmlsec.config.impl.ApacheXMLSecurityInitializer;
+import org.opensaml.xmlsec.config.impl.GlobalSecurityConfigurationInitializer;
+import org.opensaml.xmlsec.config.impl.JavaCryptoValidationInitializer;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
+import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.WebContext;
@@ -43,7 +51,6 @@ import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
-import org.springframework.core.io.Resource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -91,7 +98,9 @@ public final class SettingsBuilder {
 
     static {
         loadProperties();
-        initParserPool();
+        if (hasSamlClient()) {
+            openSAMLInitialization();
+        }
         config = buildConfig();
 
         saveInSession = loadBooleanProperty(ZM_SSO_SAVE_IN_SESSION);
@@ -137,8 +146,8 @@ public final class SettingsBuilder {
         return centralLogout;
     }
 
-    private static void initParserPool() {
-        ZimbraLog.extensions.debug("Initializing OpenSAML parserPool");
+    private static void openSAMLInitialization() {
+        ZimbraLog.extensions.debug("OpenSAML Initialization and Configuration");
         XMLObjectProviderRegistry registry;
         synchronized (ConfigurationService.class) {
             registry = ConfigurationService.get(XMLObjectProviderRegistry.class);
@@ -148,13 +157,50 @@ public final class SettingsBuilder {
             }
         }
 
+        Thread thread = Thread.currentThread();
+        ClassLoader originalClassLoader = thread.getContextClassLoader();
+        thread.setContextClassLoader(InitializationService.class.getClassLoader());
+
         try {
             InitializationService.initialize();
+
+            SAMLConfigurationInitializer samlConfigurationInitializer = new SAMLConfigurationInitializer();
+            samlConfigurationInitializer.init();
+
+            org.opensaml.saml.config.impl.XMLObjectProviderInitializer samlXMLObjectProviderInitializer = new org.opensaml.saml.config.impl.XMLObjectProviderInitializer();
+            samlXMLObjectProviderInitializer.init();
+
+            org.opensaml.core.xml.config.XMLObjectProviderInitializer coreXMLObjectProviderInitializer = new org.opensaml.core.xml.config.XMLObjectProviderInitializer();
+            coreXMLObjectProviderInitializer.init();
+
+            GlobalParserPoolInitializer globalParserPoolInitializer = new GlobalParserPoolInitializer();
+            globalParserPoolInitializer.init();
+
+            JavaCryptoValidationInitializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
+            javaCryptoValidationInitializer.init();
+
+            org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer xmlsecXMLObjectProviderInitializer = new org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer();
+            xmlsecXMLObjectProviderInitializer.init();
+
+            ApacheXMLSecurityInitializer apacheXMLSecurityInitializer = new ApacheXMLSecurityInitializer();
+            apacheXMLSecurityInitializer.init();
+
+            GlobalSecurityConfigurationInitializer globalSecurityConfigurationInitializer = new GlobalSecurityConfigurationInitializer();
+            globalSecurityConfigurationInitializer.init();
+
+            GlobalAlgorithmRegistryInitializer globalAlgorithmRegistryInitializer = new GlobalAlgorithmRegistryInitializer();
+            globalAlgorithmRegistryInitializer.init();
+
+            org.opensaml.soap.config.impl.XMLObjectProviderInitializer soapXMLObjectProviderInitializer = new org.opensaml.soap.config.impl.XMLObjectProviderInitializer();
+            soapXMLObjectProviderInitializer.init();
         } catch (final InitializationException e) {
             throw new RuntimeException("Exception initializing OpenSAML", e);
+        } finally {
+            thread.setContextClassLoader(originalClassLoader);
         }
 
         try {
+            ZimbraLog.extensions.debug("Initializing parserPool");
             BasicParserPool parserPool = new BasicParserPool();
             parserPool.setMaxPoolSize(100);
             parserPool.setCoalescing(true);
@@ -169,6 +215,7 @@ public final class SettingsBuilder {
 
             final Map<String, Boolean> features = new HashMap<>();
             features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
+            features.put("http://apache.org/xml/features/dom/defer-node-expansion", Boolean.FALSE);
             features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
             features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
             features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
@@ -177,6 +224,8 @@ public final class SettingsBuilder {
             parserPool.setBuilderFeatures(features);
             parserPool.initialize();
             registry.setParserPool(parserPool);
+
+            ConfigurationService.register(DecryptionParserPool.class, new DecryptionParserPool(parserPool));
         } catch (final ComponentInitializationException e) {
             throw new RuntimeException("Exception initializing parserPool", e);
         }
@@ -223,6 +272,17 @@ public final class SettingsBuilder {
         } catch (IOException e) {
             ZimbraLog.extensions.error(e);
         }
+    }
+
+    private static boolean hasSamlClient() {
+        if (!StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
+                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
+                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
+                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH))) {
+            return true;
+        }
+
+        return false;
     }
 
     private static String loadStringProperty(final String key) {
