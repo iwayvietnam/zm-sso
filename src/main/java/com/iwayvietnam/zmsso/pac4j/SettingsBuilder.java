@@ -36,6 +36,7 @@ import org.opensaml.xmlsec.config.DecryptionParserPool;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
+import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.WebContext;
@@ -88,6 +89,9 @@ public final class SettingsBuilder {
 
     static {
         loadProperties();
+        if (hasSamlClient()) {
+            openSAMLInitialization();
+        }
         config = buildConfig();
 
         saveInSession = loadBooleanProperty(ZM_SSO_SAVE_IN_SESSION);
@@ -209,7 +213,6 @@ public final class SettingsBuilder {
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.debug("Config saml client");
-            openSAMLInitialization();
             client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
 
             final SAML2Configuration cfg = client.getConfiguration();
@@ -235,6 +238,13 @@ public final class SettingsBuilder {
             ZimbraLog.extensions.error(e);
         }
     }
+    private static boolean hasSamlClient() {
+        return !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH));
+    }
+
 
     private static String loadStringProperty(final String key) {
         return properties.get(key);
