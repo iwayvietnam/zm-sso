@@ -31,15 +31,8 @@ import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
-import org.opensaml.core.config.Initializer;
-import org.opensaml.core.xml.config.GlobalParserPoolInitializer;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
-import org.opensaml.saml.config.impl.SAMLConfigurationInitializer;
 import org.opensaml.xmlsec.config.DecryptionParserPool;
-import org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer;
-import org.opensaml.xmlsec.config.impl.ApacheXMLSecurityInitializer;
-import org.opensaml.xmlsec.config.impl.GlobalSecurityConfigurationInitializer;
-import org.opensaml.xmlsec.config.impl.JavaCryptoValidationInitializer;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
@@ -157,45 +150,15 @@ public final class SettingsBuilder {
 
         final Thread thread = Thread.currentThread();
         final ClassLoader origCl = thread.getContextClassLoader();
-        thread.setContextClassLoader(InitializationService.class.getClassLoader());
+        thread.setContextClassLoader(SettingsBuilder.class.getClassLoader());
 
         try {
             InitializationService.initialize();
-
-            final Initializer samlConfigurationInitializer = new SAMLConfigurationInitializer();
-            samlConfigurationInitializer.init();
-
-            final Initializer samlXMLObjectProviderInitializer = new org.opensaml.saml.config.impl.XMLObjectProviderInitializer();
-            samlXMLObjectProviderInitializer.init();
-
-            final Initializer coreXMLObjectProviderInitializer = new org.opensaml.core.xml.config.XMLObjectProviderInitializer();
-            coreXMLObjectProviderInitializer.init();
-
-            final Initializer globalParserPoolInitializer = new GlobalParserPoolInitializer();
-            globalParserPoolInitializer.init();
-
-            final Initializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
-            javaCryptoValidationInitializer.init();
-
-            final Initializer xmlsecXMLObjectProviderInitializer = new org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer();
-            xmlsecXMLObjectProviderInitializer.init();
-
-            final Initializer apacheXMLSecurityInitializer = new ApacheXMLSecurityInitializer();
-            apacheXMLSecurityInitializer.init();
-
-            final Initializer globalSecurityConfigurationInitializer = new GlobalSecurityConfigurationInitializer();
-            globalSecurityConfigurationInitializer.init();
-
-            final Initializer globalAlgorithmRegistryInitializer = new GlobalAlgorithmRegistryInitializer();
-            globalAlgorithmRegistryInitializer.init();
-
-            final Initializer soapXMLObjectProviderInitializer = new org.opensaml.soap.config.impl.XMLObjectProviderInitializer();
-            soapXMLObjectProviderInitializer.init();
         } catch (final InitializationException e) {
             ZimbraLog.extensions.error(e);
             throw new RuntimeException("Exception initializing OpenSAML", e);
         } finally {
-            thread.setContextClassLoader(origCl);
+           thread.setContextClassLoader(origCl);
         }
 
         try {
@@ -250,6 +213,7 @@ public final class SettingsBuilder {
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.debug("Config saml client");
+            client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
             final SAML2Configuration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));

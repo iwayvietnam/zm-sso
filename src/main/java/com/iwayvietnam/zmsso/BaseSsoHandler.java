@@ -71,10 +71,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             RedirectionAction action;
 
             try {
-                ZimbraLog.extensions.debug("Try to get redirection action");
                 final Optional<RedirectionAction> actionOpt = client.getRedirectionAction(context);
                 action = actionOpt.get();
-                ZimbraLog.extensions.debug("Got redirection action");
             } catch (final RedirectionAction e) {
                 ZimbraLog.extensions.error(e);
                 action = e;
