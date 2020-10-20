@@ -40,8 +40,6 @@ import org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer;
 import org.opensaml.xmlsec.config.impl.ApacheXMLSecurityInitializer;
 import org.opensaml.xmlsec.config.impl.GlobalSecurityConfigurationInitializer;
 import org.opensaml.xmlsec.config.impl.JavaCryptoValidationInitializer;
-import org.opensaml.xmlsec.signature.support.SignerProvider;
-import org.opensaml.xmlsec.signature.support.impl.provider.ApacheSantuarioSignerProviderImpl;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
@@ -193,8 +191,6 @@ public final class SettingsBuilder {
 
             final Initializer soapXMLObjectProviderInitializer = new org.opensaml.soap.config.impl.XMLObjectProviderInitializer();
             soapXMLObjectProviderInitializer.init();
-
-            ServiceLoader.load(SignerProvider.class, ApacheSantuarioSignerProviderImpl.class.getClassLoader());
         } catch (final InitializationException e) {
             ZimbraLog.extensions.error(e);
             throw new RuntimeException("Exception initializing OpenSAML", e);
