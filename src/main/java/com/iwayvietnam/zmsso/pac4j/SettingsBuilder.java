@@ -31,6 +31,7 @@ import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.config.Initializer;
 import org.opensaml.core.xml.config.GlobalParserPoolInitializer;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.opensaml.saml.config.impl.SAMLConfigurationInitializer;
@@ -39,6 +40,8 @@ import org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer;
 import org.opensaml.xmlsec.config.impl.ApacheXMLSecurityInitializer;
 import org.opensaml.xmlsec.config.impl.GlobalSecurityConfigurationInitializer;
 import org.opensaml.xmlsec.config.impl.JavaCryptoValidationInitializer;
+import org.opensaml.xmlsec.signature.support.SignerProvider;
+import org.opensaml.xmlsec.signature.support.impl.provider.ApacheSantuarioSignerProviderImpl;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.cas.config.CasConfiguration;
 import org.pac4j.config.client.PropertiesConfigFactory;
@@ -55,10 +58,7 @@ import org.pac4j.saml.config.SAML2Configuration;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Pac4j Settings Builder
@@ -157,51 +157,54 @@ public final class SettingsBuilder {
             }
         }
 
-        Thread thread = Thread.currentThread();
-        ClassLoader originalClassLoader = thread.getContextClassLoader();
+        final Thread thread = Thread.currentThread();
+        final ClassLoader origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(InitializationService.class.getClassLoader());
 
         try {
             InitializationService.initialize();
 
-            SAMLConfigurationInitializer samlConfigurationInitializer = new SAMLConfigurationInitializer();
+            final Initializer samlConfigurationInitializer = new SAMLConfigurationInitializer();
             samlConfigurationInitializer.init();
 
-            org.opensaml.saml.config.impl.XMLObjectProviderInitializer samlXMLObjectProviderInitializer = new org.opensaml.saml.config.impl.XMLObjectProviderInitializer();
+            final Initializer samlXMLObjectProviderInitializer = new org.opensaml.saml.config.impl.XMLObjectProviderInitializer();
             samlXMLObjectProviderInitializer.init();
 
-            org.opensaml.core.xml.config.XMLObjectProviderInitializer coreXMLObjectProviderInitializer = new org.opensaml.core.xml.config.XMLObjectProviderInitializer();
+            final Initializer coreXMLObjectProviderInitializer = new org.opensaml.core.xml.config.XMLObjectProviderInitializer();
             coreXMLObjectProviderInitializer.init();
 
-            GlobalParserPoolInitializer globalParserPoolInitializer = new GlobalParserPoolInitializer();
+            final Initializer globalParserPoolInitializer = new GlobalParserPoolInitializer();
             globalParserPoolInitializer.init();
 
-            JavaCryptoValidationInitializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
+            final Initializer javaCryptoValidationInitializer = new JavaCryptoValidationInitializer();
             javaCryptoValidationInitializer.init();
 
-            org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer xmlsecXMLObjectProviderInitializer = new org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer();
+            final Initializer xmlsecXMLObjectProviderInitializer = new org.opensaml.xmlsec.config.impl.XMLObjectProviderInitializer();
             xmlsecXMLObjectProviderInitializer.init();
 
-            ApacheXMLSecurityInitializer apacheXMLSecurityInitializer = new ApacheXMLSecurityInitializer();
+            final Initializer apacheXMLSecurityInitializer = new ApacheXMLSecurityInitializer();
             apacheXMLSecurityInitializer.init();
 
-            GlobalSecurityConfigurationInitializer globalSecurityConfigurationInitializer = new GlobalSecurityConfigurationInitializer();
+            final Initializer globalSecurityConfigurationInitializer = new GlobalSecurityConfigurationInitializer();
             globalSecurityConfigurationInitializer.init();
 
-            GlobalAlgorithmRegistryInitializer globalAlgorithmRegistryInitializer = new GlobalAlgorithmRegistryInitializer();
+            final Initializer globalAlgorithmRegistryInitializer = new GlobalAlgorithmRegistryInitializer();
             globalAlgorithmRegistryInitializer.init();
 
-            org.opensaml.soap.config.impl.XMLObjectProviderInitializer soapXMLObjectProviderInitializer = new org.opensaml.soap.config.impl.XMLObjectProviderInitializer();
+            final Initializer soapXMLObjectProviderInitializer = new org.opensaml.soap.config.impl.XMLObjectProviderInitializer();
             soapXMLObjectProviderInitializer.init();
+
+            ServiceLoader.load(SignerProvider.class, ApacheSantuarioSignerProviderImpl.class.getClassLoader());
         } catch (final InitializationException e) {
+            ZimbraLog.extensions.error(e);
             throw new RuntimeException("Exception initializing OpenSAML", e);
         } finally {
-            thread.setContextClassLoader(originalClassLoader);
+            thread.setContextClassLoader(origCl);
         }
 
         try {
             ZimbraLog.extensions.debug("Initializing parserPool");
-            BasicParserPool parserPool = new BasicParserPool();
+            final BasicParserPool parserPool = new BasicParserPool();
             parserPool.setMaxPoolSize(100);
             parserPool.setCoalescing(true);
             parserPool.setIgnoreComments(true);
@@ -210,7 +213,7 @@ public final class SettingsBuilder {
             parserPool.setXincludeAware(false);
             parserPool.setIgnoreElementContentWhitespace(true);
 
-            final Map<String, Object> builderAttributes = new HashMap<String, Object>();
+            final Map<String, Object> builderAttributes = new HashMap<>();
             parserPool.setBuilderAttributes(builderAttributes);
 
             final Map<String, Boolean> features = new HashMap<>();
@@ -227,6 +230,7 @@ public final class SettingsBuilder {
 
             ConfigurationService.register(DecryptionParserPool.class, new DecryptionParserPool(parserPool));
         } catch (final ComponentInitializationException e) {
+            ZimbraLog.extensions.error(e);
             throw new RuntimeException("Exception initializing parserPool", e);
         }
     }
@@ -275,14 +279,10 @@ public final class SettingsBuilder {
     }
 
     private static boolean hasSamlClient() {
-        if (!StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
-                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
-                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
-                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH))) {
-            return true;
-        }
-
-        return false;
+        return !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
+               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH));
     }
 
     private static String loadStringProperty(final String key) {

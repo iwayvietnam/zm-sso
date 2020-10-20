@@ -45,8 +45,8 @@ public final class DbSsoSession {
     private static final String scriptFile = "sso_session.sql";
 
     public static void createSsoSessionTable() throws ServiceException {
-        ClassLoader classLoader = DbSsoSession.class.getClassLoader();
-        try (final InputStream inputStream = classLoader.getResourceAsStream(scriptFile)) {
+        final ClassLoader cl = DbSsoSession.class.getClassLoader();
+        try (final InputStream inputStream = cl.getResourceAsStream(scriptFile)) {
             if (inputStream != null) {
                 ZimbraLog.dbconn.debug("Create sso session table");
                 final String script = new String(IOUtils.toByteArray(inputStream));
