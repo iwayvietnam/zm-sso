@@ -152,7 +152,6 @@
                                 junit,
                                 slf4j-api,
                                 spring-beans,
-                                spring-core,
                                 zimbraCommon,
                                 zimbraClient,
                                 zimbraStore
