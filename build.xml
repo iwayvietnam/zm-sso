@@ -31,7 +31,7 @@
     <property name="build"        value="build/"/>
     <property name="dist"         value="dist/"/>
     <property name="src"          value="src/"/>
-    <property name="resources" value="src/main/resources"/>
+    <property name="resources"    value="src/main/resources"/>
     <property name="jar"          value="zm-sso-${version}-${release}.jar"/>
     <property name="javac.source" value="1.8"/>
     <property name="javac.target" value="1.8"/>

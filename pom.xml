@@ -134,6 +134,7 @@
                                 activation,
                                 antlr,
                                 asm,
+                                bcpkix-jdk15on,
                                 bcprov-jdk15on,
                                 commons-codec,
                                 commons-collections,
@@ -150,6 +151,8 @@
                                 javax.servlet-api,
                                 junit,
                                 slf4j-api,
+                                spring-beans,
+                                spring-core,
                                 zimbraCommon,
                                 zimbraClient,
                                 zimbraStore
