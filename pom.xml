@@ -130,6 +130,30 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <excludeArtifactIds>
+                                activation,
+                                antlr,
+                                asm,
+                                bcprov-jdk15on,
+                                commons-codec,
+                                commons-collections,
+                                commons-io,
+                                commons-lang,
+                                dom4j,
+                                guava,
+                                httpcore,
+                                httpclient,
+                                jackson-annotations,
+                                jackson-core,
+                                jackson-databind,
+                                javax.annotation-api,
+                                javax.servlet-api,
+                                junit,
+                                slf4j-api,
+                                zimbraCommon,
+                                zimbraClient,
+                                zimbraStore
+                            </excludeArtifactIds>
                             <outputDirectory>${project.build.directory}/dependency</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
