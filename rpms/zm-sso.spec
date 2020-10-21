@@ -9,7 +9,7 @@ URL:            https://gitlab.com/iway/zm-sso
 Source0:        https://gitlab.com/iway/zm-sso/-/archive/%{version}/zm-sso-%{version}.tar.gz
 
 Requires:       zimbra-store >= 8.8
-BuildRequires:  java-1.8.0-openjdk-devel ant
+BuildRequires:  java-1.8.0-openjdk-devel maven
 BuildArch:      noarch
 
 %description
@@ -26,7 +26,7 @@ mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/conf
 cp -R target/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
 cp -R target/dependency/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
-cp -R conf/sso.pac4j.properties $RPM_BUILD_ROOT/opt/zimbra/conf
+cp -R conf/zm.sso.properties $RPM_BUILD_ROOT/opt/zimbra/conf
 
 %posttrans
 su - zimbra -c "zmmailboxdctl restart"
@@ -38,7 +38,7 @@ su - zimbra -c "zmprov fc all"
 
 %files
 /opt/zimbra/lib/ext/zm-sso/*.jar
-/opt/zimbra/conf/sso.pac4j.properties
+/opt/zimbra/conf/zm.sso.properties
 
 %changelog
 * Wed Sep 23 2020 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1

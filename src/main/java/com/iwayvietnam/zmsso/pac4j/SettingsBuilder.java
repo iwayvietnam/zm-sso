@@ -56,7 +56,7 @@ import java.util.*;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class SettingsBuilder {
-    private static final String ZM_SSO_SETTINGS_FILE = "sso.pac4j.properties";
+    private static final String ZM_SSO_SETTINGS_FILE = "zm.sso.properties";
     private static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     private static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
 
