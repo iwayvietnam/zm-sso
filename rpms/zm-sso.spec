@@ -19,7 +19,7 @@ Zm SSO is the Zimbra Collaboration Open Source Edition extension for single sign
 %setup -q
 
 %build
-make
+mvn clean package
 
 %install
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
