@@ -24,7 +24,7 @@
 all: dist/zm-sso
 
 dist/zm-sso:
-	ant jar
+	mvn clean package
 
 clean:
 	ant clean
@@ -34,6 +34,7 @@ rpmbuild:
 
 install: dist/zm-sso
 	mkdir -p /opt/zimbra/lib/ext/zm-sso
-	cp dist/*.jar /opt/zimbra/lib/ext/zm-sso
+	cp target/*.jar /opt/zimbra/lib/ext/zm-sso
+	cp target/dependency/*.jar /opt/zimbra/lib/ext/zm-sso
 	cp conf/sso.pac4j.properties /opt/zimbra/conf
 	su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'

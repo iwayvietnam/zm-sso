@@ -23,7 +23,10 @@ make
 
 %install
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
-cp -R dist/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
+mkdir -p $RPM_BUILD_ROOT/opt/zimbra/conf
+cp -R target/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
+cp -R target/dependency/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
+cp -R conf/sso.pac4j.properties $RPM_BUILD_ROOT/opt/zimbra/conf
 
 %posttrans
 su - zimbra -c "zmmailboxdctl restart"
@@ -35,6 +38,7 @@ su - zimbra -c "zmprov fc all"
 
 %files
 /opt/zimbra/lib/ext/zm-sso/*.jar
+/opt/zimbra/conf/sso.pac4j.properties
 
 %changelog
 * Wed Sep 23 2020 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
