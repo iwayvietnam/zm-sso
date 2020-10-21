@@ -99,14 +99,12 @@ ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-1.0.0-1.el7.noarch.rpm"
 ```
 
 ## Configuration
-* Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex
-```
-vi /opt/zimbra/conf/zm.sso.properties
-```
+* Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
 * Specify default pac4j client by setting the value for the **sso.defaultClient** key. Ex: `sso.defaultClient = SAML2Client`
 
 ### Callback endpoint configuration
 To handle authentication, a callback endpoint is necessary to receive callback calls from the identity server and finish the login process.
+
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint must be **/service/extension/sso/calback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/calback`
