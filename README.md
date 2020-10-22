@@ -36,15 +36,6 @@ cd ~/projects/zimbra
 git clone git@gitlab.com:iway/zm-sso.git
 ```
 
-### Install zimbra dependency to Maven repository
-```shell script
-cd ~/projects/zimbra/zm-sso
-mvn install:install-file -Dfile=lib/zimbracommon.jar -DgroupId=com.zimbra -DartifactId=zimbraCommon -Dversion="8.8.15_GA_3928" -Dpackaging=jar
-mvn install:install-file -Dfile=lib/zimbrasoap.jar -DgroupId=com.zimbra -DartifactId=zimbraSoap -Dversion="8.8.15_GA_3928" -Dpackaging=jar
-mvn install:install-file -Dfile=lib/zimbrastore.jar -DgroupId=com.zimbra -DartifactId=zimbraStore -Dversion="8.8.15_GA_3928" -Dpackaging=jar
-mvn install:install-file -Dfile=lib/zimbraclient.jar -DgroupId=com.zimbra -DartifactId=zimbraClient -Dversion="8.8.15_GA_3928" -Dpackaging=jar
-```
-
 ### Build jar file by using Maven
 ```shell script
 cd ~/projects/zimbra/zm-sso

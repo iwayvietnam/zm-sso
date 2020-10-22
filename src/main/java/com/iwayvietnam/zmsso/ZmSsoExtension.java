@@ -25,12 +25,20 @@ package com.iwayvietnam.zmsso;
 import com.iwayvietnam.zmsso.cas.*;
 import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.iwayvietnam.zmsso.oidc.*;
+import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
 import com.iwayvietnam.zmsso.saml.*;
+import com.zimbra.common.localconfig.ConfigException;
+import com.zimbra.common.localconfig.LocalConfig;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
+import com.zimbra.cs.account.Config;
+import com.zimbra.cs.account.Provisioning;
 import com.zimbra.cs.extension.ExtensionDispatcherServlet;
 import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ZimbraExtension;
+import org.dom4j.DocumentException;
+
+import java.io.IOException;
 
 /**
  * Zimbra Single Sign On Extension
@@ -48,6 +56,9 @@ public class ZmSsoExtension implements ZimbraExtension {
     public void init() throws ExtensionException, ServiceException {
         ZimbraLog.extensions.info("Create sso session table");
         DbSsoSession.createSsoSessionTable();
+
+        ZimbraLog.extensions.info("Init sso config");
+        initSsoConfig();
 
         ZimbraLog.extensions.info("Register sso handlers");
         ExtensionDispatcherServlet.register(this, new LoginHandler());
@@ -67,5 +78,66 @@ public class ZmSsoExtension implements ZimbraExtension {
     public void destroy() {
         ZimbraLog.extensions.info("Unregister sso extension");
         ExtensionDispatcherServlet.unregister(this);
+    }
+
+    private static void initSsoConfig() {
+        try {
+            final LocalConfig lc = new LocalConfig(null);
+            boolean changed = false;
+
+            if (!lc.isSet(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)) {
+                lc.set(SettingsConstants.ZM_SSO_DEFAULT_CLIENT, "SAML2Client");
+                changed = true;
+            }
+
+            ZimbraLog.extensions.info("Callback configuration");
+            if (!lc.isSet(SettingsConstants.ZM_SSO_CALLBACK_URL)) {
+                final Config config = Provisioning.getInstance().getConfig();
+
+                final StringBuilder callbackUrl = new StringBuilder();
+                callbackUrl.append(config.getPublicServiceProtocol())
+                    .append("://")
+                    .append(config.getPublicServiceHostname())
+                    .append(":")
+                    .append(config.getPublicServicePort())
+                    .append(ExtensionDispatcherServlet.EXTENSION_PATH)
+                    .append(CallbackHandler.HANDLER_PATH);
+
+                lc.set(SettingsConstants.ZM_SSO_CALLBACK_URL, callbackUrl.toString());
+                changed = true;
+            }
+            if (!lc.isSet(SettingsConstants.ZM_SSO_SAVE_IN_SESSION)) {
+                lc.set(SettingsConstants.ZM_SSO_SAVE_IN_SESSION, "true");
+                changed = true;
+            }
+            if (!lc.isSet(SettingsConstants.ZM_SSO_MULTI_PROFILE)) {
+                lc.set(SettingsConstants.ZM_SSO_MULTI_PROFILE, "true");
+                changed = true;
+            }
+            if (!lc.isSet(SettingsConstants.ZM_SSO_RENEW_SESSION)) {
+                lc.set(SettingsConstants.ZM_SSO_RENEW_SESSION, "true");
+                changed = true;
+            }
+
+            ZimbraLog.extensions.info("Logout configuration");
+            if (!lc.isSet(SettingsConstants.ZM_SSO_LOCAL_LOGOUT)) {
+                lc.set(SettingsConstants.ZM_SSO_LOCAL_LOGOUT, "true");
+                changed = true;
+            }
+            if (!lc.isSet(SettingsConstants.ZM_SSO_DESTROY_SESSION)) {
+                lc.set(SettingsConstants.ZM_SSO_DESTROY_SESSION, "true");
+                changed = true;
+            }
+            if (!lc.isSet(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT)) {
+                lc.set(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT, "true");
+                changed = true;
+            }
+
+            if (changed) {
+                lc.save();
+            }
+        } catch (final ConfigException | DocumentException | IOException | ServiceException e) {
+            ZimbraLog.extensions.error(e);
+        }
     }
 }

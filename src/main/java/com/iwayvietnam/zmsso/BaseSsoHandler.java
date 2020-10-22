@@ -56,14 +56,9 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         config = SettingsBuilder.getConfig();
     }
 
-    protected boolean isLogin(final AuthToken authToken) {
-        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        return optional.isPresent() && !authToken.isExpired() && authToken.isRegistered();
-    }
-
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
-        if (!isLogin(authToken)) {
+        if (!isLoggedIn(authToken)) {
             ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             final HttpSession session = request.getSession();
             session.setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
@@ -84,16 +79,19 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         }
     }
 
-    protected void redirectByAuthToken(final HttpServletRequest request, final HttpServletResponse response, final AuthToken authToken) throws IOException, ServiceException {
-        final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
-        final boolean secureCookie = isProtocolSecure(request.getScheme());
+    private boolean isLoggedIn(final AuthToken authToken) {
+        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
+        return optional.isPresent() && !authToken.isExpired() && authToken.isRegistered();
+    }
 
+    private void redirectByAuthToken(final HttpServletRequest request, final HttpServletResponse response, final AuthToken authToken) throws IOException, ServiceException {
+        final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
         final Server server = authToken.getAccount().getServer();
-        String redirectUrl = AuthUtil.getRedirectURL(request, server, isAdmin, false);
-        redirectUrl = appendIgnoreLoginURL(redirectUrl);
+        final String redirectUrl = AuthUtil.getRedirectURL(request, server, isAdmin, true) + AuthUtil.IGNORE_LOGIN_URL;
 
         final URL url = new URL(redirectUrl);
-        boolean isRedirectProtocolSecure = isProtocolSecure(url.getProtocol());
+        final boolean isRedirectProtocolSecure = isProtocolSecure(url.getProtocol());
+        final boolean secureCookie = isProtocolSecure(request.getScheme());
 
         if (secureCookie && !isRedirectProtocolSecure) {
             throw ServiceException.INVALID_REQUEST(String.format("Cannot redirect to non-secure protocol: %s", redirectUrl), null);
@@ -101,13 +99,6 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
         ZimbraLog.extensions.debug(String.format("SSO login - redirecting (with auth token) to: %s", redirectUrl));
         response.sendRedirect(redirectUrl);
-    }
-
-    private String appendIgnoreLoginURL(String redirectUrl) {
-        if (!redirectUrl.endsWith("/")) {
-            redirectUrl = redirectUrl + "/";
-        }
-        return redirectUrl + AuthUtil.IGNORE_LOGIN_URL;
     }
 
     private boolean isProtocolSecure(final String protocol) {

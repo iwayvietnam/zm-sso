@@ -37,7 +37,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class CasLoginHandler extends BaseSsoHandler {
-    private static final String LOGIN_HANDLER_PATH = "/cas/login";
+    public static final String HANDLER_PATH = "/cas/login";
     private final CasClient client;
 
     public CasLoginHandler() throws ExtensionException {
@@ -47,7 +47,7 @@ public class CasLoginHandler extends BaseSsoHandler {
 
     @Override
     public String getPath() {
-        return LOGIN_HANDLER_PATH;
+        return HANDLER_PATH;
     }
 
     @Override

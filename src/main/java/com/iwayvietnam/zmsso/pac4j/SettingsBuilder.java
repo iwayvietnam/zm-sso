@@ -46,9 +46,7 @@ import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -56,25 +54,6 @@ import java.util.*;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class SettingsBuilder {
-    private static final String ZM_SSO_SETTINGS_FILE = "zm.sso.properties";
-    private static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
-    private static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
-
-    private static final String ZM_SSO_SAVE_IN_SESSION = "sso.saveInSession";
-    private static final String ZM_SSO_MULTI_PROFILE = "sso.multiProfile";
-    private static final String ZM_SSO_RENEW_SESSION = "sso.renewSession";
-
-    private static final String ZM_SSO_LOCAL_LOGOUT = "sso.localLogout";
-    private static final String ZM_SSO_DESTROY_SESSION = "sso.destroySession";
-    private static final String ZM_SSO_CENTRAL_LOGOUT = "sso.centralLogout";
-
-    private static final String ZM_SSO_SAML_AUTHN_REQUEST_SIGNED = "saml.authnRequestSigned";
-    private static final String ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED = "saml.spLogoutRequestSigned";
-    private static final String ZM_SSO_SAML_SP_METADATA_GENERATION = "saml.spMetadataGeneration";
-    private static final String ZM_SSO_SAML_SP_KEYSTORE_GENERATION = "saml.spKeystoreGeneration";
-
-    private static final String ZM_SSO_OIDC_WITH_STATE = "oidc.withState";
-
     private static final Map<String, String> properties = new HashMap<>();
     private static final Config config;
     private static final Optional<Client> defaultClient;
@@ -88,21 +67,23 @@ public final class SettingsBuilder {
     private static final Boolean centralLogout;
 
     static {
-        loadProperties();
+        loadSettingsFromLocalConfig(SettingsConstants.class.getDeclaredFields());
+        loadSettingsFromLocalConfig(PropertiesConstants.class.getDeclaredFields());
+
         if (hasSamlClient()) {
             openSAMLInitialization();
         }
         config = buildConfig();
 
-        saveInSession = loadBooleanProperty(ZM_SSO_SAVE_IN_SESSION);
-        multiProfile = loadBooleanProperty(ZM_SSO_MULTI_PROFILE);
-        renewSession = loadBooleanProperty(ZM_SSO_RENEW_SESSION);
+        saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
+        multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
+        renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
 
-        localLogout = loadBooleanProperty(ZM_SSO_LOCAL_LOGOUT);
-        destroySession = loadBooleanProperty(ZM_SSO_DESTROY_SESSION);
-        centralLogout = loadBooleanProperty(ZM_SSO_CENTRAL_LOGOUT);
+        localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
+        destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
+        centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
 
-        defaultClient = config.getClients().findClient(loadStringProperty(ZM_SSO_DEFAULT_CLIENT));
+        defaultClient = config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT));
     }
 
     public static Config getConfig() {
@@ -197,7 +178,7 @@ public final class SettingsBuilder {
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
         final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
-        final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(ZM_SSO_CALLBACK_URL), properties);
+        final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         final Config config = factory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
@@ -209,7 +190,7 @@ public final class SettingsBuilder {
             ZimbraLog.extensions.debug("Config oidc client");
             final OidcConfiguration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
-            cfg.setWithState(loadBooleanProperty(ZM_SSO_OIDC_WITH_STATE));
+            cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.debug("Config saml client");
@@ -217,27 +198,28 @@ public final class SettingsBuilder {
 
             final SAML2Configuration cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
-            cfg.setAuthnRequestSigned(loadBooleanProperty(ZM_SSO_SAML_AUTHN_REQUEST_SIGNED));
-            cfg.setSpLogoutRequestSigned(loadBooleanProperty(ZM_SSO_SAML_SP_LOGOUT_REQUEST_SIGNED));
-            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_METADATA_GENERATION));
-            cfg.setForceKeystoreGeneration(loadBooleanProperty(ZM_SSO_SAML_SP_KEYSTORE_GENERATION));
+            cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
+            cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_LOGOUT_REQUEST_SIGNED));
+            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_METADATA_GENERATION));
+            cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_KEYSTORE_GENERATION));
         });
         return config;
     }
 
-    private static void loadProperties() {
-        final Properties prop = new Properties();
-        try {
-            ZimbraLog.extensions.debug("Load config properties");
-            final InputStream inputStream = new FileInputStream(LC.zimbra_home.value() + "/conf/" + ZM_SSO_SETTINGS_FILE);
-            prop.load(inputStream);
-            for (String key: prop.stringPropertyNames()) {
-                properties.put(key, prop.getProperty(key));
+    private static void loadSettingsFromLocalConfig(final Field[] fields) {
+        for (Field field : fields) {
+            try {
+                final String key = field.get(null).toString();
+                final String value = LC.get(key);
+                if (!StringUtil.isNullOrEmpty(value)) {
+                    properties.put(key, value);
+                }
+            } catch (IllegalAccessException e) {
+                ZimbraLog.extensions.error(e);
             }
-        } catch (IOException e) {
-            ZimbraLog.extensions.error(e);
         }
     }
+
     private static boolean hasSamlClient() {
         return !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&

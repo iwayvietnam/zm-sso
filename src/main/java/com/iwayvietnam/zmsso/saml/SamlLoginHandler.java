@@ -35,7 +35,7 @@ import java.io.IOException;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class SamlLoginHandler extends SamlBaseHandler {
-    private static final String LOGIN_HANDLER_PATH = "/saml/login";
+    public static final String HANDLER_PATH = "/saml/login";
 
     public SamlLoginHandler() throws ExtensionException {
         super();
@@ -43,7 +43,7 @@ public class SamlLoginHandler extends SamlBaseHandler {
 
     @Override
     public String getPath() {
-        return LOGIN_HANDLER_PATH;
+        return HANDLER_PATH;
     }
 
     @Override

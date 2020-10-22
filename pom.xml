@@ -16,24 +16,31 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pac4j.version>4.1.0</pac4j.version>
-        <zimbra.version>8.8.15_GA_3928</zimbra.version>
+        <zimbra.version>8.8.15</zimbra.version>
+        <zimbra.lib.dir>${project.basedir}/lib</zimbra.lib.dir>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.zimbra</groupId>
-            <artifactId>zimbraCommon</artifactId>
+            <groupId>com.zimbra.cs</groupId>
+            <artifactId>zimbra-common</artifactId>
             <version>${zimbra.version}</version>
+            <scope>system</scope>
+            <systemPath>${zimbra.lib.dir}/zimbracommon.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.zimbra</groupId>
-            <artifactId>zimbraClient</artifactId>
+            <groupId>com.zimbra.cs</groupId>
+            <artifactId>zimbra-client</artifactId>
             <version>${zimbra.version}</version>
+            <scope>system</scope>
+            <systemPath>${zimbra.lib.dir}/zimbraclient.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>com.zimbra</groupId>
-            <artifactId>zimbraStore</artifactId>
+            <groupId>com.zimbra.cs</groupId>
+            <artifactId>zimbra-store</artifactId>
             <version>${zimbra.version}</version>
+            <scope>system</scope>
+            <systemPath>${zimbra.lib.dir}/zimbrastore.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
@@ -150,9 +157,9 @@
                                 junit,
                                 slf4j-api,
                                 spring-beans,
-                                zimbraCommon,
-                                zimbraClient,
-                                zimbraStore
+                                zimbra-common,
+                                zimbra-client,
+                                zimbra-store
                             </excludeArtifactIds>
                             <outputDirectory>${project.build.directory}/dependency</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>

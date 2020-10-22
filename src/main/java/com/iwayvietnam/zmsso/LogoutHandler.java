@@ -44,11 +44,11 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class LogoutHandler extends BaseSsoHandler {
-    private static final String LOGOUT_HANDLER_PATH = "/sso/logout";
+    public static final String HANDLER_PATH = "/sso/logout";
 
     @Override
     public String getPath() {
-        return LOGOUT_HANDLER_PATH;
+        return HANDLER_PATH;
     }
 
     @Override

@@ -11,9 +11,33 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.zimbra:zimbraCommon:8.8.15_GA_3928" level="project" />
-    <orderEntry type="library" name="Maven: com.zimbra:zimbraClient:8.8.15_GA_3928" level="project" />
-    <orderEntry type="library" name="Maven: com.zimbra:zimbraStore:8.8.15_GA_3928" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.zimbra.cs:zimbra-common:8.8.15">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/zimbracommon.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: com.zimbra.cs:zimbra-client:8.8.15">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/zimbraclient.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: com.zimbra.cs:zimbra-store:8.8.15">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/zimbrastore.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.pac4j:pac4j-cas:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.pac4j:pac4j-core:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.30" level="project" />
