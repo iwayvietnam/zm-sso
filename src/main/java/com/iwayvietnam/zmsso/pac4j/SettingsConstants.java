@@ -27,6 +27,8 @@ package com.iwayvietnam.zmsso.pac4j;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class SettingsConstants {
+    public static final String ZM_SSO_SETTINGS_FILE = "zm.sso.properties";
+
     public static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     public static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
 

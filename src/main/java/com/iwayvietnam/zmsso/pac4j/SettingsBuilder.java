@@ -46,7 +46,11 @@ import org.pac4j.oidc.config.OidcConfiguration;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.config.SAML2Configuration;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -67,8 +71,8 @@ public final class SettingsBuilder {
     private static final Boolean centralLogout;
 
     static {
-        loadSettingsFromLocalConfig(SettingsConstants.class.getDeclaredFields());
-        loadSettingsFromLocalConfig(PropertiesConstants.class.getDeclaredFields());
+        loadSettingsFromProperties();
+        loadSettingsFromLocalConfig();
 
         if (hasSamlClient()) {
             openSAMLInitialization();
@@ -206,8 +210,23 @@ public final class SettingsBuilder {
         return config;
     }
 
-    private static void loadSettingsFromLocalConfig(final Field[] fields) {
-        for (Field field : fields) {
+    private static void loadSettingsFromProperties() {
+        final String confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
+        final Properties prop = new Properties();
+        try {
+            ZimbraLog.extensions.debug("Load config properties");
+            final InputStream inputStream = new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE);
+            prop.load(inputStream);
+            prop.stringPropertyNames().stream().forEach(key -> properties.put(key, prop.getProperty(key)));
+        } catch (IOException e) {
+            ZimbraLog.extensions.error(e);
+        }
+    }
+
+    private static void loadSettingsFromLocalConfig() {
+        final List<Field> fields = Arrays.asList(SettingsConstants.class.getDeclaredFields());
+        fields.addAll(Arrays.asList(PropertiesConstants.class.getDeclaredFields()));
+        fields.stream().forEach(field -> {
             try {
                 final String key = field.get(null).toString();
                 final String value = LC.get(key);
@@ -217,7 +236,7 @@ public final class SettingsBuilder {
             } catch (IllegalAccessException e) {
                 ZimbraLog.extensions.error(e);
             }
-        }
+        });
     }
 
     private static boolean hasSamlClient() {
@@ -226,7 +245,6 @@ public final class SettingsBuilder {
                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
                !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH));
     }
-
 
     private static String loadStringProperty(final String key) {
         return properties.get(key);
