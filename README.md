@@ -14,15 +14,16 @@ get their profiles and manage authorizations in order to secure web applications
 * JDK 8 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
+* rpmbuild for rpm package build.
 
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell script
-dnf -y install java-8-openjdk java-8-openjdk-devel maven ant git
+dnf -y install java-8-openjdk java-8-openjdk-devel maven ant git rpmbuild
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell script
-yum -y install java-8-openjdk java-8-openjdk-devel maven ant git
+yum -y install java-8-openjdk java-8-openjdk-devel maven ant git rpmbuild
 ```
 * On Debian or Ubuntu
 ```shell script
@@ -94,7 +95,6 @@ The settings loaded from the following places:
 1. An optional **zm.sso.properties** file. The default location of this file is **/opt/zimbra/conf/zm.sso.properties**
 2. But it can be overridden by setting via the **localconfig.xml** file.
 
-
 ### Default client configuration
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
 * Specify default pac4j client by setting the value for the **sso.defaultClient** key. Ex: `sso.defaultClient = SAML2Client`
@@ -139,6 +139,7 @@ zmlocalconfig -e sso.centralLogout=true
 ```shell script
 keytool -genkeypair -alias saml-key-demo -keypass saml-key-passwd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass saml-store-passwd -keyalg RSA -keysize 2048 -validity 3650
 ```
+
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * **saml.keystorePath**: It defines the keystore resource location. It is the value of the -keystore option for the keystore generation with prefix **file:**. Ex: `saml.keystorePath = file:/opt/zimbra/conf/samlKeystore.jks`
