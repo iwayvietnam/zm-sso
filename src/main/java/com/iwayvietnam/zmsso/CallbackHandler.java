@@ -24,6 +24,7 @@ package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.StringUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
@@ -51,9 +52,11 @@ public class CallbackHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         final HttpSession session = request.getSession();
-        final String clientName;
+        String clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
         try {
-            clientName = Optional.ofNullable(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString()).orElse(SettingsBuilder.defaultClient().getName());
+            if (StringUtil.isNullOrEmpty(clientName)) {
+                clientName = SettingsBuilder.defaultClient().getName();
+            }
         } catch (final ServiceException e) {
             throw new ServletException(e);
         }
