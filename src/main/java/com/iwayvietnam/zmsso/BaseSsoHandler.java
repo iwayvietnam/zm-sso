@@ -38,7 +38,6 @@ import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -60,20 +59,9 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLoggedIn(authToken)) {
             ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
-            final HttpSession session = request.getSession();
-            session.setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
+            request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final JEEContext context = new JEEContext(request, response);
-            RedirectionAction action;
-
-            try {
-                final Optional<RedirectionAction> actionOpt = client.getRedirectionAction(context);
-                action = actionOpt.get();
-            } catch (final RedirectionAction e) {
-                ZimbraLog.extensions.error(e);
-                action = e;
-            }
-
-            JEEHttpActionAdapter.INSTANCE.adapt(action, context);
+            JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context).get(), context);
         } else {
             redirectByAuthToken(request, response, authToken);
         }
