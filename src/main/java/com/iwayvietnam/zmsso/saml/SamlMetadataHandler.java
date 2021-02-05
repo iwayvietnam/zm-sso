@@ -22,9 +22,7 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.core.exception.TechnicalException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
