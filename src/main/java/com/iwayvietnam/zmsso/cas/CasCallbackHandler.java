@@ -20,9 +20,8 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.oidc;
+package com.iwayvietnam.zmsso.cas;
 
-import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;
@@ -31,13 +30,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Oidc SSO Login Handler
+ * CAS SSO Callback Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class OidcLoginHandler extends OidcBaseHandler {
-    public static final String HANDLER_PATH = "/oidc/login";
+public class CasCallbackHandler extends CasBaseHandler {
+    public static final String HANDLER_PATH = "/cas/callback";
 
-    public OidcLoginHandler() throws ExtensionException {
+    public CasCallbackHandler() throws ExtensionException {
         super();
     }
 
@@ -48,11 +47,7 @@ public class OidcLoginHandler extends OidcBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        try {
-            doLogin(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
-        }
+        doCallback(request, response, client);
     }
 
     @Override

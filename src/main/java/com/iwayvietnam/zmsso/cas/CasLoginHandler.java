@@ -22,10 +22,8 @@
  */
 package com.iwayvietnam.zmsso.cas;
 
-import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.cas.client.CasClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,13 +34,11 @@ import java.io.IOException;
  * CAS SSO Login Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class CasLoginHandler extends BaseSsoHandler {
+public class CasLoginHandler extends CasBaseHandler {
     public static final String HANDLER_PATH = "/cas/login";
-    private final CasClient client;
 
     public CasLoginHandler() throws ExtensionException {
         super();
-        client = config.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
     }
 
     @Override

@@ -35,8 +35,10 @@ import org.pac4j.core.config.Config;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.JEEContextFactory;
 import org.pac4j.core.context.session.JEESessionStore;
+import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
+import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,6 +69,13 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         } else {
             redirectByAuthToken(request, response, authToken);
         }
+    }
+
+    protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
+        final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final boolean renewSession = SettingsBuilder.renewSession();
+        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+        DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
     }
 
     private boolean isLoggedIn(final AuthToken authToken) {

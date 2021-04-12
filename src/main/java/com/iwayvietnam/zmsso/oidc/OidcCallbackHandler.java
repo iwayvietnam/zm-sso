@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso.oidc;
 
-import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;
@@ -34,10 +33,10 @@ import java.io.IOException;
  * Oidc SSO Login Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class OidcLoginHandler extends OidcBaseHandler {
-    public static final String HANDLER_PATH = "/oidc/login";
+public class OidcCallbackHandler extends OidcBaseHandler {
+    public static final String HANDLER_PATH = "/oidc/callback";
 
-    public OidcLoginHandler() throws ExtensionException {
+    public OidcCallbackHandler() throws ExtensionException {
         super();
     }
 
@@ -48,11 +47,7 @@ public class OidcLoginHandler extends OidcBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        try {
-            doLogin(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
-        }
+        doCallback(request, response, client);
     }
 
     @Override
