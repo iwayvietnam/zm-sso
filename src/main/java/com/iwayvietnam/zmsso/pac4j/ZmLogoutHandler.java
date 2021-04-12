@@ -23,6 +23,7 @@
 package com.iwayvietnam.zmsso.pac4j;
 
 import com.iwayvietnam.zmsso.db.DbSsoSession;
+import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraCookie;
@@ -50,7 +51,7 @@ import java.util.Optional;
  */
 public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
     private static final Provisioning prov = Provisioning.getInstance();
-    private static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
+    private static final String X_ORIGINATING_IP_HEADER = LC.zimbra_http_originating_ip_header.value();
     private static final String USER_AGENT_HEADER = "User-Agent";
 
     /**

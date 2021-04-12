@@ -20,43 +20,21 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.oidc;
+package com.iwayvietnam.zmsso.cas;
 
-import com.zimbra.common.service.ServiceException;
+import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.cs.extension.ExtensionException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.pac4j.cas.client.CasClient;
 
 /**
- * Oidc SSO Login Handler
+ * CAS Base Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class OidcLoginHandler extends OidcBaseHandler {
-    public static final String HANDLER_PATH = "/oidc/login";
+public abstract class CasBaseHandler extends BaseSsoHandler  {
+    protected final CasClient client;
 
-    public OidcLoginHandler() throws ExtensionException {
+    public CasBaseHandler() throws ExtensionException {
         super();
-    }
-
-    @Override
-    public String getPath() {
-        return HANDLER_PATH;
-    }
-
-    @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        try {
-            doLogin(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
-        }
-    }
-
-    @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        doPost(request, response);
+        client = config.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
     }
 }

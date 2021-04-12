@@ -20,30 +20,25 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso;
+package com.iwayvietnam.zmsso.oidc;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
-import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.StringUtil;
-import org.pac4j.core.client.Client;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
-import org.pac4j.core.util.Pac4jConstants;
+import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
- * SSO Callback Handler
+ * Oidc SSO Callback Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class CallbackHandler extends BaseSsoHandler {
-    public static final String HANDLER_PATH = "/sso/callback";
+public class OidcCallbackHandler extends OidcBaseHandler {
+    public static final String HANDLER_PATH = "/oidc/callback";
+
+    public OidcCallbackHandler() throws ExtensionException {
+        super();
+    }
 
     @Override
     public String getPath() {
@@ -52,14 +47,7 @@ public class CallbackHandler extends BaseSsoHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        try {
-            final HttpSession session = request.getSession();
-            final String clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
-            final Client client = config.getClients().findClient(clientName).orElse(SettingsBuilder.defaultClient());
-            doCallback(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
-        }
+        doCallback(request, response, client);
     }
 
     @Override
