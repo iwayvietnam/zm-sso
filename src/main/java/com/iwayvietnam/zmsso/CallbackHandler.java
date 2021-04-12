@@ -24,12 +24,7 @@ package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.StringUtil;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.context.JEEContextFactory;
-import org.pac4j.core.context.session.JEESessionStore;
-import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
+import org.pac4j.core.client.Client;
 import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
@@ -53,19 +48,14 @@ public class CallbackHandler extends BaseSsoHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        final HttpSession session = request.getSession();
-        String clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
         try {
-            if (StringUtil.isNullOrEmpty(clientName)) {
-                clientName = SettingsBuilder.defaultClient().getName();
-            }
+            final HttpSession session = request.getSession();
+            final String clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
+            final Client client = config.getClients().findClient(clientName).orElse(SettingsBuilder.defaultClient());
+            doCallback(request, response, client);
         } catch (final ServiceException e) {
             throw new ServletException(e);
         }
-        final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final boolean renewSession = SettingsBuilder.renewSession();
-        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, clientName);
     }
 
     @Override
