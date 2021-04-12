@@ -181,7 +181,7 @@ public final class SettingsBuilder {
 
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
-        final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
+        final LogoutHandler logoutHandler = new ZmLogoutHandler();
         final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         final Config config = factory.build();
 

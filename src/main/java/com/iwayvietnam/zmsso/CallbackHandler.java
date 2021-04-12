@@ -26,6 +26,8 @@ import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.JEEContextFactory;
+import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.util.Pac4jConstants;
@@ -61,11 +63,9 @@ public class CallbackHandler extends BaseSsoHandler {
             throw new ServletException(e);
         }
         final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final boolean saveInSession = SettingsBuilder.saveInSession();
-        final boolean multiProfile = SettingsBuilder.multiProfile();
         final boolean renewSession = SettingsBuilder.renewSession();
-        final JEEContext context = new JEEContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, clientName);
+        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+        DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, clientName);
     }
 
     @Override

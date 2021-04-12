@@ -60,52 +60,52 @@
 
     <target name="check-pac4j-core">
         <condition property="available-pac4j-core">
-            <available file="${lib}/pac4j-core-4.1.0.jar" />
+            <available file="${lib}/pac4j-core-5.0.0.jar" />
         </condition>
     </target>
     <target name="download-pac4j-core" depends="check-pac4j-core" unless="available-pac4j-core">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/4.1.0/pac4j-core-4.1.0.jar"
-             dest="${lib}/pac4j-core-4.1.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/5.0.0/pac4j-core-5.0.0.jar"
+             dest="${lib}/pac4j-core-5.0.0.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-cas">
         <condition property="available-pac4j-cas">
-            <available file="${lib}/pac4j-cas-4.1.0.jar" />
+            <available file="${lib}/pac4j-cas-5.0.0.jar" />
         </condition>
     </target>
     <target name="download-pac4j-cas" depends="check-pac4j-cas" unless="available-pac4j-cas">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/4.1.0/pac4j-cas-4.1.0.jar"
-             dest="${lib}/pac4j-cas-4.1.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/5.0.0/pac4j-cas-5.0.0.jar"
+             dest="${lib}/pac4j-cas-5.0.0.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-oidc">
         <condition property="available-pac4j-oidc">
-            <available file="${lib}/pac4j-oidc-4.1.0.jar" />
+            <available file="${lib}/pac4j-oidc-5.0.0.jar" />
         </condition>
     </target>
     <target name="download-pac4j-oidc" depends="check-pac4j-oidc" unless="available-pac4j-oidc">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/4.1.0/pac4j-oidc-4.1.0.jar"
-             dest="${lib}/pac4j-oidc-4.1.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/5.0.0/pac4j-oidc-5.0.0.jar"
+             dest="${lib}/pac4j-oidc-5.0.0.jar" usetimestamp="true"/>
     </target>
 
-    <target name="check-pac4j-opensamlv3">
-        <condition property="available-pac4j-opensamlv3">
-            <available file="${lib}/pac4j-saml-opensamlv3-4.1.0.jar" />
+    <target name="check-pac4j-saml">
+        <condition property="available-pac4j-saml">
+            <available file="${lib}/pac4j-saml-5.0.0.jar" />
         </condition>
     </target>
-    <target name="download-pac4j-opensamlv3" depends="check-pac4j-opensamlv3" unless="available-pac4j-opensamlv3">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml-opensamlv3/4.1.0/pac4j-saml-opensamlv3-4.1.0.jar"
-             dest="${lib}/pac4j-saml-opensamlv3-4.1.0.jar" usetimestamp="true"/>
+    <target name="download-pac4j-saml" depends="check-pac4j-saml" unless="available-pac4j-saml">
+            <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml/5.0.0/pac4j-saml-5.0.0.jar"
+             dest="${lib}/pac4j-saml-5.0.0.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-config">
         <condition property="available-pac4j-config">
-            <available file="${lib}/pac4j-config-4.1.0.jar" />
+            <available file="${lib}/pac4j-config-5.0.0.jar" />
         </condition>
     </target>
     <target name="download-pac4j-config" depends="check-pac4j-config" unless="available-pac4j-config">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/4.1.0/pac4j-config-4.1.0.jar"
-             dest="${lib}/pac4j-config-4.1.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/5.0.0/pac4j-config-5.0.0.jar"
+             dest="${lib}/pac4j-config-5.0.0.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-commons-io">
@@ -120,32 +120,32 @@
 
     <target name="check-opensaml-core">
         <condition property="available-opensaml-core">
-            <available file="${lib}/opensaml-core-3.4.5.jar" />
+            <available file="${lib}/opensaml-core-4.0.1.jar" />
         </condition>
     </target>
     <target name="download-opensaml-core" depends="check-opensaml-core" unless="available-opensaml-core">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-core/3.4.5/opensaml-core-3.4.5.jar"
-             dest="${lib}/opensaml-core-3.4.5.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-core/4.0.1/opensaml-core-4.0.1.jar"
+             dest="${lib}/opensaml-core-4.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-opensaml-xmlsec-api">
         <condition property="available-opensaml-xmlsec-api">
-            <available file="${lib}/opensaml-xmlsec-api-3.4.5.jar" />
+            <available file="${lib}/opensaml-xmlsec-api-4.0.1.jar" />
         </condition>
     </target>
     <target name="download-opensaml-xmlsec-api" depends="check-opensaml-xmlsec-api" unless="available-opensaml-xmlsec-api">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-xmlsec-api/3.4.5/opensaml-xmlsec-api-3.4.5.jar"
-             dest="${lib}/opensaml-xmlsec-api-3.4.5.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-xmlsec-api/4.0.1/opensaml-xmlsec-api-4.0.1.jar"
+             dest="${lib}/opensaml-xmlsec-api-4.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-shibboleth-java-support">
         <condition property="available-shibboleth-java-support">
-            <available file="${lib}/java-support-7.5.1.jar" />
+            <available file="${lib}/java-support-7.5.2.jar" />
         </condition>
     </target>
     <target name="download-shibboleth-java-support" depends="check-shibboleth-java-support" unless="available-shibboleth-java-support">
-        <get src="https://repo1.maven.org/maven2/net/shibboleth/utilities/java-support/7.5.1/java-support-7.5.1.jar"
-             dest="${lib}/java-support-7.5.1.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/net/shibboleth/utilities/java-support/7.5.2/java-support-7.5.2.jar"
+             dest="${lib}/java-support-7.5.2.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-apache-httpclient">
@@ -168,7 +168,7 @@
                 download-pac4j-core,
                 download-pac4j-cas,
                 download-pac4j-oidc,
-                download-pac4j-opensamlv3,
+                download-pac4j-saml,
                 download-pac4j-config"
             description="download dependencies">
     </target>

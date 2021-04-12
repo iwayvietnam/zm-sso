@@ -29,6 +29,8 @@ import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.JEEContextFactory;
+import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.util.Pac4jConstants;
@@ -63,8 +65,8 @@ public class LogoutHandler extends BaseSsoHandler {
         final boolean localLogout = SettingsBuilder.localLogout();
         final boolean destroySession = SettingsBuilder.destroySession();
         final boolean centralLogout = SettingsBuilder.centralLogout();
-        final JEEContext context = new JEEContext(request, response);
-        DefaultLogoutLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
+        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+        DefaultLogoutLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
     }
 
     @Override

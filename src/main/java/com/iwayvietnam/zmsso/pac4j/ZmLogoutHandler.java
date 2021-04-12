@@ -36,6 +36,7 @@ import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 
@@ -48,7 +49,7 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
+public final class ZmLogoutHandler extends DefaultLogoutHandler implements LogoutHandler {
     private static final Provisioning prov = Provisioning.getInstance();
     private static final String X_ORIGINATING_IP_HEADER = "X-Forwarded-For";
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -59,9 +60,9 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      * @param key the key
      */
     @Override
-    public void recordSession(final C context, final String key) {
-        super.recordSession(context, key);
-        getProfileManager(context).get(true).ifPresent(profile -> {
+    public void recordSession(final WebContext context, final SessionStore sessionStore, final String key) {
+        super.recordSession(context, sessionStore, key);
+        getProfileManager(context, sessionStore).getProfile().ifPresent(profile -> {
             try {
                 singleLogin(context, profile.getUsername(), key, profile.getClientName());
             } catch (final ServiceException e) {
@@ -76,13 +77,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      * @param key the key
      */
     @Override
-    public void destroySessionFront(final C context, final String key) {
+    public void destroySessionFront(final WebContext context, final SessionStore sessionStore, final String key) {
         try {
             clearAuthToken(context, key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionFront(context, key);
+        super.destroySessionFront(context, sessionStore, key);
     }
 
     /**
@@ -91,16 +92,16 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      * @param key the key
      */
     @Override
-    public void destroySessionBack(final C context, final String key) {
+    public void destroySessionBack(WebContext context, SessionStore sessionStore, String key) {
         try {
             singleLogout(key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionBack(context, key);
+        super.destroySessionBack(context, sessionStore, key);
     }
 
-    private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
+    private void singleLogin(final WebContext context, final String accountName, final String key, final String client) throws ServiceException {
         final Map<String, Object> authCtxt = new HashMap<>();
         final String remoteIp = context.getRemoteAddr();
         final String origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
@@ -119,7 +120,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
     }
 
-    private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
+    private void setAuthTokenCookie(final WebContext context, final AuthToken authToken) throws ServiceException {
         if (context instanceof JEEContext) {
             final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
             final JEEContext jeeCxt = (JEEContext) context;
@@ -128,7 +129,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         }
     }
 
-    private void clearAuthToken(final C context, final String key) throws ServiceException {
+    private void clearAuthToken(final WebContext context, final String key) throws ServiceException {
         if (context instanceof JEEContext) {
             final JEEContext jeeCxt = (JEEContext) context;
             final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
