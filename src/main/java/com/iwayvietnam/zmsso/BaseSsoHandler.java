@@ -36,7 +36,6 @@ import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.JEEContextFactory;
 import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.util.Pac4jConstants;
 
@@ -65,7 +64,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
-            JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context, JEESessionStore.INSTANCE).get(), context);
+            client.getRedirectionAction(context, JEESessionStore.INSTANCE).ifPresent(action -> JEEHttpActionAdapter.INSTANCE.adapt(action, context));
         } else {
             redirectByAuthToken(request, response, authToken);
         }

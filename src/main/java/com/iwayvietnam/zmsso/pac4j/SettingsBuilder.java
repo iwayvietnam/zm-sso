@@ -39,7 +39,6 @@ import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.OidcConfiguration;
@@ -60,10 +59,8 @@ import java.util.*;
 public final class SettingsBuilder {
     private static final Map<String, String> properties = new HashMap<>();
     private static final Config config;
-    private static final Optional<Client> defaultClient;
 
     private static final Boolean renewSession;
-
     private static final Boolean localLogout;
     private static final Boolean destroySession;
     private static final Boolean centralLogout;
@@ -78,12 +75,9 @@ public final class SettingsBuilder {
         config = buildConfig();
 
         renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
-
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
         centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
-
-        defaultClient = config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT));
     }
 
     public static Config getConfig() {
@@ -91,7 +85,9 @@ public final class SettingsBuilder {
     }
 
     public static Client defaultClient() throws ServiceException {
-        return defaultClient.orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
+        return config.getClients()
+             .findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT))
+             .orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
     }
 
     public static Boolean renewSession() {
@@ -205,7 +201,7 @@ public final class SettingsBuilder {
             ZimbraLog.extensions.debug("Load config properties");
             final InputStream inputStream = new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE);
             prop.load(inputStream);
-            prop.stringPropertyNames().stream().forEach(key -> properties.put(key, prop.getProperty(key)));
+            prop.stringPropertyNames().forEach(key -> properties.put(key, prop.getProperty(key)));
         } catch (IOException e) {
             ZimbraLog.extensions.error(e);
         }
@@ -214,7 +210,7 @@ public final class SettingsBuilder {
     private static void loadSettingsFromLocalConfig() {
         final List<Field> fields = Arrays.asList(SettingsConstants.class.getDeclaredFields());
         fields.addAll(Arrays.asList(PropertiesConstants.class.getDeclaredFields()));
-        fields.stream().forEach(field -> {
+        fields.forEach(field -> {
             try {
                 final String key = field.get(null).toString();
                 final String value = LC.get(key);
