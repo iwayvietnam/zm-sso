@@ -24,7 +24,6 @@ package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
-import org.pac4j.core.client.Client;
 import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
@@ -47,8 +46,8 @@ public class LoginHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            final String clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
-            final Client client = config.getClients().findClient(clientName).orElse(SettingsBuilder.defaultClient());
+            final var clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
+            final var client = config.getClients().findClient(clientName).orElse(SettingsBuilder.defaultClient());
             doLogin(request, response, client);
         } catch (final ServiceException e) {
             throw new ServletException(e);

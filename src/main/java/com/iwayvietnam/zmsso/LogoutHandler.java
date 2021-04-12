@@ -25,10 +25,8 @@ package com.iwayvietnam.zmsso;
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
-import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
-import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.JEEContextFactory;
 import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultLogoutLogic;
@@ -39,7 +37,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * SSO Logout Handler
@@ -60,12 +57,12 @@ public class LogoutHandler extends BaseSsoHandler {
         } catch (final ServiceException | AuthTokenException e) {
             throw new ServletException(e);
         }
-        final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final String logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
-        final boolean localLogout = SettingsBuilder.localLogout();
-        final boolean destroySession = SettingsBuilder.destroySession();
-        final boolean centralLogout = SettingsBuilder.centralLogout();
-        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final var logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
+        final var localLogout = SettingsBuilder.localLogout();
+        final var destroySession = SettingsBuilder.destroySession();
+        final var centralLogout = SettingsBuilder.centralLogout();
+        final var context = JEEContextFactory.INSTANCE.newContext(request, response);
         DefaultLogoutLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
     }
 
@@ -75,9 +72,8 @@ public class LogoutHandler extends BaseSsoHandler {
     }
 
     private void clearAuthToken(final HttpServletRequest request, final HttpServletResponse response) throws ServiceException, AuthTokenException {
-        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
-        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        if (optional.isPresent()) {
+        final var authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
+        if (authToken != null) {
             authToken.encode(request, response, true);
             authToken.deRegister();
         }

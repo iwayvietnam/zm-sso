@@ -44,12 +44,12 @@ public class ZmSAML2RedirectionActionBuilder extends SAML2RedirectionActionBuild
 
     @Override
     public Optional<RedirectionAction> getRedirectionAction(final WebContext wc, final SessionStore sessionStore) {
-        final Thread thread = Thread.currentThread();
-        final ClassLoader origCl = thread.getContextClassLoader();
+        final var thread = Thread.currentThread();
+        final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());
 
         ZimbraLog.extensions.debug("SAML getRedirectionAction");
-        final Optional<RedirectionAction> action = super.getRedirectionAction(wc, sessionStore);
+        final var action = super.getRedirectionAction(wc, sessionStore);
         thread.setContextClassLoader(origCl);
         return action;
     }

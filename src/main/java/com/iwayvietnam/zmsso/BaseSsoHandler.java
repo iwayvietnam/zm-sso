@@ -32,7 +32,6 @@ import com.zimbra.cs.httpclient.URLUtil;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.JEEContextFactory;
 import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
@@ -43,7 +42,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 
 /**
  * Base Sso Handler
@@ -59,11 +57,11 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
-        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
+        final var authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLoggedIn(authToken)) {
             ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
-            final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+            final var context = JEEContextFactory.INSTANCE.newContext(request, response);
             client.getRedirectionAction(context, JEESessionStore.INSTANCE).ifPresent(action -> JEEHttpActionAdapter.INSTANCE.adapt(action, context));
         } else {
             redirectByAuthToken(request, response, authToken);
@@ -71,25 +69,27 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
-        final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final boolean renewSession = SettingsBuilder.renewSession();
-        final JEEContext context = JEEContextFactory.INSTANCE.newContext(request, response);
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final var renewSession = SettingsBuilder.renewSession();
+        final var context = JEEContextFactory.INSTANCE.newContext(request, response);
         DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
     }
 
     private boolean isLoggedIn(final AuthToken authToken) {
-        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        return optional.isPresent() && !authToken.isExpired() && authToken.isRegistered();
+        if (authToken != null) {
+            return !authToken.isExpired() && authToken.isRegistered();
+        }
+        return false;
     }
 
     private void redirectByAuthToken(final HttpServletRequest request, final HttpServletResponse response, final AuthToken authToken) throws IOException, ServiceException {
-        final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
-        final Server server = authToken.getAccount().getServer();
-        final String redirectUrl = AuthUtil.getRedirectURL(request, server, isAdmin, true) + AuthUtil.IGNORE_LOGIN_URL;
+        final var isAdmin = AuthToken.isAnyAdmin(authToken);
+        final var server = authToken.getAccount().getServer();
+        final var redirectUrl = AuthUtil.getRedirectURL(request, server, isAdmin, true) + AuthUtil.IGNORE_LOGIN_URL;
 
-        final URL url = new URL(redirectUrl);
-        final boolean isRedirectProtocolSecure = isProtocolSecure(url.getProtocol());
-        final boolean secureCookie = isProtocolSecure(request.getScheme());
+        final var url = new URL(redirectUrl);
+        final var isRedirectProtocolSecure = isProtocolSecure(url.getProtocol());
+        final var secureCookie = isProtocolSecure(request.getScheme());
 
         if (secureCookie && !isRedirectProtocolSecure) {
             throw ServiceException.INVALID_REQUEST(String.format("Cannot redirect to non-secure protocol: %s", redirectUrl), null);
