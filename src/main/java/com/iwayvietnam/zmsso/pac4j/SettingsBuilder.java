@@ -62,8 +62,6 @@ public final class SettingsBuilder {
     private static final Config config;
     private static final Optional<Client> defaultClient;
 
-    private static final Boolean saveInSession;
-    private static final Boolean multiProfile;
     private static final Boolean renewSession;
 
     private static final Boolean localLogout;
@@ -79,8 +77,6 @@ public final class SettingsBuilder {
         }
         config = buildConfig();
 
-        saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
-        multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
         renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
 
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
@@ -96,14 +92,6 @@ public final class SettingsBuilder {
 
     public static Client defaultClient() throws ServiceException {
         return defaultClient.orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
-    }
-
-    public static Boolean saveInSession() {
-        return saveInSession;
-    }
-
-    public static Boolean multiProfile() {
-        return multiProfile;
     }
 
     public static Boolean renewSession() {
