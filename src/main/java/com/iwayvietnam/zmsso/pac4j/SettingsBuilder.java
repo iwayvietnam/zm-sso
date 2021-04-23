@@ -31,7 +31,6 @@ import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
 
@@ -94,7 +93,7 @@ public final class SettingsBuilder {
 
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
-        final LogoutHandler logoutHandler = new ZmLogoutHandler();
+        final var logoutHandler = new ZmLogoutHandler();
         final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         final var config = factory.build();
 
