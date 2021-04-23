@@ -106,14 +106,10 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint must be **/service/extension/sso/calback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/calback`
-* Specify profile should be saved in session by setting the value for the **sso.saveInSession** key.
-* Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key.
 * Or execute following commands with the Zimbra user:
 ```shell script
 zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/calback
-zmlocalconfig -e sso.saveInSession=true
-zmlocalconfig -e sso.multiProfile=true
 zmlocalconfig -e sso.renewSession=true
 ```
 
