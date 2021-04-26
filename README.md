@@ -75,7 +75,7 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
 cd ~/projects/zimbra/zm-sso
 ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
-scp target/dependency/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
+scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
 ```
 * Restart mailbox to load the extension.

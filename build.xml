@@ -61,52 +61,52 @@
 
     <target name="check-pac4j-core">
         <condition property="available-pac4j-core">
-            <available file="${deps}/pac4j-core-5.0.0.jar" />
+            <available file="${deps}/pac4j-core-5.0.1.jar" />
         </condition>
     </target>
     <target name="download-pac4j-core" depends="check-pac4j-core" unless="available-pac4j-core">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/5.0.0/pac4j-core-5.0.0.jar"
-             dest="${deps}/pac4j-core-5.0.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/5.0.1/pac4j-core-5.0.1.jar"
+             dest="${deps}/pac4j-core-5.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-cas">
         <condition property="available-pac4j-cas">
-            <available file="${deps}/pac4j-cas-5.0.0.jar" />
+            <available file="${deps}/pac4j-cas-5.0.1.jar" />
         </condition>
     </target>
     <target name="download-pac4j-cas" depends="check-pac4j-cas" unless="available-pac4j-cas">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/5.0.0/pac4j-cas-5.0.0.jar"
-             dest="${deps}/pac4j-cas-5.0.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/5.0.1/pac4j-cas-5.0.1.jar"
+             dest="${deps}/pac4j-cas-5.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-oidc">
         <condition property="available-pac4j-oidc">
-            <available file="${deps}/pac4j-oidc-5.0.0.jar" />
+            <available file="${deps}/pac4j-oidc-5.0.1.jar" />
         </condition>
     </target>
     <target name="download-pac4j-oidc" depends="check-pac4j-oidc" unless="available-pac4j-oidc">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/5.0.0/pac4j-oidc-5.0.0.jar"
-             dest="${deps}/pac4j-oidc-5.0.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/5.0.1/pac4j-oidc-5.0.1.jar"
+             dest="${deps}/pac4j-oidc-5.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-saml">
         <condition property="available-pac4j-saml">
-            <available file="${deps}/pac4j-saml-5.0.0.jar" />
+            <available file="${deps}/pac4j-saml-5.0.1.jar" />
         </condition>
     </target>
     <target name="download-pac4j-saml" depends="check-pac4j-saml" unless="available-pac4j-saml">
-            <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml/5.0.0/pac4j-saml-5.0.0.jar"
-             dest="${deps}/pac4j-saml-5.0.0.jar" usetimestamp="true"/>
+            <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml/5.0.1/pac4j-saml-5.0.1.jar"
+             dest="${deps}/pac4j-saml-5.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-config">
         <condition property="available-pac4j-config">
-            <available file="${deps}/pac4j-config-5.0.0.jar" />
+            <available file="${deps}/pac4j-config-5.0.1.jar" />
         </condition>
     </target>
     <target name="download-pac4j-config" depends="check-pac4j-config" unless="available-pac4j-config">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/5.0.0/pac4j-config-5.0.0.jar"
-             dest="${deps}/pac4j-config-5.0.0.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/5.0.1/pac4j-config-5.0.1.jar"
+             dest="${deps}/pac4j-config-5.0.1.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-commons-io">
@@ -159,6 +159,16 @@
              dest="${deps}/httpclient-4.5.9.jar" usetimestamp="true"/>
     </target>
 
+    <target name="check-javax-annotation">
+        <condition property="available-javax-annotation">
+            <available file="${deps}/javax.annotation-api-1.3.2.jar" />
+        </condition>
+    </target>
+    <target name="download-javax-annotation" depends="check-javax-annotation" unless="available-javax-annotation">
+        <get src="https://repo1.maven.org/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar"
+             dest="${deps}/javax.annotation-api-1.3.2.jar" usetimestamp="true"/>
+    </target>
+
     <target name="create-deps">
         <mkdir dir="${deps}"/>
     </target>
@@ -175,7 +185,8 @@
                 download-pac4j-cas,
                 download-pac4j-oidc,
                 download-pac4j-saml,
-                download-pac4j-config"
+                download-pac4j-config,
+                download-javax-annotation"
             description="download dependencies">
     </target>
 

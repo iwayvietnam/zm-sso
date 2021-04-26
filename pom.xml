@@ -145,7 +145,7 @@
                                 zimbra-client,
                                 zimbra-store
                             </excludeArtifactIds>
-                            <outputDirectory>${project.build.directory}/dependency</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
@@ -166,9 +166,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <outputDirectory>${project.build.directory}/jar-with-dependencies</outputDirectory>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
             </plugin>
         </plugins>

@@ -25,7 +25,7 @@ mvn clean package
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/conf
 cp -R target/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
-cp -R target/dependency/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
+cp -R target/dependencies/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
 cp -R conf/zm.sso.properties $RPM_BUILD_ROOT/opt/zimbra/conf
 
 %posttrans
