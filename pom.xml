@@ -13,7 +13,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <pac4j.version>5.0.0</pac4j.version>
+        <pac4j.version>5.0.1</pac4j.version>
         <zimbra.version>8.8.15</zimbra.version>
         <zimbra.lib.dir>${project.basedir}/lib</zimbra.lib.dir>
     </properties>
@@ -138,27 +138,9 @@
                         </goals>
                         <configuration>
                             <excludeArtifactIds>
-                                activation,
-                                antlr,
-                                asm,
-                                bcpkix-jdk15on,
-                                bcprov-jdk15on,
-                                commons-codec,
                                 commons-collections,
-                                commons-io,
-                                commons-lang,
-                                dom4j,
-                                guava,
-                                httpcore,
-                                httpclient,
-                                jackson-annotations,
-                                jackson-core,
-                                jackson-databind,
-                                javax.annotation-api,
-                                javax.servlet-api,
                                 junit,
-                                slf4j-api,
-                                spring-beans,
+                                javax.servlet-api,
                                 zimbra-common,
                                 zimbra-client,
                                 zimbra-store
