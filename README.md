@@ -106,13 +106,14 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint can be:
-    * Using default client **/service/extension/sso/callback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/callback`
-    * Using only SAML client **/service/extension/saml/callback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/saml/callback`
-    * Using only CAS client **/service/extension/cas/callback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/cas/callback`
-    * Using only OpenID Connect client **/service/extension/oidc/callback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/oidc/callback`
+    * **/service/extension/sso/callback** (using default client. specified in sso.defaultClient). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/callback`
+    * **/service/extension/saml/callback** (using only SAML client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/saml/callback`
+    * **/service/extension/cas/callback** (using only CAS client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/cas/callback`
+    * **/service/extension/oidc/callback** (using only OpenID Connect client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/oidc/callback`
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key. Ex: `sso.renewSession = true`
 * Or execute following commands with the Zimbra user:
 ```shell script
+# callback endpoint by using default client. Specified in sso.defaultClient
 zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/callback
 # or using only SAML client
 # zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/saml/callback
