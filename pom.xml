@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <pac4j.version>4.1.0</pac4j.version>
+        <pac4j.version>4.4.0</pac4j.version>
         <zimbra.version>8.8.15</zimbra.version>
         <zimbra.lib.dir>${project.basedir}/lib</zimbra.lib.dir>
     </properties>
