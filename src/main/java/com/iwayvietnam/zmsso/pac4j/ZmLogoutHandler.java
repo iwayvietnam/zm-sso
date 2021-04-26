@@ -39,6 +39,7 @@ import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
+import org.pac4j.core.profile.CommonProfile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,9 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         super.recordSession(context, key);
         getProfileManager(context).get(true).ifPresent(profile -> {
             try {
-                singleLogin(context, profile.getUsername(), key, profile.getClientName());
+                final CommonProfile commonProfile = (CommonProfile) profile;
+                final String accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getUsername());
+                singleLogin(context, accountName, key, commonProfile.getClientName());
             } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
             }
