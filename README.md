@@ -75,7 +75,7 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
 cd ~/projects/zimbra/zm-sso
 ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
-scp target/dependency/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
+scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
 ```
 * Restart mailbox to load the extension.
@@ -105,13 +105,24 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
-* Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint must be **/service/extension/sso/calback**. Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/calback`
+* Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint can be:
+    * **/service/extension/sso/callback** (using default client. specified in sso.defaultClient). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/callback`
+    * **/service/extension/saml/callback** (using only SAML client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/saml/callback`
+    * **/service/extension/cas/callback** (using only CAS client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/cas/callback`
+    * **/service/extension/oidc/callback** (using only OpenID Connect client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/oidc/callback`
 * Specify profile should be saved in session by setting the value for the **sso.saveInSession** key.
 * Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key.
 * Or execute following commands with the Zimbra user:
 ```shell script
-zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/calback
+# callback endpoint by using default client. Specified in sso.defaultClient
+zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/callback
+# or using only SAML client
+# zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/saml/callback
+# or using only CAS client
+# zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/cas/callback
+# or using only OpenID Connect client
+# zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/oidc/callback
 zmlocalconfig -e sso.saveInSession=true
 zmlocalconfig -e sso.multiProfile=true
 zmlocalconfig -e sso.renewSession=true
@@ -160,11 +171,11 @@ zmlocalconfig -e saml.serviceProviderEntityId=https://mail.zimbra-server.com/ser
 
 ### Configuration to login with a CAS server.
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
-* **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://casserver.herokuapp.com/cas/login`
+* **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.cas-server.com/cas/login`
 * **cas.protocol**: It defines the CAS protocol you want to use. Ex: `cas.protocol = CAS20`
 * Or execute following commands with the Zimbra user:
 ```shell script
-zmlocalconfig -e cas.loginUrl=https://casserver.herokuapp.com/cas/login
+zmlocalconfig -e cas.loginUrl=https://cas.cas-server.com/cas/login
 zmlocalconfig -e cas.protocol=CAS20
 ```
 
@@ -185,12 +196,28 @@ zmlocalconfig -e oidc.scope=openid email profile
 ### Replace login and logout urls
 * Execute following commands with the Zimbra user for domain configuration:
 ```shell script
+# SSO login by using default client. Specified in sso.defaultClient
 zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+# or SSO login by using only SAML client
+# zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
+# or SSO login by using only CAS client
+# zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/cas/login
+# or SSO login by using only OpenID Connect client
+# zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
+# Specified logout URL
 zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 * Execute following commands with the Zimbra user for global configuration:
 ```shell script
+# SSO login by using default client. Specified in sso.defaultClient
 zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+# or SSO login by using only SAML client
+# zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
+# or SSO login by using only CAS client
+# zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/cas/login
+# or SSO login by using only OpenID Connect client
+# zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
+# Specified logout URL
 zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 * Execute the following command with the Zimbra user to restart Zimbra server: `zmcontrol restart`
