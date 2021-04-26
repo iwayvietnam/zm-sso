@@ -39,6 +39,7 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
+import org.pac4j.core.profile.CommonProfile;
 
 import java.util.HashMap;
 
@@ -60,9 +61,9 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
     @Override
     public void recordSession(final WebContext context, final SessionStore sessionStore, final String key) {
         super.recordSession(context, sessionStore, key);
-        getProfileManager(context, sessionStore).getProfile().ifPresent(profile -> {
+        getProfileManager(context, sessionStore).getProfile(CommonProfile.class).ifPresent(profile -> {
             try {
-                singleLogin(context, profile.getUsername(), key, profile.getClientName());
+                singleLogin(context, profile.getEmail(), key, profile.getClientName());
             } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
             }
