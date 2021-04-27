@@ -64,7 +64,7 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         super.recordSession(context, sessionStore, key);
         getProfileManager(context, sessionStore).getProfile(CommonProfile.class).ifPresent(profile -> {
             try {
-                final String accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getUsername());
+                final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getUsername());
                 singleLogin(context, accountName, key, profile.getClientName());
             } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
