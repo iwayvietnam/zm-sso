@@ -137,9 +137,7 @@ public final class SettingsBuilder {
 
     private static void loadSettingsFromLocalConfig() {
         final var fields = Arrays.asList(SettingsConstants.class.getDeclaredFields());
-        Arrays.asList(PropertiesConstants.class.getDeclaredFields()).forEach(field -> {
-            fields.add(field);
-        });
+        Arrays.asList(PropertiesConstants.class.getDeclaredFields()).forEach(field -> fields.add(field));
         fields.forEach(field -> {
             try {
                 final var key = field.get(null).toString();
