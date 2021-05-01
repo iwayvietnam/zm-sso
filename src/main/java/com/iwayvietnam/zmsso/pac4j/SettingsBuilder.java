@@ -28,7 +28,6 @@ import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
-import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.oidc.client.OidcClient;
@@ -123,22 +122,34 @@ public final class SettingsBuilder {
     }
 
     private static void loadSettingsFromProperties() {
-        final var confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
-        final var prop = new Properties();
+        InputStream inputStream = null;
         try {
-            ZimbraLog.extensions.debug("Load config properties");
-            final InputStream inputStream = new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE);
-            prop.load(inputStream);
-            prop.stringPropertyNames().forEach(key -> properties.put(key, prop.getProperty(key)));
+            final var confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
+            ZimbraLog.extensions.debug(String.format("Load config properties: %s/%s", confDir, SettingsConstants.ZM_SSO_SETTINGS_FILE));
+            inputStream = new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE);
+            final var props = new Properties();
+            props.load(inputStream);
+            final var keys = props.stringPropertyNames();
+            for (final var key : keys) {
+                properties.put(key, props.getProperty(key));
+            }
         } catch (IOException e) {
             ZimbraLog.extensions.error(e);
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                ZimbraLog.extensions.error(e);
+            }
         }
     }
 
     private static void loadSettingsFromLocalConfig() {
-        final var fields = Arrays.asList(SettingsConstants.class.getDeclaredFields());
-        Arrays.asList(PropertiesConstants.class.getDeclaredFields()).forEach(field -> fields.add(field));
-        fields.forEach(field -> {
+        ZimbraLog.extensions.debug("Load settings from local config");
+        final var fields = SettingsConstants.class.getDeclaredFields();
+        for (final var field : fields) {
             try {
                 final var key = field.get(null).toString();
                 final var value = LC.get(key);
@@ -148,7 +159,7 @@ public final class SettingsBuilder {
             } catch (IllegalAccessException e) {
                 ZimbraLog.extensions.error(e);
             }
-        });
+        }
     }
 
     private static String loadStringProperty(final String key) {
