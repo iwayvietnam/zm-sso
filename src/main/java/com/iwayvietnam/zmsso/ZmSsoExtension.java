@@ -59,18 +59,30 @@ public class ZmSsoExtension implements ZimbraExtension {
         ExtensionDispatcherServlet.register(this, new CallbackHandler());
         ExtensionDispatcherServlet.register(this, new LogoutHandler());
 
-        ZimbraLog.extensions.info("Register sso saml handlers");
-        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
-        ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
-        ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
+        try {
+            ZimbraLog.extensions.info("Register sso saml handlers");
+            ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
+            ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
+            ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
 
-        ZimbraLog.extensions.info("Register sso cas handlers");
-        ExtensionDispatcherServlet.register(this, new CasLoginHandler());
-        ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
+        try {
+            ZimbraLog.extensions.info("Register sso cas handlers");
+            ExtensionDispatcherServlet.register(this, new CasLoginHandler());
+            ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
 
-        ZimbraLog.extensions.info("Register sso oidc handlers");
-        ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
-        ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
+        try {
+            ZimbraLog.extensions.info("Register sso oidc handlers");
+            ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
+            ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
 
         SoapServlet.addService("AdminServlet", dispatcher -> {
             ZimbraLog.extensions.info("Register admin soap services");

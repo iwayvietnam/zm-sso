@@ -33,9 +33,7 @@ import org.pac4j.core.config.Config;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -129,9 +127,11 @@ public final class SettingsBuilder {
             inputStream = new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE);
             final var props = new Properties();
             props.load(inputStream);
-            final var keys = props.stringPropertyNames();
-            for (final var key : keys) {
-                properties.put(key, props.getProperty(key));
+            for (final var key : props.stringPropertyNames()) {
+                final var value = props.getProperty(key);
+                if (!StringUtil.isNullOrEmpty(value)) {
+                    properties.put(key, value);
+                }
             }
         } catch (IOException e) {
             ZimbraLog.extensions.error(e);
