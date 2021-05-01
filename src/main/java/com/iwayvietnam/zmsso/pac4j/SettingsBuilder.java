@@ -32,6 +32,7 @@ import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
+import org.pac4j.saml.config.SAML2Configuration;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -91,32 +92,51 @@ public final class SettingsBuilder {
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
         final var logoutHandler = new ZmLogoutHandler();
-        final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
-        final var config = factory.build();
+//        final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
+//        final var config = factory.build();
+//        config.getClients().findClient(CasClient.class).ifPresent(client -> {
+//            ZimbraLog.extensions.debug("Config cas client");
+//            final var cfg = client.getConfiguration();
+//            cfg.setLogoutHandler(logoutHandler);
+//        });
+//        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+//            ZimbraLog.extensions.debug("Config oidc client");
+//            final var cfg = client.getConfiguration();
+//            cfg.setLogoutHandler(logoutHandler);
+//            cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
+//        });
+//        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+//            ZimbraLog.extensions.debug("Config saml client");
+//            client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
+//
+//            final var cfg = client.getConfiguration();
+//            cfg.setLogoutHandler(logoutHandler);
+//            cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
+//            cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_LOGOUT_REQUEST_SIGNED));
+//            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_METADATA_GENERATION));
+//            cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_KEYSTORE_GENERATION));
+//        });
+//        return config;
+        final var keystorePassword = loadStringProperty("saml.keystorePassword");
+        final var privateKeyPassword = loadStringProperty("saml.privateKeyPassword");
+        final var keystorePath = loadStringProperty("saml.keystorePath");
+        final var identityProviderMetadataPath = loadStringProperty("saml.identityProviderMetadataPath");
 
-        config.getClients().findClient(CasClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config cas client");
-            final var cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-        });
-        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config oidc client");
-            final var cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-            cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
-        });
-        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config saml client");
-            client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
+        final var cfg = new SAML2Configuration(keystorePath, keystorePassword, privateKeyPassword, identityProviderMetadataPath);
+        cfg.setLogoutHandler(logoutHandler);
+        cfg.setKeystoreAlias(loadStringProperty("saml.keystoreAlias"));
+        cfg.setServiceProviderEntityId(loadStringProperty("saml.serviceProviderEntityId"));
+        cfg.setAuthnRequestBindingType(loadStringProperty("saml.authnRequestBindingType"));
+        cfg.setMaximumAuthenticationLifetime(Integer.parseInt(loadStringProperty("saml.maximumAuthenticationLifetime")));
+        cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
+        cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_LOGOUT_REQUEST_SIGNED));
+        cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_METADATA_GENERATION));
+        cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_KEYSTORE_GENERATION));
+        final var saml2Client = new SAML2Client(cfg);
 
-            final var cfg = client.getConfiguration();
-            cfg.setLogoutHandler(logoutHandler);
-            cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
-            cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_LOGOUT_REQUEST_SIGNED));
-            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_METADATA_GENERATION));
-            cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_KEYSTORE_GENERATION));
-        });
-        return config;
+        List<Client> clients = new ArrayList();
+        clients.add(saml2Client);
+        return new Config(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), clients);
     }
 
     private static void loadSettingsFromProperties() {
