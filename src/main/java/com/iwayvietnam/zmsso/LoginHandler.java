@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
 import org.pac4j.core.util.Pac4jConstants;
 
