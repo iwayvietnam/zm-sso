@@ -23,7 +23,10 @@
 package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
+import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
+import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
@@ -41,8 +44,13 @@ import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Base Sso Handler
@@ -50,6 +58,7 @@ import java.net.URL;
  */
 public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected static final String SSO_CLIENT_NAME_SESSION_ATTR = "sso.ClientName";
+    protected static final Map<String, String> properties = new HashMap<>();
 
     protected final Config config;
 
@@ -60,6 +69,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     @Override
     public void init(ZimbraExtension ext) throws ServiceException {
         super.init(ext);
+        loadSettingsFromProperties();
+        loadSettingsFromLocalConfig();
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
@@ -107,5 +118,36 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private boolean isProtocolSecure(final String protocol) {
         return URLUtil.PROTO_HTTPS.equalsIgnoreCase(protocol);
+    }
+
+    private static void loadSettingsFromProperties() {
+        try {
+            final var confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
+            ZimbraLog.extensions.debug(String.format("Load config properties: %s/%s", confDir, SettingsConstants.ZM_SSO_SETTINGS_FILE));
+            final var props = new Properties();
+            props.load(new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE));
+            props.stringPropertyNames().forEach((key) -> {
+                properties.put(key, props.getProperty(key));
+            });
+        }
+        catch (IOException e) {
+            ZimbraLog.extensions.error(e);
+        }
+    }
+
+    private static void loadSettingsFromLocalConfig() {
+        ZimbraLog.extensions.debug("Load settings from local config");
+        final var fields = SettingsConstants.class.getDeclaredFields();
+        for (final var field : fields) {
+            try {
+                final var key = field.get(null).toString();
+                final var value = LC.get(key);
+                if (!StringUtil.isNullOrEmpty(value)) {
+                    properties.put(key, value);
+                }
+            } catch (IllegalAccessException e) {
+                ZimbraLog.extensions.error(e);
+            }
+        }
     }
 }
