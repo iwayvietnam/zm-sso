@@ -4,10 +4,10 @@ Zm SSO is the Zimbra Collaboration Open Source Edition extension for single sign
 Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserved.
 
 * Using framework: [pac4j](https://www.pac4j.org) is an easy and powerful security engine for Java to authenticate users,
-get their profiles and manage authorizations in order to secure web applications and web services.
+  get their profiles and manage authorizations in order to secure web applications and web services.
 * Supported authentication mechanisms: [SAML](http://www.pac4j.org/docs/clients/saml.html) -
-[CAS](http://www.pac4j.org/docs/clients/cas.html) -
-[OpenID Connect](http://www.pac4j.org/docs/clients/openid-connect.html)
+  [CAS](http://www.pac4j.org/docs/clients/cas.html) -
+  [OpenID Connect](http://www.pac4j.org/docs/clients/openid-connect.html)
 
 ## Building Java extension
 ### Requirement
@@ -106,11 +106,13 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * Specify callback endpoint by setting the value for the **sso.callbackUrl** key. The path of endpoint can be:
-    * **/service/extension/sso/callback** (using default client. specified in sso.defaultClient). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/callback`
-    * **/service/extension/saml/callback** (using only SAML client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/saml/callback`
-    * **/service/extension/cas/callback** (using only CAS client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/cas/callback`
-    * **/service/extension/oidc/callback** (using only OpenID Connect client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/oidc/callback`
-* Specify the session must be renewed by setting the value for the **sso.renewSession** key. Ex: `sso.renewSession = true`
+  * **/service/extension/sso/callback** (using default client. specified in sso.defaultClient). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/sso/callback`
+  * **/service/extension/saml/callback** (using only SAML client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/saml/callback`
+  * **/service/extension/cas/callback** (using only CAS client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/cas/callback`
+  * **/service/extension/oidc/callback** (using only OpenID Connect client). Ex: `sso.callbackUrl = https://mail.zimbra-server.com/service/extension/oidc/callback`
+* Specify profile should be saved in session by setting the value for the **sso.saveInSession** key.
+* Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
+* Specify the session must be renewed by setting the value for the **sso.renewSession** key.
 * Or execute following commands with the Zimbra user:
 ```shell script
 # callback endpoint by using default client. Specified in sso.defaultClient
@@ -121,6 +123,8 @@ zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extensio
 # zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/cas/callback
 # or using only OpenID Connect client
 # zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/oidc/callback
+zmlocalconfig -e sso.saveInSession=true
+zmlocalconfig -e sso.multiProfile=true
 zmlocalconfig -e sso.renewSession=true
 ```
 
@@ -144,7 +148,7 @@ zmlocalconfig -e sso.centralLogout=true
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
 ```shell script
-keytool -genkeypair -alias saml-key-demo -keypass saml-key-passwd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass saml-store-passwd -keyalg RSA -keysize 2048 -validity 3650
+keytool -genkeypair -alias samlSshKey -keypass keyPasswd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass storePasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
 **Config**:
@@ -158,20 +162,20 @@ keytool -genkeypair -alias saml-key-demo -keypass saml-key-passwd -keystore /opt
 * Or execute following commands with the Zimbra user:
 ```shell script
 zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/samlKeystore.jks
-zmlocalconfig -e saml.keystorePassword=saml-store-passwd
-zmlocalconfig -e saml.privateKeyPassword=saml-key-passwd
-zmlocalconfig -e saml.keystoreAlias=saml-key-demo
+zmlocalconfig -e saml.keystorePassword=storePasswd
+zmlocalconfig -e saml.privateKeyPassword=keyPasswd
+zmlocalconfig -e saml.keystoreAlias=samlSshKey
 zmlocalconfig -e saml.identityProviderMetadataPath=https://samltest.id/saml/idp
 zmlocalconfig -e saml.serviceProviderEntityId=https://mail.zimbra-server.com/service/extension/saml/metadata
 ```
 
 ### Configuration to login with a CAS server.
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
-* **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.sso-server.com/cas/login`
+* **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.cas-server.com/cas/login`
 * **cas.protocol**: It defines the CAS protocol you want to use. Ex: `cas.protocol = CAS20`
 * Or execute following commands with the Zimbra user:
 ```shell script
-zmlocalconfig -e cas.loginUrl=https://cas.sso-server.com/cas/login
+zmlocalconfig -e cas.loginUrl=https://cas.cas-server.com/cas/login
 zmlocalconfig -e cas.protocol=CAS20
 ```
 

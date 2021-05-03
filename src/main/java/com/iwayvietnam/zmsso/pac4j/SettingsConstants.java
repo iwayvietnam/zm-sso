@@ -31,6 +31,9 @@ public final class SettingsConstants {
 
     public static final String ZM_SSO_DEFAULT_CLIENT = "sso.defaultClient";
     public static final String ZM_SSO_CALLBACK_URL = "sso.callbackUrl";
+
+    public static final String ZM_SSO_SAVE_IN_SESSION = "sso.saveInSession";
+    public static final String ZM_SSO_MULTI_PROFILE = "sso.multiProfile";
     public static final String ZM_SSO_RENEW_SESSION = "sso.renewSession";
 
     public static final String ZM_SSO_LOCAL_LOGOUT = "sso.localLogout";

@@ -24,9 +24,7 @@ package com.iwayvietnam.zmsso.pac4j;
 
 import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.exception.http.RedirectionAction;
-import org.pac4j.core.redirect.RedirectionActionBuilder;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.redirect.SAML2RedirectionActionBuilder;
 
@@ -36,21 +34,26 @@ import java.util.Optional;
  * Redirection action builder for SAML 2.
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class ZmSAML2RedirectionActionBuilder extends SAML2RedirectionActionBuilder implements RedirectionActionBuilder {
+public class ZmSAML2RedirectionActionBuilder extends SAML2RedirectionActionBuilder {
 
-    public ZmSAML2RedirectionActionBuilder(final SAML2Client client) {
+    public ZmSAML2RedirectionActionBuilder(SAML2Client client) {
         super(client);
     }
 
     @Override
-    public Optional<RedirectionAction> getRedirectionAction(final WebContext wc, final SessionStore sessionStore) {
+    public Optional<RedirectionAction> getRedirectionAction(final WebContext wc) {
         final var thread = Thread.currentThread();
         final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());
 
-        ZimbraLog.extensions.debug("SAML getRedirectionAction");
-        final var action = super.getRedirectionAction(wc, sessionStore);
-        thread.setContextClassLoader(origCl);
+        Optional<RedirectionAction> action = Optional.empty();
+        try {
+            action = super.getRedirectionAction(wc);
+        } catch (final RedirectionAction e) {
+            ZimbraLog.extensions.error(e);
+        } finally {
+            thread.setContextClassLoader(origCl);
+        }
         return action;
     }
 }

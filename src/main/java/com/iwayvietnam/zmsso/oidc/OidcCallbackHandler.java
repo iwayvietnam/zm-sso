@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Oidc SSO Login Handler
+ * Oidc SSO Callback Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class OidcCallbackHandler extends OidcBaseHandler {

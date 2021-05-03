@@ -27,10 +27,10 @@ import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.cas.client.CasClient;
 
 /**
- * CAS SSO Base Handler
+ * CAS Base Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public abstract class CasBaseHandler extends BaseSsoHandler {
+public abstract class CasBaseHandler extends BaseSsoHandler  {
     protected final CasClient client;
 
     public CasBaseHandler() throws ExtensionException {

@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS sso_session (
     origin_client_ip VARCHAR(64),
     remote_ip        VARCHAR(64),
     user_agent       VARCHAR(255),
-    login_at         TIMESTAMP,
-    logout_at        TIMESTAMP,
+    login_at         INTEGER UNSIGNED,
+    logout_at        INTEGER UNSIGNED,
 
     PRIMARY KEY (sso_token, account_id),
     UNIQUE INDEX i_sso_token (sso_token),

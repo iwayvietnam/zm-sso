@@ -36,7 +36,6 @@ import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.core.profile.CommonProfile;
@@ -49,7 +48,7 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-public final class ZmLogoutHandler extends DefaultLogoutHandler implements LogoutHandler {
+public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
     private static final Provisioning prov = Provisioning.getInstance();
     private static final String X_ORIGINATING_IP_HEADER = LC.zimbra_http_originating_ip_header.value();
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -60,12 +59,13 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void recordSession(final WebContext context, final SessionStore sessionStore, final String key) {
-        super.recordSession(context, sessionStore, key);
-        getProfileManager(context, sessionStore).getProfile(CommonProfile.class).ifPresent(profile -> {
+    public void recordSession(final C context, final String key) {
+        super.recordSession(context, key);
+        getProfileManager(context).get(true).ifPresent(profile -> {
             try {
-                final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getUsername());
-                singleLogin(context, accountName, key, profile.getClientName());
+                final var commonProfile = (CommonProfile) profile;
+                final var accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getUsername());
+                singleLogin(context, accountName, key, commonProfile.getClientName());
             } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
             }
@@ -78,13 +78,13 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void destroySessionFront(final WebContext context, final SessionStore sessionStore, final String key) {
+    public void destroySessionFront(final C context, final String key) {
         try {
             clearAuthToken(context, key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionFront(context, sessionStore, key);
+        super.destroySessionFront(context, key);
     }
 
     /**
@@ -93,16 +93,16 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void destroySessionBack(final WebContext context, final SessionStore sessionStore, final String key) {
+    public void destroySessionBack(final C context, final String key) {
         try {
             singleLogout(key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionBack(context, sessionStore, key);
+        super.destroySessionBack(context, key);
     }
 
-    private void singleLogin(final WebContext context, final String accountName, final String key, final String client) throws ServiceException {
+    private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
         final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
@@ -115,26 +115,27 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
 
         final var account = prov.getAccountByName(accountName);
         prov.ssoAuthAccount(account, AuthContext.Protocol.soap, authCtxt);
-        final AuthToken authToken = AuthProvider.getAuthToken(account, false);
+        final var authToken = AuthProvider.getAuthToken(account, false);
         setAuthTokenCookie(context, authToken);
 
         DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
     }
 
-    private void setAuthTokenCookie(final WebContext context, final AuthToken authToken) throws ServiceException {
+    private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
         if (context instanceof JEEContext) {
-            final boolean isAdmin = AuthToken.isAnyAdmin(authToken);
+            final var isAdmin = AuthToken.isAnyAdmin(authToken);
             final var jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
             ZimbraLog.extensions.debug(String.format("Set auth token cookie for account id: %s", authToken.getAccountId()));
         }
     }
 
-    private void clearAuthToken(final WebContext context, final String key) throws ServiceException {
+    private void clearAuthToken(final C context, final String key) throws ServiceException {
         if (context instanceof JEEContext) {
             final var jeeCxt = (JEEContext) context;
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
-            if (authToken != null) {
+            final var optional = Optional.ofNullable(authToken);
+            if (optional.isPresent()) {
                 authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
                 try {
                     authToken.deRegister();

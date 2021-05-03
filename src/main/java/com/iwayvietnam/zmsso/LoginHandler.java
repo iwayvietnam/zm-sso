@@ -22,8 +22,9 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.core.client.Client;
 import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
@@ -38,6 +39,10 @@ import java.io.IOException;
 public class LoginHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/sso/login";
 
+    public LoginHandler() throws ExtensionException {
+        super();
+    }
+
     @Override
     public String getPath() {
         return HANDLER_PATH;
@@ -47,7 +52,7 @@ public class LoginHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             final var clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
-            final var client = config.getClients().findClient(clientName).orElse(SettingsBuilder.defaultClient());
+            final var client = config.getClients().findClient(clientName).orElse(defaultClient());
             doLogin(request, response, client);
         } catch (final ServiceException e) {
             throw new ServletException(e);

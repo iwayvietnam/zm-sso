@@ -41,5 +41,5 @@ su - zimbra -c "zmprov fc all"
 /opt/zimbra/conf/zm.sso.properties
 
 %changelog
-* Wed Sep 23 2020 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
+* Wed May 03 2021 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
 - Initial release 1.0.0 from upstream.
