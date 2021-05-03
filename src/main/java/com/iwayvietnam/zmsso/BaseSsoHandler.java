@@ -30,6 +30,7 @@ import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
+import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 import com.zimbra.cs.extension.ZimbraExtension;
 import com.zimbra.cs.httpclient.URLUtil;
@@ -73,17 +74,20 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected static final String SSO_CLIENT_NAME_SESSION_ATTR = "sso.ClientName";
     private static final Map<String, String> properties = new HashMap<>();
 
-    protected Config config;
+    protected final Config config;
 
-    @Override
-    public void init(ZimbraExtension ext) throws ServiceException {
-        super.init(ext);
+    public BaseSsoHandler() throws ExtensionException {
         loadSettingsFromProperties();
         loadSettingsFromLocalConfig();
         if (hasSamlClient()) {
             openSAMLInitialization();
         }
         config = buildConfig();
+    }
+
+    @Override
+    public void init(ZimbraExtension ext) throws ServiceException {
+        super.init(ext);
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
@@ -149,7 +153,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         return URLUtil.PROTO_HTTPS.equalsIgnoreCase(protocol);
     }
 
-    private static void openSAMLInitialization() throws ServiceException {
+    private static void openSAMLInitialization() throws ExtensionException {
         ZimbraLog.extensions.debug("OpenSAML Initialization and Configuration");
         XMLObjectProviderRegistry registry;
         synchronized (ConfigurationService.class) {
@@ -167,7 +171,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         try {
             InitializationService.initialize();
         } catch (final InitializationException e) {
-            throw ServiceException.FAILURE("Exception initializing OpenSAML", e);
+            throw new ExtensionException("Exception initializing OpenSAML", e);
         } finally {
             thread.setContextClassLoader(origCl);
         }
@@ -200,7 +204,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
             ConfigurationService.register(DecryptionParserPool.class, new DecryptionParserPool(parserPool));
         } catch (final ComponentInitializationException e) {
-            throw ServiceException.FAILURE("Exception initializing parserPool", e);
+            throw new ExtensionException("Exception initializing parserPool", e);
         }
     }
 
@@ -248,9 +252,19 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     private static void loadSettingsFromLocalConfig() {
-        final var fields = Arrays.asList(SettingsConstants.class.getDeclaredFields());
-        fields.addAll(Arrays.asList(PropertiesConstants.class.getDeclaredFields()));
-        fields.forEach(field -> {
+        ZimbraLog.extensions.debug("Load settings from local config");
+        Arrays.asList(SettingsConstants.class.getDeclaredFields()).forEach((field) -> {
+            try {
+                final var key = field.get(null).toString();
+                final var value = LC.get(key);
+                if (!StringUtil.isNullOrEmpty(value)) {
+                    properties.put(key, value);
+                }
+            } catch (IllegalAccessException e) {
+                ZimbraLog.extensions.error(e);
+            }
+        });
+        Arrays.asList(PropertiesConstants.class.getDeclaredFields()).forEach((field) -> {
             try {
                 final var key = field.get(null).toString();
                 final var value = LC.get(key);

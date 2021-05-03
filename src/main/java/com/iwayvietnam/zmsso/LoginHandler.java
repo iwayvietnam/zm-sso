@@ -23,6 +23,7 @@
 package com.iwayvietnam.zmsso;
 
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.util.Pac4jConstants;
 
@@ -37,6 +38,10 @@ import java.io.IOException;
  */
 public class LoginHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/sso/login";
+
+    public LoginHandler() throws ExtensionException {
+        super();
+    }
 
     @Override
     public String getPath() {
