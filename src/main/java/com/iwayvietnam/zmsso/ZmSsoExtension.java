@@ -53,19 +53,30 @@ public class ZmSsoExtension implements ZimbraExtension {
         ExtensionDispatcherServlet.register(this, new LoginHandler());
         ExtensionDispatcherServlet.register(this, new CallbackHandler());
         ExtensionDispatcherServlet.register(this, new LogoutHandler());
+        try {
+            ZimbraLog.extensions.info("Register saml sso handlers");
+            ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
+            ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
+            ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
 
-        ZimbraLog.extensions.info("Register saml sso handlers");
-        ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
-        ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
-        ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
+        try {
+            ZimbraLog.extensions.info("Register cas sso handlers");
+            ExtensionDispatcherServlet.register(this, new CasLoginHandler());
+            ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
 
-        ZimbraLog.extensions.info("Register cas sso handlers");
-        ExtensionDispatcherServlet.register(this, new CasLoginHandler());
-        ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
-
-        ZimbraLog.extensions.info("Register oidc sso handlers");
-        ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
-        ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
+        try {
+            ZimbraLog.extensions.info("Register oidc sso handlers");
+            ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
+            ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
+        } catch (ExtensionException e) {
+            ZimbraLog.extensions.error(e);
+        }
     }
 
     @Override

@@ -25,7 +25,6 @@ package com.iwayvietnam.zmsso;
 import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
-import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
@@ -37,7 +36,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * SSO Logout Handler
@@ -75,9 +73,8 @@ public class LogoutHandler extends BaseSsoHandler {
     }
 
     private void clearAuthToken(final HttpServletRequest request, final HttpServletResponse response) throws ServiceException, AuthTokenException {
-        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
-        final Optional<AuthToken> optional = Optional.ofNullable(authToken);
-        if (optional.isPresent()) {
+        final var authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
+        if (authToken != null) {
             authToken.encode(request, response, true);
             authToken.deRegister();
         }
