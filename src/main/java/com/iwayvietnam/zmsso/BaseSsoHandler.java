@@ -255,6 +255,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             }
         });
     }
+
     protected static String loadStringProperty(final String key) {
         return properties.get(key);
     }
