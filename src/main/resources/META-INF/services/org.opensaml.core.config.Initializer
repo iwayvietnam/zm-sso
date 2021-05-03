@@ -3,6 +3,8 @@ org.opensaml.core.xml.config.GlobalParserPoolInitializer
 org.opensaml.core.metrics.impl.MetricRegistryInitializer
 org.opensaml.saml.config.impl.XMLObjectProviderInitializer
 org.opensaml.saml.config.impl.SAMLConfigurationInitializer
+org.opensaml.security.config.impl.ClientTLSValidationConfiguratonInitializer
+org.opensaml.security.config.impl.HttpClientSecurityConfigurationInitalizer
 org.opensaml.soap.config.impl.XMLObjectProviderInitializer
 org.opensaml.xmlsec.config.GlobalAlgorithmRegistryInitializer
 org.opensaml.xmlsec.config.DecryptionParserPoolInitializer
