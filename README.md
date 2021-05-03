@@ -148,7 +148,7 @@ zmlocalconfig -e sso.centralLogout=true
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
 ```shell script
-keytool -genkeypair -alias saml-key-demo -keypass saml-key-passwd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass saml-store-passwd -keyalg RSA -keysize 2048 -validity 3650
+keytool -genkeypair -alias samlSshKey -keypass keyPasswd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass storePasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
 **Config**:
@@ -162,9 +162,9 @@ keytool -genkeypair -alias saml-key-demo -keypass saml-key-passwd -keystore /opt
 * Or execute following commands with the Zimbra user:
 ```shell script
 zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/samlKeystore.jks
-zmlocalconfig -e saml.keystorePassword=saml-store-passwd
-zmlocalconfig -e saml.privateKeyPassword=saml-key-passwd
-zmlocalconfig -e saml.keystoreAlias=saml-key-demo
+zmlocalconfig -e saml.keystorePassword=storePasswd
+zmlocalconfig -e saml.privateKeyPassword=keyPasswd
+zmlocalconfig -e saml.keystoreAlias=samlSshKey
 zmlocalconfig -e saml.identityProviderMetadataPath=https://samltest.id/saml/idp
 zmlocalconfig -e saml.serviceProviderEntityId=https://mail.zimbra-server.com/service/extension/saml/metadata
 ```
