@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
 import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
 import com.iwayvietnam.zmsso.pac4j.ZmLogoutHandler;
 import com.iwayvietnam.zmsso.pac4j.ZmSAML2RedirectionActionBuilder;
@@ -74,10 +73,6 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected Config config;
 
-//    public BaseSsoHandler() {
-//        config = SettingsBuilder.getConfig();
-//    }
-
     @Override
     public void init(ZimbraExtension ext) throws ServiceException {
         super.init(ext);
@@ -103,7 +98,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final var renewSession = SettingsBuilder.renewSession();
+        final var renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
         final var context = JEEContextFactory.INSTANCE.newContext(request, response);
         DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
     }
@@ -180,7 +175,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
         final Thread thread = Thread.currentThread();
         final ClassLoader origCl = thread.getContextClassLoader();
-        thread.setContextClassLoader(SettingsBuilder.class.getClassLoader());
+        thread.setContextClassLoader(BaseSsoHandler.class.getClassLoader());
 
         try {
             InitializationService.initialize();
@@ -260,17 +255,24 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             }
         });
     }
-    private static String loadStringProperty(final String key) {
+    protected static String loadStringProperty(final String key) {
         return properties.get(key);
     }
 
-    private static Boolean loadBooleanProperty(final String key) {
+    protected static Boolean loadBooleanProperty(final String key) {
         final var value = properties.get(key);
         if (!StringUtil.isNullOrEmpty(value)) {
             return Boolean.parseBoolean((value).trim());
         }
         return false;
     }
+
+    protected Client defaultClient() throws ServiceException {
+        return config.getClients()
+                .findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT))
+                .orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
+    }
+
     private static boolean hasSamlClient() {
         return !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
                 !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
