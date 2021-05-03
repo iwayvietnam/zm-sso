@@ -11,7 +11,7 @@ get their profiles and manage authorizations in order to secure web applications
 
 ## Building Java extension
 ### Requirement
-* JDK 8 or newer.
+* JDK 11 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
 * rpmbuild for rpm package build.
@@ -19,15 +19,15 @@ get their profiles and manage authorizations in order to secure web applications
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell script
-dnf -y install java-8-openjdk java-8-openjdk-devel maven ant git rpmbuild
+dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell script
-yum -y install java-8-openjdk java-8-openjdk-devel maven ant git rpmbuild
+yum -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
 ```
 * On Debian or Ubuntu
 ```shell script
-apt install -y openjdk-8-jdk maven ant git
+apt install -y openjdk-11-jdk maven ant git
 ```
 
 ### Clone code from git repository
