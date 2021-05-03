@@ -42,8 +42,8 @@ public class ZmSAML2RedirectionActionBuilder extends SAML2RedirectionActionBuild
 
     @Override
     public Optional<RedirectionAction> getRedirectionAction(final WebContext wc) {
-        final Thread thread = Thread.currentThread();
-        final ClassLoader origCl = thread.getContextClassLoader();
+        final var thread = Thread.currentThread();
+        final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());
 
         Optional<RedirectionAction> action = Optional.empty();

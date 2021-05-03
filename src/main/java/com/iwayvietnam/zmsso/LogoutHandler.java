@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsBuilder;
+import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
 import com.zimbra.cs.account.AuthToken;
@@ -58,12 +58,14 @@ public class LogoutHandler extends BaseSsoHandler {
         } catch (final ServiceException | AuthTokenException e) {
             throw new ServletException(e);
         }
-        final String defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final String logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
-        final boolean localLogout = SettingsBuilder.localLogout();
-        final boolean destroySession = SettingsBuilder.destroySession();
-        final boolean centralLogout = SettingsBuilder.centralLogout();
-        final JEEContext context = new JEEContext(request, response);
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final var logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
+
+        final var localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
+        final var destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
+        final var centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
+
+        final var context = new JEEContext(request, response);
         DefaultLogoutLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
     }
 
