@@ -27,66 +27,189 @@ import com.zimbra.common.util.ByteUtil;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.Account;
+import com.zimbra.cs.db.Db;
 import com.zimbra.cs.db.DbPool;
 import com.zimbra.cs.db.DbResults;
 import com.zimbra.cs.db.DbUtil;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Db Sso Session
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public final class DbSsoSession {
-    private static final String scriptFile = "sso_session.sql";
+    private static final String SCRIPT_FILE = "sso_session.sql";
+    private static final String SELECT_TABLE = "sso_session";
+    private static final String SELECT_COLUMNS = "sso_token, account_id, account_name, protocol, origin_client_ip, remote_ip, user_agent, login_at, logout_at";
+    private static final String INSERT_COLUMNS = "sso_token, account_id, account_name, protocol, origin_client_ip, remote_ip, user_agent, login_at";
+    private static final String KEY_COLUMN = "sso_token";
+    private static final String ORDER_COLUMN = "login_at";
+
+    private final String ssoToken;
+    private final String accountId;
+    private final String accountName;
+    private final String protocol;
+    private final String originClientIp;
+    private final String remoteIp;
+    private final String userAgent;
+    private final Timestamp loginAt;
+    private final Timestamp logoutAt;
+
+    DbSsoSession(String ssoToken, String accountId, String accountName, String protocol, String originClientIp, String remoteIp, String userAgent, Timestamp loginAt, Timestamp logoutAt) {
+        this.ssoToken = ssoToken;
+        this.accountId = accountId;
+        this.accountName = accountName;
+        this.protocol = protocol;
+        this.originClientIp = originClientIp;
+        this.remoteIp = remoteIp;
+        this.userAgent = userAgent;
+        this.loginAt = loginAt;
+        this.logoutAt = logoutAt;
+    }
+    static DbSsoSession constructSsoSession(DbResults rs) {
+        return new DbSsoSession(
+                rs.getString("sso_token"),
+                rs.getString("account_id"),
+                rs.getString("account_name"),
+                rs.getString("protocol"),
+                rs.getString("origin_client_ip"),
+                rs.getString("remote_ip"),
+                rs.getString("user_agent"),
+                (Timestamp) rs.getObject("login_at"),
+                (Timestamp) rs.getObject("logout_at")
+        );
+    }
+
+    public String getSsoToken() {
+        return ssoToken;
+    }
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getOriginClientIp() {
+        return originClientIp;
+    }
+
+    public String getRemoteIp() {
+        return remoteIp;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public Timestamp getLoginAt() {
+        return loginAt;
+    }
+
+    public Timestamp getLogoutAt() {
+        return logoutAt;
+    }
 
     public static void createSsoSessionTable() throws ServiceException {
         final var cl = DbSsoSession.class.getClassLoader();
-        try (final var inputStream = cl.getResourceAsStream(scriptFile)) {
+        final var inputStream = cl.getResourceAsStream(SCRIPT_FILE);
+        try {
             if (inputStream != null) {
                 ZimbraLog.dbconn.debug("Create sso session table");
                 final var script = new String(IOUtils.toByteArray(inputStream));
-                final DbPool.DbConnection conn = DbPool.getConnection();
-                DbUtil.executeScript(conn, new StringReader(script));
+                DbUtil.executeScript(DbPool.getConnection(), new StringReader(script));
             } else {
-                final var errorMsg = String.format("Script file '%s' not found in the classpath", scriptFile);
+                final var errorMsg = String.format("Script file '%s' not found in the classpath", SCRIPT_FILE);
+                ZimbraLog.extensions.error(errorMsg);
                 throw ServiceException.NOT_FOUND(errorMsg);
             }
         } catch (final IOException e) {
-            final var errorMsg = String.format("Script file '%s' cannot be loaded.", scriptFile);
+            ZimbraLog.extensions.error(e);
+            final var errorMsg = String.format("Script file '%s' cannot be loaded.", SCRIPT_FILE);
             throw ServiceException.FAILURE(errorMsg, e);
         }  catch (final SQLException e) {
+            ZimbraLog.extensions.error(e);
             throw ServiceException.FAILURE("Create sso session table", e);
         }
     }
 
     public static void ssoSessionLogin(final Account account, final String ssoToken, final String protocol, final String origIp, final String remoteIp, final String userAgent) throws ServiceException {
         final var hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        final var results = DbUtil.executeQuery("SELECT account_id FROM sso_session WHERE sso_token = ?", hashedToken);
+        final var results = DbUtil.executeQuery(String.format("SELECT %s FROM %s WHERE %s = ?", KEY_COLUMN, SELECT_TABLE, KEY_COLUMN), hashedToken);
         if (!results.next() && !StringUtil.isNullOrEmpty(hashedToken)) {
             ZimbraLog.dbconn.debug(String.format("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken));
-            final var sql = "INSERT INTO sso_session (sso_token, account_id, account_name, protocol, origin_client_ip, remote_ip, user_agent, login_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            final var loginAt = (int) (System.currentTimeMillis() / 1000L);
-            DbUtil.executeUpdate(sql, hashedToken, account.getId(), account.getName(), protocol, origIp, remoteIp, userAgent, loginAt);
+            final var sql = String.format("INSERT INTO %s (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SELECT_TABLE, INSERT_COLUMNS);
+            final var loginAt = new Timestamp(System.currentTimeMillis());
+            DbUtil.executeUpdate(sql,
+                    hashedToken,
+                    account.getId(),
+                    account.getName(),
+                    protocol,
+                    origIp,
+                    remoteIp,
+                    userAgent,
+                    loginAt
+            );
         }
     }
 
     public static String ssoSessionLogout(final String ssoToken) throws ServiceException {
         final var hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
-        final var results = DbUtil.executeQuery("SELECT account_id, logout_at FROM sso_session WHERE sso_token = ?", hashedToken);
-        if (results.next()) {
-            if (results.isNull("logout_at")) {
-                ZimbraLog.dbconn.debug(String.format("Update sso session logout with hashed token %s", hashedToken));
-                final var sql = "UPDATE sso_session SET logout_at = ? WHERE sso_token = ?";
-                final var logoutAt = (int) (System.currentTimeMillis() / 1000L);
-                DbUtil.executeUpdate(sql, logoutAt, hashedToken);
-                return results.getString("account_id");
-            }
+        final var results = DbUtil.executeQuery(String.format("SELECT %s FROM %s WHERE %s = ?", SELECT_COLUMNS, SELECT_TABLE, KEY_COLUMN), hashedToken);
+        if (results.next() && results.isNull("logout_at")) {
+            ZimbraLog.dbconn.debug(String.format("Update sso session logout with hashed token %s", hashedToken));
+            final var sql = String.format("UPDATE %s SET logout_at = ? WHERE %s = ?", SELECT_TABLE, KEY_COLUMN);
+            final var logoutAt = new Timestamp(System.currentTimeMillis());
+            DbUtil.executeUpdate(sql, logoutAt, hashedToken);
+            return results.getString("account_id");
         }
         return null;
+    }
+
+    public static List<DbSsoSession> GetAllSsoSessions(final Integer offset, final Integer limit) throws ServiceException {
+        final var sessions = new ArrayList<DbSsoSession>();
+        final var joinQuery = new StringBuilder(String.format("SELECT %s AS ref_key FROM %s ORDER BY %s DESC", KEY_COLUMN, SELECT_TABLE, ORDER_COLUMN));
+        if (Db.supports(Db.Capability.LIMIT_CLAUSE) && limit != null && limit > 0) {
+            if (offset != null && offset > 0) {
+                joinQuery.append(" ").append(Db.getInstance().limit(offset, limit));
+            }
+            else {
+                joinQuery.append(" ").append(Db.getInstance().limit(limit));
+            }
+        }
+        final var query = String.format(
+                "SELECT %s FROM %s INNER JOIN (%s) AS joinQuery ON joinQuery.ref_key = %s.%s",
+                SELECT_COLUMNS,
+                SELECT_TABLE,
+                joinQuery,
+                SELECT_TABLE,
+                KEY_COLUMN
+        );
+        final var rs = DbUtil.executeQuery(query);
+        while (rs.next()) {
+            sessions.add(constructSsoSession(rs));
+        }
+        return sessions;
+    }
+
+    public static Integer CountAllSsoSessions() throws ServiceException {
+        final var rs = DbUtil.executeQuery(String.format("SELECT COUNT(*) FROM %s", SELECT_TABLE));
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
     }
 }

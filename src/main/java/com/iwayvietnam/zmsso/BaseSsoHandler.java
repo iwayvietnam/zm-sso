@@ -48,12 +48,10 @@ import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.context.WebContext;
+import org.pac4j.core.context.JEEContextFactory;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
-import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
@@ -91,11 +89,11 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
-        final AuthToken authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
+        final var authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLoggedIn(authToken)) {
             ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
-            final var context = new JEEContext(request, response);
+            final var context = JEEContextFactory.INSTANCE.newContext(request, response);
             JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context).get(), context);
         } else {
             redirectByAuthToken(request, response, authToken);
@@ -107,7 +105,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
         final var multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
         final var renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
-        final var context = new JEEContext(request, response);
+        final var context = JEEContextFactory.INSTANCE.newContext(request, response);
         DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
     }
 
@@ -128,8 +126,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     private boolean isLoggedIn(final AuthToken authToken) {
-        final var optional = Optional.ofNullable(authToken);
-        return optional.isPresent() && !authToken.isExpired() && authToken.isRegistered();
+        return Optional.ofNullable(authToken).isPresent() && !authToken.isExpired() && authToken.isRegistered();
     }
 
     private void redirectByAuthToken(final HttpServletRequest request, final HttpServletResponse response, final AuthToken authToken) throws IOException, ServiceException {
@@ -178,7 +175,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
         try {
             ZimbraLog.extensions.debug("Initializing parserPool");
-            final BasicParserPool parserPool = new BasicParserPool();
+            final var parserPool = new BasicParserPool();
             parserPool.setMaxPoolSize(100);
             parserPool.setCoalescing(true);
             parserPool.setIgnoreComments(true);
@@ -187,10 +184,10 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             parserPool.setXincludeAware(false);
             parserPool.setIgnoreElementContentWhitespace(true);
 
-            final Map<String, Object> builderAttributes = new HashMap<>();
+            final var builderAttributes = new HashMap<String, Object>();
             parserPool.setBuilderAttributes(builderAttributes);
 
-            final Map<String, Boolean> features = new HashMap<>();
+            final var features = new HashMap<String, Boolean>();
             features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
             features.put("http://apache.org/xml/features/dom/defer-node-expansion", Boolean.FALSE);
             features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
@@ -210,9 +207,9 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
-        final LogoutHandler<WebContext> logoutHandler = new ZmLogoutHandler<>();
-        final PropertiesConfigFactory factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
-        final Config config = factory.build();
+        final var logoutHandler = new ZmLogoutHandler();
+        final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
+        final var config = factory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
             ZimbraLog.extensions.debug("Config cas client");
