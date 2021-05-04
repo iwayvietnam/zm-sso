@@ -24,7 +24,6 @@ package com.iwayvietnam.zmsso;
 
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.core.client.Client;
 import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
