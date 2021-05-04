@@ -148,12 +148,12 @@ zmlocalconfig -e sso.centralLogout=true
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
 ```shell script
-keytool -genkeypair -alias samlSshKey -keypass keyPasswd -keystore /opt/zimbra/conf/samlKeystore.jks -storepass storePasswd -keyalg RSA -keysize 2048 -validity 3650
+keytool -genkeypair -alias samlSshKey -keypass keyPasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass storePasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
-* **saml.keystorePath**: It defines the keystore resource location. It is the value of the -keystore option for the keystore generation with prefix **file:**. Ex: `saml.keystorePath = file:/opt/zimbra/conf/samlKeystore.jks`
+* **saml.keystorePath**: It defines the keystore resource location. It is the value of the -keystore option for the keystore generation with prefix **file:**. Ex: `saml.keystorePath = file:/opt/zimbra/conf/saml/keystore.jks`
 * **saml.keystorePassword**: It defines keystore password. It is the value of the -storepass option for the keystore generation.
 * **saml.privateKeyPassword**: It defines key password. It is the value of the -keypass option for the keystore generation.
 * **saml.keystoreAlias**: It defines keystore alias. It is the value of the -alias option for the keystore generation.
@@ -161,7 +161,7 @@ keytool -genkeypair -alias samlSshKey -keypass keyPasswd -keystore /opt/zimbra/c
 * **saml.serviceProviderEntityId**: It defines the entity ID of your application (the Service Provider). Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
 * Or execute following commands with the Zimbra user:
 ```shell script
-zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/samlKeystore.jks
+zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/saml/keystore.jks
 zmlocalconfig -e saml.keystorePassword=storePasswd
 zmlocalconfig -e saml.privateKeyPassword=keyPasswd
 zmlocalconfig -e saml.keystoreAlias=samlSshKey
