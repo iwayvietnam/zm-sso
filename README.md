@@ -222,6 +222,18 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 ```
 * Execute the following command with the Zimbra user to restart Zimbra server: `zmcontrol restart`
 
+### Import untrusted ssl certificate to the cacerts file
+This is primarily for allowance of untrusted ssl certificates in external data sources.
+* Export untrusted ssl certificate to the file:
+~~~shell script
+openssl s_client -servername remote.server.net -connect remote.server.net:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+~~~
+* Execute following commands with the Zimbra user:
+~~~shell script
+zmcertmgr addcacert /path/to/cert.pem
+zmmailboxdctl restart
+~~~
+
 Licensing
 =========
 Zm SSO is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.
