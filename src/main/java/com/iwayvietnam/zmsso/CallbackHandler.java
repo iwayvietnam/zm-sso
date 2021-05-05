@@ -53,7 +53,7 @@ public class CallbackHandler extends BaseSsoHandler {
         try {
             final var session = request.getSession();
             final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
-            final var client = config.getClients().findClient(clientName).orElse(defaultClient());
+            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
             doCallback(request, response, client);
         } catch (final ServiceException e) {
             throw new ServletException(e);

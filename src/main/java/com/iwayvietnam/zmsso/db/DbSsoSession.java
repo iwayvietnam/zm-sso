@@ -73,6 +73,7 @@ public final class DbSsoSession {
         this.loginAt = loginAt;
         this.logoutAt = logoutAt;
     }
+
     static DbSsoSession constructSsoSession(DbResults rs) {
         return new DbSsoSession(
                 rs.getString("sso_token"),
