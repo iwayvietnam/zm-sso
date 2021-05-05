@@ -75,10 +75,10 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final var builder = ConfigBuilder.getInstance();
-        final var saveInSession = builder.getSaveInSession();
-        final var multiProfile = builder.getMultiProfile();
-        final var renewSession = builder.getRenewSession();
+        final var saveInSession = configBuilder.getSaveInSession();
+        final var multiProfile = configBuilder.getMultiProfile();
+        final var renewSession = configBuilder.getRenewSession();
+        ZimbraLog.extensions.debug(String.format("SSO callback with: %s", client.getName()));
         DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
     }
 

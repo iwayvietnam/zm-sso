@@ -25,7 +25,6 @@ package com.iwayvietnam.zmsso;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
 import com.zimbra.cs.account.AuthTokenException;
-import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultLogoutLogic;
@@ -43,10 +42,6 @@ import java.io.IOException;
  */
 public class LogoutHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/sso/logout";
-
-    public LogoutHandler() throws ExtensionException {
-        super();
-    }
 
     @Override
     public String getPath() {
