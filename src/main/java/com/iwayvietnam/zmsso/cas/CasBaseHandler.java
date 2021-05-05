@@ -40,7 +40,7 @@ public abstract class CasBaseHandler extends BaseSsoHandler  {
         client = config.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
         final var callbackUrl = loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL);
         if (!StringUtil.isNullOrEmpty(callbackUrl)) {
-            client.setCallbackUrl(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL));
+            client.setCallbackUrl(callbackUrl);
         }
     }
 }

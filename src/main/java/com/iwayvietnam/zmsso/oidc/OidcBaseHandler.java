@@ -40,7 +40,7 @@ public abstract class OidcBaseHandler extends BaseSsoHandler {
         client = config.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No oidc client found"));
         final var callbackUrl = loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL);
         if (!StringUtil.isNullOrEmpty(callbackUrl)) {
-            client.setCallbackUrl(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL));
+            client.setCallbackUrl(callbackUrl);
         }
     }
 }

@@ -40,7 +40,7 @@ public abstract class SamlBaseHandler extends BaseSsoHandler {
         client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No saml client found"));
         final var callbackUrl = loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL);
         if (!StringUtil.isNullOrEmpty(callbackUrl)) {
-            client.setCallbackUrl(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL));
+            client.setCallbackUrl(callbackUrl);
         }
     }
 }
