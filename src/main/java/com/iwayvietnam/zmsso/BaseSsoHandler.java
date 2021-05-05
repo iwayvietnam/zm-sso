@@ -27,7 +27,6 @@ import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
-import com.zimbra.cs.extension.ZimbraExtension;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
@@ -53,11 +52,6 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     public BaseSsoHandler() {
         configBuilder = ConfigBuilder.getInstance();
-    }
-
-    @Override
-    public void init(ZimbraExtension ext) throws ServiceException {
-        super.init(ext);
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
