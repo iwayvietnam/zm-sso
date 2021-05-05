@@ -23,6 +23,8 @@
 package com.iwayvietnam.zmsso.saml;
 
 import com.iwayvietnam.zmsso.BaseSsoHandler;
+import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
+import com.zimbra.common.util.StringUtil;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.saml.client.SAML2Client;
 
@@ -36,5 +38,9 @@ public abstract class SamlBaseHandler extends BaseSsoHandler {
     public SamlBaseHandler() throws ExtensionException {
         super();
         client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No saml client found"));
+        final var callbackUrl = loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL);
+        if (!StringUtil.isNullOrEmpty(callbackUrl)) {
+            client.setCallbackUrl(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL));
+        }
     }
 }
