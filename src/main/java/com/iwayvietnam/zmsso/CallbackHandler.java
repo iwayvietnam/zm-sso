@@ -23,7 +23,6 @@
 package com.iwayvietnam.zmsso;
 
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.ServletException;
@@ -39,10 +38,6 @@ import java.util.Optional;
 public class CallbackHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/sso/callback";
 
-    public CallbackHandler() throws ExtensionException {
-        super();
-    }
-
     @Override
     public String getPath() {
         return HANDLER_PATH;
@@ -53,7 +48,7 @@ public class CallbackHandler extends BaseSsoHandler {
         try {
             final var session = request.getSession();
             final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
-            final var client = config.getClients().findClient(clientName).orElse(defaultClient());
+            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
             doCallback(request, response, client);
         } catch (final ServiceException e) {
             throw new ServletException(e);
