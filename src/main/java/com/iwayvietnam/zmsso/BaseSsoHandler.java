@@ -28,7 +28,6 @@ import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 import com.zimbra.cs.extension.ZimbraExtension;
-import com.zimbra.cs.httpclient.URLUtil;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
@@ -41,7 +40,6 @@ import org.pac4j.core.util.Pac4jConstants;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -63,13 +61,14 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
-        ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
         final var authToken = AuthUtil.getAuthTokenFromHttpReq(request, false);
         if (!isLoggedIn(authToken)) {
+            ZimbraLog.extensions.debug(String.format("SSO login with: %s", client.getName()));
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context).get(), context);
         } else {
+            ZimbraLog.extensions.debug(String.format("Redirect by auth token: %s", authToken.toString()));
             redirectByAuthToken(request, response, authToken);
         }
     }
@@ -91,20 +90,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var isAdmin = AuthToken.isAnyAdmin(authToken);
         final var server = authToken.getAccount().getServer();
         final var redirectUrl = AuthUtil.getRedirectURL(request, server, isAdmin, true) + AuthUtil.IGNORE_LOGIN_URL;
-
-        final var url = new URL(redirectUrl);
-        final var isRedirectProtocolSecure = isProtocolSecure(url.getProtocol());
-        final var secureCookie = isProtocolSecure(request.getScheme());
-
-        if (secureCookie && !isRedirectProtocolSecure) {
-            throw ServiceException.INVALID_REQUEST(String.format("Cannot redirect to non-secure protocol: %s", redirectUrl), null);
-        }
-
-        ZimbraLog.extensions.debug(String.format("SSO login - redirecting (with auth token) to: %s", redirectUrl));
+        ZimbraLog.extensions.debug(String.format("Redirecting (with auth token) to url: %s", redirectUrl));
         response.sendRedirect(redirectUrl);
-    }
-
-    private boolean isProtocolSecure(final String protocol) {
-        return URLUtil.PROTO_HTTPS.equalsIgnoreCase(protocol);
     }
 }
