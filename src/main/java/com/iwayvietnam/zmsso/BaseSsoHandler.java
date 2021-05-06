@@ -73,7 +73,12 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var multiProfile = configBuilder.getMultiProfile();
         final var renewSession = configBuilder.getRenewSession();
         ZimbraLog.extensions.debug(String.format("SSO callback with: %s", client.getName()));
-        DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        try {
+            DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        }
+        catch (RuntimeException rte) {
+            ZimbraLog.extensions.error(rte);
+        }
     }
 
     private boolean isLoggedIn(final AuthToken authToken) {

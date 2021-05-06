@@ -222,17 +222,27 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 ```
 * Execute the following command with the Zimbra user to restart Zimbra server: `zmcontrol restart`
 
+
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
 * Export untrusted ssl certificate to the file:
 ~~~shell script
-openssl s_client -servername remote.server.net -connect remote.server.net:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+openssl s_client -servername idp.server.net -connect idp.server.net:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
 ~~~
 * Execute following commands with the Zimbra user:
 ~~~shell script
 zmcertmgr addcacert /path/to/cert.pem
+keytool -importcert -file /path/to/cert.pem -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -alias "Idp Entity ID"
 zmmailboxdctl restart
 ~~~
+**Note**: get `Idp Entity ID` from identity provider metadata
+
+### Add identity provider hostname to ignore CSRF referer check
+~~~shell script
+zmprov -l mcf zimbraCsrfAllowedRefererHosts idp.server.net
+zmmailboxdctl restart
+~~~
+A list of hosts like www.abc.com, www.xyz.com. These are used while doing CSRF referer check.
 
 Licensing
 =========
