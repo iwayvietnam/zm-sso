@@ -232,8 +232,10 @@ openssl s_client -servername idp.server.net -connect idp.server.net:443 </dev/nu
 * Execute following commands with the Zimbra user:
 ~~~shell script
 zmcertmgr addcacert /path/to/cert.pem
+keytool -importcert -file /path/to/cert.pem -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -alias "Idp Entity ID"
 zmmailboxdctl restart
 ~~~
+**Note**: get `Idp Entity ID` from identity provider metadata
 
 ### Add identity provider hostname to ignore CSRF referer check
 ~~~shell script

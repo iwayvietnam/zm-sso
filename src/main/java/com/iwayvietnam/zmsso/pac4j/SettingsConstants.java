@@ -47,6 +47,7 @@ public final class SettingsConstants {
     public static final String ZM_SAML_SP_LOGOUT_REQUEST_SIGNED = "saml.spLogoutRequestSigned";
     public static final String ZM_SAML_SP_METADATA_GENERATION = "saml.spMetadataGeneration";
     public static final String ZM_SAML_SP_KEYSTORE_GENERATION = "saml.spKeystoreGeneration";
+    public static final String ZM_SAML_SP_FORCE_AUTH = "saml.spForceAuth";
 
     public static final String ZM_OIDC_WITH_STATE = "oidc.withState";
 }

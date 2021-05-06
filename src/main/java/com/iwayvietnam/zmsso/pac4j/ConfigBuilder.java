@@ -179,6 +179,7 @@ public class ConfigBuilder {
             cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_LOGOUT_REQUEST_SIGNED));
             cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_METADATA_GENERATION));
             cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_KEYSTORE_GENERATION));
+            cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_SP_FORCE_AUTH));
         });
         return config;
     }
