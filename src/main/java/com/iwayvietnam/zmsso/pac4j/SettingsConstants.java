@@ -42,7 +42,6 @@ public final class SettingsConstants {
     public static final String ZM_SSO_LOCAL_LOGOUT = "sso.localLogout";
     public static final String ZM_SSO_DESTROY_SESSION = "sso.destroySession";
     public static final String ZM_SSO_CENTRAL_LOGOUT = "sso.centralLogout";
-    public static final String ZM_SSO_LOGOUT_RETURN_URL = "sso.logoutReturnUrl";
 
     public static final String ZM_SAML_AUTHN_REQUEST_SIGNED = "saml.authnRequestSigned";
     public static final String ZM_SAML_LOGOUT_REQUEST_SIGNED = "saml.logoutRequestSigned";
