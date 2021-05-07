@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * SSO Logout Handler
@@ -56,7 +57,7 @@ public class LogoutHandler extends BaseSsoHandler {
         } catch (final ServiceException | AuthTokenException e) {
             throw new ServletException(e);
         }
-        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final var returnUrl = Optional.ofNullable(configBuilder.getLogoutReturnUrl()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
         final var logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
 
         final var localLogout = configBuilder.getLocalLogout();
@@ -65,7 +66,7 @@ public class LogoutHandler extends BaseSsoHandler {
 
         try {
             configBuilder.clientInit();
-            DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
+            DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, returnUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
         }
         catch (RuntimeException rte) {
             ZimbraLog.extensions.error(rte);

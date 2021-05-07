@@ -60,11 +60,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void recordSession(final C context, final String key) {
+        ZimbraLog.extensions.debug("Associates a key with the current web session.");
         super.recordSession(context, key);
         getProfileManager(context).get(true).ifPresent(profile -> {
+            ZimbraLog.extensions.debug("Profile: {}", profile);
             try {
                 final var commonProfile = (CommonProfile) profile;
-                final var accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getUsername());
+                final var accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getId());
                 singleLogin(context, accountName, key, commonProfile.getClientName());
             } catch (final ServiceException e) {
                 ZimbraLog.extensions.error(e);
@@ -79,6 +81,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionFront(final C context, final String key) {
+        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout.");
         try {
             clearAuthToken(context, key);
         } catch (final ServiceException e) {
@@ -94,6 +97,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionBack(final C context, final String key) {
+        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout.");
         try {
             singleLogout(key);
         } catch (final ServiceException e) {

@@ -14,6 +14,7 @@ public class ZmSAML2LogoutActionBuilder extends SAML2LogoutActionBuilder {
     public ZmSAML2LogoutActionBuilder(SAML2Client client) {
         super(client);
     }
+
     @Override
     public Optional<RedirectionAction> getLogoutAction(WebContext context, UserProfile currentProfile, String targetUrl) {
         final var thread = Thread.currentThread();
