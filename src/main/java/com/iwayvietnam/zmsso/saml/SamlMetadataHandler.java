@@ -49,7 +49,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         ZimbraLog.extensions.debug(String.format("Generate saml metadata with: %s", client.getName()));
-        client.init();
+        configBuilder.clientInit();
         response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
         response.getWriter().flush();
         response.setStatus(HttpServletResponse.SC_OK);

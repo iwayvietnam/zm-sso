@@ -26,13 +26,6 @@ import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.xml.BasicParserPool;
-import org.opensaml.core.config.ConfigurationService;
-import org.opensaml.core.config.InitializationException;
-import org.opensaml.core.config.InitializationService;
-import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
-import org.opensaml.xmlsec.config.DecryptionParserPool;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.config.client.PropertiesConstants;
@@ -41,6 +34,7 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
+import org.pac4j.saml.util.DefaultConfigurationManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -71,6 +65,7 @@ public class ConfigBuilder {
     private final Boolean localLogout;
     private final Boolean destroySession;
     private final Boolean centralLogout;
+    private final String logoutReturnUrl;
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
@@ -91,6 +86,7 @@ public class ConfigBuilder {
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
         centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
+        logoutReturnUrl = loadStringProperty(SettingsConstants.ZM_SSO_LOGOUT_RETURN_URL);
     }
 
     public static ConfigBuilder getInstance() {
@@ -114,6 +110,18 @@ public class ConfigBuilder {
 
     public Client defaultClient() throws ServiceException {
         return config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
+    }
+
+    public void clientInit() {
+        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+            if (!client.isInitialized()) {
+                ZimbraLog.extensions.debug("Init saml client");
+                client.init();
+                client.setCredentialsExtractor(new ZmSAML2CredentialsExtractor(client));
+                client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
+                client.setLogoutActionBuilder(new ZmSAML2LogoutActionBuilder(client));
+            }
+        });
     }
 
     public String getCasCallbackUrl() {
@@ -152,6 +160,10 @@ public class ConfigBuilder {
         return centralLogout;
     }
 
+    public String getLogoutReturnUrl() {
+        return logoutReturnUrl;
+    }
+
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
         final var logoutHandler = new ZmLogoutHandler();
@@ -171,8 +183,6 @@ public class ConfigBuilder {
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.debug("Config saml client");
-            client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
-
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
@@ -189,56 +199,17 @@ public class ConfigBuilder {
 
     private static void openSAMLInitialization() {
         ZimbraLog.extensions.debug("OpenSAML Initialization and Configuration");
-        XMLObjectProviderRegistry registry;
-        synchronized (ConfigurationService.class) {
-            registry = ConfigurationService.get(XMLObjectProviderRegistry.class);
-            if (registry == null) {
-                registry = new XMLObjectProviderRegistry();
-                ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
-            }
-        }
 
         final var thread = Thread.currentThread();
         final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(ConfigBuilder.class.getClassLoader());
 
         try {
-            InitializationService.initialize();
-        } catch (final InitializationException e) {
-            ZimbraLog.extensions.error("Exception initializing OpenSAML", e);
+            new DefaultConfigurationManager().configure();
+        } catch (final RuntimeException e) {
+            ZimbraLog.extensions.error(e);
         } finally {
             thread.setContextClassLoader(origCl);
-        }
-
-        try {
-            ZimbraLog.extensions.debug("Initializing parserPool");
-            final var parserPool = new BasicParserPool();
-            parserPool.setMaxPoolSize(100);
-            parserPool.setCoalescing(true);
-            parserPool.setIgnoreComments(true);
-            parserPool.setNamespaceAware(true);
-            parserPool.setExpandEntityReferences(false);
-            parserPool.setXincludeAware(false);
-            parserPool.setIgnoreElementContentWhitespace(true);
-
-            final var builderAttributes = new HashMap<String, Object>();
-            parserPool.setBuilderAttributes(builderAttributes);
-
-            final var features = new HashMap<String, Boolean>();
-            features.put("http://apache.org/xml/features/disallow-doctype-decl", Boolean.TRUE);
-            features.put("http://apache.org/xml/features/dom/defer-node-expansion", Boolean.FALSE);
-            features.put("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
-            features.put("http://javax.xml.XMLConstants/feature/secure-processing", Boolean.TRUE);
-            features.put("http://xml.org/sax/features/external-general-entities", Boolean.FALSE);
-            features.put("http://xml.org/sax/features/external-parameter-entities", Boolean.FALSE);
-
-            parserPool.setBuilderFeatures(features);
-            parserPool.initialize();
-            registry.setParserPool(parserPool);
-
-            ConfigurationService.register(DecryptionParserPool.class, new DecryptionParserPool(parserPool));
-        } catch (final ComponentInitializationException e) {
-            ZimbraLog.extensions.error("Exception initializing parserPool", e);
         }
     }
 
