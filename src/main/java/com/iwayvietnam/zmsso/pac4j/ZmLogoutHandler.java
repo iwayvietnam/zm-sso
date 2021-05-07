@@ -40,6 +40,7 @@ import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.core.profile.CommonProfile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -143,20 +144,30 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
                 authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
                 try {
                     authToken.deRegister();
-                } catch (final AuthTokenException e) {
-                    throw ServiceException.FAILURE(e.getMessage(), e);
+                } catch (final AuthTokenException ate) {
+                    throw ServiceException.FAILURE(ate.getMessage(), ate);
                 }
             }
             ZimbraCookie.clearCookie(jeeCxt.getNativeResponse(), ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
             final var accountId = DbSsoSession.ssoSessionLogout(key);
-            ZimbraLog.extensions.debug(String.format("SSO session logout for account id: %s", accountId));
+            ZimbraLog.extensions.debug(String.format("Update sso session logout for account id: %s", accountId));
+            if (!StringUtil.isNullOrEmpty(accountId)) {
+                try {
+                    final var server = prov.getAccountById(accountId).getServer();
+                    final var redirectUrl = AuthUtil.getRedirectURL(jeeCxt.getNativeRequest(), server, false, true);
+                    ZimbraLog.extensions.debug(String.format("Redirecting to url: %s", redirectUrl));
+                    jeeCxt.getNativeResponse().sendRedirect(redirectUrl);
+                } catch (IOException ioe) {
+                    throw ServiceException.FAILURE(ioe.getMessage(), ioe);
+                }
+            }
         }
     }
 
     private void singleLogout(final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
-            ZimbraLog.extensions.debug(String.format("SSO single logout for account id: %s", accountId));
+            ZimbraLog.extensions.debug(String.format("Update sso single logout for account id: %s", accountId));
             final var account = prov.getAccountById(accountId);
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {

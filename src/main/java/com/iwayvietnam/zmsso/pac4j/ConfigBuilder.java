@@ -65,7 +65,6 @@ public class ConfigBuilder {
     private final Boolean localLogout;
     private final Boolean destroySession;
     private final Boolean centralLogout;
-    private final String logoutReturnUrl;
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
@@ -86,7 +85,6 @@ public class ConfigBuilder {
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
         centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
-        logoutReturnUrl = loadStringProperty(SettingsConstants.ZM_SSO_LOGOUT_RETURN_URL);
     }
 
     public static ConfigBuilder getInstance() {
@@ -158,10 +156,6 @@ public class ConfigBuilder {
 
     public Boolean getCentralLogout() {
         return centralLogout;
-    }
-
-    public String getLogoutReturnUrl() {
-        return logoutReturnUrl;
     }
 
     private static Config buildConfig() {
