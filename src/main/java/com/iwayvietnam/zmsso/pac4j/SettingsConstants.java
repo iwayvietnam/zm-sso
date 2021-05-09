@@ -49,10 +49,8 @@ public final class SettingsConstants {
     public static final String ZM_SAML_METADATA_GENERATION = "saml.metadataGeneration";
     public static final String ZM_SAML_KEYSTORE_GENERATION = "saml.keystoreGeneration";
     public static final String ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED = "saml.allSignatureValidationDisabled";
-
     public static final String ZM_SAML_WANTS_ASSERTIONS_SIGNED = "saml.wantsAssertionsSigned";
     public static final String ZM_SAML_WANTS_RESPONSES_SIGNED = "saml.wantsResponsesSigned";
-
     public static final String ZM_SAML_FORCE_AUTH = "saml.forceAuth";
 
     public static final String ZM_OIDC_WITH_STATE = "oidc.withState";

@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.pac4j.SettingsConstants;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
 import com.zimbra.cs.account.AuthTokenException;
@@ -36,7 +35,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * SSO Logout Handler
@@ -57,7 +55,7 @@ public class LogoutHandler extends BaseSsoHandler {
         } catch (final ServiceException | AuthTokenException e) {
             throw new ServletException(e);
         }
-        final var defaultUrl = Optional.ofNullable(configBuilder.getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final var logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
 
         final var localLogout = configBuilder.getLocalLogout();
