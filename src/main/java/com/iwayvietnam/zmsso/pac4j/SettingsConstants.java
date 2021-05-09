@@ -42,13 +42,13 @@ public final class SettingsConstants {
     public static final String ZM_SSO_LOCAL_LOGOUT = "sso.localLogout";
     public static final String ZM_SSO_DESTROY_SESSION = "sso.destroySession";
     public static final String ZM_SSO_CENTRAL_LOGOUT = "sso.centralLogout";
+    public static final String ZM_SSO_POST_LOGOUT_URL = "sso.postLogoutURL";
 
     public static final String ZM_SAML_AUTHN_REQUEST_SIGNED = "saml.authnRequestSigned";
     public static final String ZM_SAML_LOGOUT_REQUEST_SIGNED = "saml.logoutRequestSigned";
     public static final String ZM_SAML_METADATA_GENERATION = "saml.metadataGeneration";
     public static final String ZM_SAML_KEYSTORE_GENERATION = "saml.keystoreGeneration";
     public static final String ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED = "saml.allSignatureValidationDisabled";
-    public static final String ZM_SAML_POST_LOGOUT_URL = "saml.postLogoutURL";
 
     public static final String ZM_SAML_WANTS_ASSERTIONS_SIGNED = "saml.wantsAssertionsSigned";
     public static final String ZM_SAML_WANTS_RESPONSES_SIGNED = "saml.wantsResponsesSigned";
