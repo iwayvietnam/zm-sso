@@ -98,6 +98,9 @@ cd /opt/wso2is-5.11.0/
 * Check **Enable Attribute Profile** and **Include Attributes in the Response Always**
 * Click **Update** to update SAML service provider configuration
 
+#### Testing
+* Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/saml/login` from your web browser.
+* Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
 
 ### Single sign on with with with OpenID Connect protocol
 #### Config OpenID Connect service provider
@@ -118,3 +121,7 @@ cd /opt/wso2is-5.11.0/
 * Set **sso.id** to `OAuth Client Key`
 * Set **sso.secret** to `OAuth Client Secret`
 **Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
+
+#### Testing
+* Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/oidc/login` from your web browser.
+* Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
