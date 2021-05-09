@@ -59,7 +59,6 @@ public class LogoutHandler extends BaseSsoHandler {
             DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
         }
         catch (RuntimeException rte) {
-            ZimbraLog.extensions.error(rte);
             throw new ServletException(rte);
         }
     }
