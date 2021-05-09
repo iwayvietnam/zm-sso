@@ -18,27 +18,27 @@ get their profiles and manage authorizations in order to secure web applications
 
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
-```shell script
+```shell
 dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
 ```
 * On CentOS 7.x or Red Hat EL 7.x
-```shell script
+```shell
 yum -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
 ```
 * On Debian or Ubuntu
-```shell script
+```shell
 apt install -y openjdk-11-jdk maven ant git
 ```
 
 ### Clone code from git repository
-```shell script
+```shell
 mkdir -p ~/projects/zimbra
 cd ~/projects/zimbra
 git clone git@gitlab.com:iway/zm-sso.git
 ```
 
 ### Build jar file by using Maven
-```shell script
+```shell
 cd ~/projects/zimbra/zm-sso
 mvn clean package
 ```
@@ -49,7 +49,7 @@ Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-1.0.0-1.jar
 ```
 
 ### Build jar file by using Ant
-```shell script
+```shell
 cd ~/projects/zimbra/zm-sso
 ant jar
 ```
@@ -59,7 +59,7 @@ The output should be like this:
 ```
 
 ### Build rpm package
-```shell script
+```shell
 cd ~/projects/zimbra/zm-sso
 make rpmbuild
 ```
@@ -71,7 +71,7 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
 ## Installation
 ### Install jar extension
 * Copy jar extension to zimbra server
-```shell script
+```shell
 cd ~/projects/zimbra/zm-sso
 ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
@@ -79,12 +79,12 @@ scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
 ```
 * Restart mailbox to load the extension.
-```shell script
+```shell
 ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
 ```
 
 ### Install rpm package
-```shell script
+```shell
 ssh root@zimbra.server "mkdir -p /tmp/zimbra"
 scp ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm root@zimbra.server:/tmp/zimbra
 ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-1.0.0-1.el7.noarch.rpm"
@@ -114,7 +114,7 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 * Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key.
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
-```shell script
+```shell
 # callback endpoint by using default client. Specified in sso.defaultClient
 zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/callback
 # or using SAML client
@@ -138,16 +138,18 @@ To handle the logout, a logout endpoint is necessary to perform:
 * **sso.localLogout**: It indicates whether a local logout must be performed.
 * **sso.destroySession**: It defines whether we must destroy the web session during the local logout.
 * **sso.centralLogout**: It defines whether a central logout must be performed.
+* **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
-```shell script
+```shell
 zmlocalconfig -e sso.localLogout=true
 zmlocalconfig -e sso.destroySession=true
 zmlocalconfig -e sso.centralLogout=true
+zmlocalconfig -e sso.postLogoutURL=https://mail.zimbra-server.com/
 ```
 
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
-```shell script
+```shell
 keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
@@ -165,7 +167,7 @@ Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/exten
 * **saml.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page. 
 It is possible to customize default pac4j behavior using the postLogoutURL property of the SAML2Configuration.
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
-```shell script
+```shell
 zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/saml/keystore.jks
 zmlocalconfig -e saml.keystorePassword=samlpasswd
 zmlocalconfig -e saml.privateKeyPassword=samlpasswd
@@ -180,7 +182,7 @@ zmlocalconfig -e saml.postLogoutURL=https://mail.zimbra-server.com/
 * **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.cas-server.com/cas/login`
 * **cas.protocol**: It defines the CAS protocol you want to use. Ex: `cas.protocol = CAS20`
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
-```shell script
+```shell
 zmlocalconfig -e cas.loginUrl=https://cas.cas-server.com/cas/login
 zmlocalconfig -e cas.protocol=CAS20
 ```
@@ -192,7 +194,7 @@ zmlocalconfig -e cas.protocol=CAS20
 * **oidc.secret**: It defines the OpenID client secret.
 * **oidc.scope**: It defines the OpenID client scope.
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
-```shell script
+```shell
 zmlocalconfig -e oidc.discoveryUri=https://demo.c2id.com/.well-known/openid-configuration
 zmlocalconfig -e oidc.id=000123
 zmlocalconfig -e oidc.secret=rlC_8s3oBayCynAO_7UKt34hbEwiiTKx0l7zRcrFY3A
@@ -201,7 +203,7 @@ zmlocalconfig -e oidc.scope=openid email profile
 
 ### Replace login and logout urls
 * Execute following commands with the Zimbra user for domain configuration:
-```shell script
+```shell
 # SSO login by using default client. Specified in sso.defaultClient
 zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
 # or SSO login by using SAML client
@@ -214,7 +216,7 @@ zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/
 zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 * Execute following commands with the Zimbra user for global configuration:
-```shell script
+```shell
 # SSO login by using default client. Specified in sso.defaultClient
 zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
 # or SSO login by using SAML client
@@ -232,23 +234,27 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
 * Export untrusted ssl certificate to the file:
-~~~shell script
+~~~shell
 openssl s_client -servername idp.server.net -connect idp.server.net:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
 ~~~
 * Execute following commands with the Zimbra user:
-~~~shell script
+~~~shell
 zmcertmgr addcacert /path/to/cert.pem
-keytool -importcert -file /path/to/cert.pem -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -alias "Idp Entity ID"
 zmmailboxdctl restart
 ~~~
 **Note**: get `Idp Entity ID` from identity provider metadata
 
 ### Add identity provider hostname to ignore CSRF referer check
-~~~shell script
+~~~shell
 zmprov -l mcf zimbraCsrfAllowedRefererHosts idp.server.net
 zmmailboxdctl restart
 ~~~
 A list of hosts like www.abc.com, www.xyz.com. These are used while doing CSRF referer check.
+
+## Tutorials
+* [Single sign on with WSO2 Identity Server (WSO2 IS)](docs/wso2-is.md)
+* [Single sign on with Keyclock](docs/keyclocks.md)
+* [Single sign on with Apereo Central Authentication Service (CAS)](docs/cas.md)
 
 Licensing
 =========
