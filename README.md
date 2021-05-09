@@ -153,12 +153,17 @@ keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/con
 
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
-* **saml.keystorePath**: It defines the keystore resource location. It is the value of the -keystore option for the keystore generation with prefix **file:**. Ex: `saml.keystorePath = file:/opt/zimbra/conf/saml/keystore.jks`
+* **saml.keystorePath**: It defines the keystore resource location. It is the value of the -keystore option for the keystore generation with prefix **file:**.
+Ex: `saml.keystorePath = file:/opt/zimbra/conf/saml/keystore.jks`
 * **saml.keystorePassword**: It defines keystore password. It is the value of the -storepass option for the keystore generation.
 * **saml.privateKeyPassword**: It defines key password. It is the value of the -keypass option for the keystore generation.
 * **saml.keystoreAlias**: It defines keystore alias. It is the value of the -alias option for the keystore generation.
-* **saml.identityProviderMetadataPath**: It defines the resource location should point to your IdP metadata. Ex: `saml.identityProviderMetadataPath = https://samltest.id/saml/idp`
-* **saml.serviceProviderEntityId**: It defines the entity ID of your application (the Service Provider). Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
+* **saml.identityProviderMetadataPath**: It defines the resource location should point to your IdP metadata.
+Ex: `saml.identityProviderMetadataPath = https://samltest.id/saml/idp`
+* **saml.serviceProviderEntityId**: It defines the entity ID of your application (the Service Provider).
+Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
+* **saml.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page. 
+It is possible to customize default pac4j behavior using the postLogoutURL property of the SAML2Configuration.
 * Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
 ```shell script
 zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/saml/keystore.jks
@@ -167,6 +172,7 @@ zmlocalconfig -e saml.privateKeyPassword=samlpasswd
 zmlocalconfig -e saml.keystoreAlias=samlkey
 zmlocalconfig -e saml.identityProviderMetadataPath=https://samltest.id/saml/idp
 zmlocalconfig -e saml.serviceProviderEntityId=https://mail.zimbra-server.com/service/extension/saml/metadata
+zmlocalconfig -e saml.postLogoutURL=https://mail.zimbra-server.com/
 ```
 
 ### Configuration to login with a CAS server.

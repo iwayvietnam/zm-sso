@@ -40,7 +40,6 @@ import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 import org.pac4j.core.profile.CommonProfile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -83,12 +82,12 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     @Override
     public void destroySessionFront(final C context, final String key) {
         ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout.");
+        super.destroySessionFront(context, key);
         try {
             clearAuthToken(context, key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionFront(context, key);
     }
 
     /**
@@ -98,13 +97,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionBack(final C context, final String key) {
+        super.destroySessionBack(context, key);
         ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout.");
         try {
             singleLogout(key);
         } catch (final ServiceException e) {
             ZimbraLog.extensions.error(e);
         }
-        super.destroySessionBack(context, key);
     }
 
     private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
@@ -151,16 +150,6 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
             ZimbraCookie.clearCookie(jeeCxt.getNativeResponse(), ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
             final var accountId = DbSsoSession.ssoSessionLogout(key);
             ZimbraLog.extensions.debug(String.format("Update sso session logout for account id: %s", accountId));
-            if (!StringUtil.isNullOrEmpty(accountId)) {
-                try {
-                    final var server = prov.getAccountById(accountId).getServer();
-                    final var redirectUrl = AuthUtil.getRedirectURL(jeeCxt.getNativeRequest(), server, false, true);
-                    ZimbraLog.extensions.debug(String.format("Redirecting to url: %s", redirectUrl));
-                    jeeCxt.getNativeResponse().sendRedirect(redirectUrl);
-                } catch (IOException ioe) {
-                    throw ServiceException.FAILURE(ioe.getMessage(), ioe);
-                }
-            }
         }
     }
 

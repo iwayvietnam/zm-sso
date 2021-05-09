@@ -48,6 +48,7 @@ public final class SettingsConstants {
     public static final String ZM_SAML_METADATA_GENERATION = "saml.metadataGeneration";
     public static final String ZM_SAML_KEYSTORE_GENERATION = "saml.keystoreGeneration";
     public static final String ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED = "saml.allSignatureValidationDisabled";
+    public static final String ZM_SAML_POST_LOGOUT_URL = "saml.postLogoutURL";
 
     public static final String ZM_SAML_WANTS_ASSERTIONS_SIGNED = "saml.wantsAssertionsSigned";
     public static final String ZM_SAML_WANTS_RESPONSES_SIGNED = "saml.wantsResponsesSigned";
