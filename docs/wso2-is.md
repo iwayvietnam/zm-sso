@@ -105,6 +105,8 @@ cd /opt/wso2is-5.11.0/
 * On the Main menu, click **Identity > Service Providers > List**
 * Click on **Edit** link that corresponds to the service provider for Zimbra Mail Server
 * On **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration**, click **Configure**
+* Fill **Callback Url** with `regexp=https://your-zimbra-hostname(.*)`
+* Check **Enable OIDC Backchannel Logout** and fill **Backchannel Logout Url** with `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`
 
 #### Config Zimbra SSO
 * Using a text editor to open **/opt/zimbra/conf/zm.sso.properties** file.
@@ -112,4 +114,7 @@ cd /opt/wso2is-5.11.0/
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-
+* Set **sso.discoveryUri** to `https://your-id-server-hostname:9443/oauth2/oidcdiscovery/.well-known/openid-configuration`
+* Set **sso.id** to `OAuth Client Key`
+* Set **sso.secret** to `OAuth Client Secret`
+**Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
