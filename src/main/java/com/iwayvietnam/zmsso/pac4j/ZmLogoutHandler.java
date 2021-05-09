@@ -135,6 +135,8 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     }
 
     private void clearAuthToken(final C context, final String key) throws ServiceException {
+        final var accountId = DbSsoSession.ssoSessionLogout(key);
+        ZimbraLog.extensions.debug(String.format("Update sso session logout for account id: %s", accountId));
         if (context instanceof JEEContext) {
             final var jeeCxt = (JEEContext) context;
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
@@ -148,8 +150,6 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
                 }
             }
             ZimbraCookie.clearCookie(jeeCxt.getNativeResponse(), ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
-            final var accountId = DbSsoSession.ssoSessionLogout(key);
-            ZimbraLog.extensions.debug(String.format("Update sso session logout for account id: %s", accountId));
         }
     }
 
