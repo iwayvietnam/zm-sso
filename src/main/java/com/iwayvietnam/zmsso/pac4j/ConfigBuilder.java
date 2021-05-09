@@ -32,6 +32,7 @@ import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.util.DefaultConfigurationManager;
@@ -39,10 +40,7 @@ import org.pac4j.saml.util.DefaultConfigurationManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Config builder
@@ -187,6 +185,9 @@ public class ConfigBuilder {
             cfg.setWantsResponsesSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_RESPONSES_SIGNED));
             cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
             cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
+
+            final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
+            cfg.setPostLogoutURL(postLogoutURL);
         });
         return config;
     }
