@@ -120,6 +120,14 @@ public class ConfigBuilder {
                 client.setLogoutActionBuilder(new ZmSAML2LogoutActionBuilder(client));
             }
         });
+
+        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+            if (!client.isInitialized()) {
+                ZimbraLog.extensions.debug("Init oidc client");
+                client.init();
+                client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
+            }
+        });
     }
 
     public String getCasCallbackUrl() {
