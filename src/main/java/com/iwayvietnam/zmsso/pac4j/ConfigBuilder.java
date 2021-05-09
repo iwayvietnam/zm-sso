@@ -63,6 +63,7 @@ public class ConfigBuilder {
     private final Boolean localLogout;
     private final Boolean destroySession;
     private final Boolean centralLogout;
+    private final String postLogoutURL;
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
@@ -83,6 +84,7 @@ public class ConfigBuilder {
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
         centralLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_CENTRAL_LOGOUT);
+        postLogoutURL = loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL);
     }
 
     public static ConfigBuilder getInstance() {
@@ -156,6 +158,10 @@ public class ConfigBuilder {
         return centralLogout;
     }
 
+    public String getPostLogoutURL() {
+        return postLogoutURL;
+    }
+
     private static Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
         final var logoutHandler = new ZmLogoutHandler();
@@ -186,7 +192,7 @@ public class ConfigBuilder {
             cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
             cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
 
-            final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
+            final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
             cfg.setPostLogoutURL(postLogoutURL);
         });
         return config;
