@@ -88,11 +88,11 @@ LAUNCH_JBOSS_IN_BACKGROUND=1
 ### Config Keycloak ssl certificate & hostname with Zimbra
 * Export untrusted ssl certificate to the file:
 ~~~shell
-openssl s_client -servername your-keyclock-server-hostname -connect your-keyclock-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+openssl s_client -servername your-keyclock-server-hostname -connect your-keyclock-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/keyclock.pem
 ~~~
 * Execute following commands under the `zimbra` user:
 ~~~shell
-zmcertmgr addcacert /path/to/cert.pem
+zmcertmgr addcacert /path/to/keyclock.pem
 zmprov -l mcf zimbraCsrfAllowedRefererHosts your-keyclock-server-hostname
 zmmailboxdctl restart
 ~~~

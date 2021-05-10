@@ -75,11 +75,11 @@ cd /opt/wso2is-5.11.0/
 ### Config WSO2 IS ssl certificate & hostname with Zimbra
 * Export untrusted ssl certificate to the file:
 ~~~shell
-openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/wso2-is.pem
 ~~~
 * Execute following commands under the `zimbra` user:
 ~~~shell
-zmcertmgr addcacert /path/to/cert.pem
+zmcertmgr addcacert /path/to/wso2-is.pem
 zmprov -l mcf zimbraCsrfAllowedRefererHosts your-id-server-hostname
 zmmailboxdctl restart
 ~~~
