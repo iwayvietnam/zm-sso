@@ -52,7 +52,6 @@ exposed_headers = []
 supports_credentials = true
 max_age = 3600
 tag_requests = false
-
 ```
 
 ### Running the Identity Server
@@ -74,6 +73,17 @@ cd /opt/wso2is-5.11.0/
 * On the Main menu, click **Identity > Service Providers > Add**
 * Enter **Service Provider Name** and click **Register** to add service provider
 
+### Import WSO2 IS ssl certificate to the cacerts file
+* Export untrusted ssl certificate to the file:
+~~~shell
+openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+~~~
+* Execute following commands under the `zimbra` user:
+~~~shell
+zmcertmgr addcacert /path/to/cert.pem
+zmmailboxdctl restart
+~~~
+
 ### Single sign on with with SAML protocol
 #### Config Zimbra SSO
 * Using a text editor to open **/opt/zimbra/conf/zm.sso.properties** file.
@@ -82,7 +92,7 @@ cd /opt/wso2is-5.11.0/
 * Set **saml.callbackUrl** to `https://your-zimbra-hostname/service/extension/saml/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
 * Set **saml.identityProviderMetadataPath** to `https://your-id-server-hostname:9443/identity/metadata/saml2/`
-* Restart mailbox
+* Restart mailbox unser `zimbra` user: `zmmailboxdctl restart`
 
 #### Config SAML service provider
 * Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
@@ -117,9 +127,10 @@ cd /opt/wso2is-5.11.0/
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **sso.discoveryUri** to `https://your-id-server-hostname:9443/oauth2/oidcdiscovery/.well-known/openid-configuration`
-* Set **sso.id** to `OAuth Client Key`
-* Set **sso.secret** to `OAuth Client Secret`
+* Set **oidc.discoveryUri** to `https://your-id-server-hostname:9443/oauth2/oidcdiscovery/.well-known/openid-configuration`
+* Set **oidc.id** to `OAuth Client Key`
+* Set **oidc.secret** to `OAuth Client Secret`
+* Restart mailbox unser `zimbra` user: `zmmailboxdctl restart`
 **Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
 
 #### Testing

@@ -230,7 +230,6 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 ```
 * Execute the following command with the Zimbra user to restart Zimbra server: `zmcontrol restart`
 
-
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
 * Export untrusted ssl certificate to the file:
@@ -242,7 +241,6 @@ openssl s_client -servername idp.server.net -connect idp.server.net:443 </dev/nu
 zmcertmgr addcacert /path/to/cert.pem
 zmmailboxdctl restart
 ~~~
-**Note**: get `Idp Entity ID` from identity provider metadata
 
 ### Add identity provider hostname to ignore CSRF referer check
 ~~~shell
