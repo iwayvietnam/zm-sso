@@ -113,6 +113,7 @@ zmmailboxdctl restart
 * On the Main menu, click **Configure > Clients**
 * Click **Create** button, click **Select file** to upload service provider metadata file (`metadata.xml`).
   Click **Save** to create new SAML client.
+* Click **Mappers** tab. Click **Add Builtin** button, select all `builtin`, click **Add selected** button.
 
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
