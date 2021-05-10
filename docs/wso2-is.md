@@ -85,7 +85,7 @@ zmprov -l mcf zimbraCsrfAllowedRefererHosts your-id-server-hostname
 zmmailboxdctl restart
 ~~~
 
-### Single sign on with with SAML protocol
+### Single sign on with SAML protocol
 #### Config Zimbra SSO
 * Using a text editor to open **/opt/zimbra/conf/zm.sso.properties** file.
 * Set **sso.defaultClient** to `SAML2Client`
@@ -113,7 +113,7 @@ zmmailboxdctl restart
 * Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/saml/login` from your web browser.
 * Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
 
-### Single sign on with with with OpenID Connect protocol
+### Single sign on with OpenID Connect protocol
 #### Config OpenID Connect service provider
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
 * On the Main menu, click **Identity > Service Providers > List**
