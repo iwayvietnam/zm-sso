@@ -93,7 +93,7 @@ zmmailboxdctl restart
 * Set **saml.callbackUrl** to `https://your-zimbra-hostname/service/extension/saml/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
 * Set **saml.identityProviderMetadataPath** to `https://your-id-server-hostname:9443/identity/metadata/saml2/`
-* Restart mailbox unser `zimbra` user: `zmmailboxdctl restart`
+* Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Config SAML service provider
 * Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
@@ -132,7 +132,7 @@ zmmailboxdctl restart
 * Set **oidc.discoveryUri** to `https://your-id-server-hostname:9443/oauth2/oidcdiscovery/.well-known/openid-configuration`
 * Set **oidc.id** to `OAuth Client Key`
 * Set **oidc.secret** to `OAuth Client Secret`
-* Restart mailbox unser `zimbra` user: `zmmailboxdctl restart`
+* Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 **Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
 
