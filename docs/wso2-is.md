@@ -131,6 +131,7 @@ zmmailboxdctl restart
 * Set **oidc.id** to `OAuth Client Key`
 * Set **oidc.secret** to `OAuth Client Secret`
 * Restart mailbox unser `zimbra` user: `zmmailboxdctl restart`
+
 **Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
 
 #### Testing

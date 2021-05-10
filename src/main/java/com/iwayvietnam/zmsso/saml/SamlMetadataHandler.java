@@ -24,9 +24,6 @@ package com.iwayvietnam.zmsso.saml;
 
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +56,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
             response.setStatus(HttpServletResponse.SC_OK);
         }
         catch (RuntimeException rte) {
-            ZimbraLog.extensions.error(rte);
+            throw new ServletException(rte);
         }
     }
 
