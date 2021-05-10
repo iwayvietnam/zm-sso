@@ -110,6 +110,7 @@ zmmailboxdctl restart
 * Click **Update** to update SAML service provider configuration
 
 #### Testing
+* Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
 * Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/saml/login` from your web browser.
 * Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
 
