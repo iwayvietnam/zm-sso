@@ -247,7 +247,7 @@ zmmailboxdctl restart
 zmprov -l mcf zimbraCsrfAllowedRefererHosts idp.server.net
 zmmailboxdctl restart
 ~~~
-A list of hosts like www.abc.com, www.xyz.com. These are used while doing CSRF referer check.
+A list of hosts like `www.abc.com, www.xyz.com`. These are used while doing CSRF referer check.
 
 ## Tutorials
 * [Single sign on with WSO2 Identity Server (WSO2 IS)](docs/wso2-is.md)
