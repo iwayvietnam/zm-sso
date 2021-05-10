@@ -73,7 +73,7 @@ cd /opt/wso2is-5.11.0/
 * On the Main menu, click **Identity > Service Providers > Add**
 * Enter **Service Provider Name** and click **Register** to add service provider
 
-### Import WSO2 IS ssl certificate to the cacerts file
+### Config WSO2 IS ssl certificate & hostname with Zimbra
 * Export untrusted ssl certificate to the file:
 ~~~shell
 openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
@@ -81,6 +81,7 @@ openssl s_client -servername your-id-server-hostname -connect your-id-server-hos
 * Execute following commands under the `zimbra` user:
 ~~~shell
 zmcertmgr addcacert /path/to/cert.pem
+zmprov -l mcf zimbraCsrfAllowedRefererHosts your-id-server-hostname
 zmmailboxdctl restart
 ~~~
 
