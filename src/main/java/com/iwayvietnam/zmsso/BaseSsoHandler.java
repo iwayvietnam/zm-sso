@@ -62,7 +62,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             final var context = new JEEContext(request, response);
             configBuilder.clientInit();
             JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context).get(), context);
-        } else {
+        }
+        else {
             ZimbraLog.extensions.debug(String.format("Redirect by auth token: %s", authToken.toString()));
             redirectByAuthToken(request, response, authToken);
         }
@@ -74,13 +75,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var multiProfile = configBuilder.getMultiProfile();
         final var renewSession = configBuilder.getRenewSession();
         ZimbraLog.extensions.debug(String.format("SSO callback with: %s", client.getName()));
-        try {
-            configBuilder.clientInit();
-            DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
-        }
-        catch (RuntimeException rte) {
-            ZimbraLog.extensions.error(rte);
-        }
+        configBuilder.clientInit();
+        DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
     }
 
     private boolean isLoggedIn(final AuthToken authToken) {

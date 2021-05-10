@@ -48,8 +48,9 @@ public class LoginHandler extends BaseSsoHandler {
             final var clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
             final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
             doLogin(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
+        }
+        catch (final ServiceException | RuntimeException ex) {
+            throw new ServletException(ex);
         }
     }
 

@@ -50,8 +50,8 @@ public class CasLoginHandler extends CasBaseHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doLogin(request, response, client);
-        } catch (final ServiceException e) {
-            throw new ServletException(e);
+        } catch (final ServiceException | RuntimeException ex) {
+            throw new ServletException(ex);
         }
     }
 

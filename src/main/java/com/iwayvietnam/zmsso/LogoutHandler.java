@@ -52,7 +52,8 @@ public class LogoutHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             clearAuthToken(request, response);
-        } catch (final ServiceException | AuthTokenException e) {
+        }
+        catch (final ServiceException | AuthTokenException e) {
             throw new ServletException(e);
         }
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
