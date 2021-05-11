@@ -38,7 +38,6 @@ import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
-import org.pac4j.core.profile.CommonProfile;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -62,16 +61,6 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     public void recordSession(final C context, final String key) {
         ZimbraLog.extensions.debug("Associates a key with the current web session.");
         super.recordSession(context, key);
-        getProfileManager(context).get(true).ifPresent(profile -> {
-            ZimbraLog.extensions.debug("Profile: {}", profile);
-            try {
-                final var commonProfile = (CommonProfile) profile;
-                final var accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getId());
-                singleLogin(context, accountName, key, commonProfile.getClientName());
-            } catch (final ServiceException e) {
-                ZimbraLog.extensions.error(e);
-            }
-        });
     }
 
     /**
@@ -106,7 +95,8 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         }
     }
 
-    private void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
+    public void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
+        ZimbraLog.extensions.debug("Single login. account: {} -> session key: {} -> client {}", accountName, key, client);
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
         final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
@@ -122,7 +112,9 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         final var authToken = AuthProvider.getAuthToken(account, false);
         setAuthTokenCookie(context, authToken);
 
-        DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
+        if (!StringUtil.isNullOrEmpty(key)) {
+            DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
+        }
     }
 
     private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
@@ -130,13 +122,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
             final var isAdmin = AuthToken.isAnyAdmin(authToken);
             final var jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
-            ZimbraLog.extensions.debug(String.format("Set auth token cookie for account id: %s", authToken.getAccountId()));
+            ZimbraLog.extensions.debug("Set auth token cookie for account id: {}", authToken.getAccountId());
         }
     }
 
     private void clearAuthToken(final C context, final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
-        ZimbraLog.extensions.debug(String.format("Update sso session logout for account id: %s", accountId));
+        ZimbraLog.extensions.debug("Update sso session logout for account id: {}", accountId);
         if (context instanceof JEEContext) {
             final var jeeCxt = (JEEContext) context;
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
@@ -156,7 +148,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     private void singleLogout(final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
-            ZimbraLog.extensions.debug(String.format("Update sso single logout for account id: %s", accountId));
+            ZimbraLog.extensions.debug("Update sso single logout for account id: {}", accountId);
             final var account = prov.getAccountById(accountId);
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {

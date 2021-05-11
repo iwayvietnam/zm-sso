@@ -23,7 +23,6 @@
 package com.iwayvietnam.zmsso.oidc;
 
 import com.iwayvietnam.zmsso.BaseSsoHandler;
-import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.oidc.client.OidcClient;

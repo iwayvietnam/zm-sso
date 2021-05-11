@@ -80,7 +80,7 @@ openssl s_client -servername your-id-server-hostname -connect your-id-server-hos
 * Execute following commands under the `zimbra` user:
 ~~~shell
 zmcertmgr addcacert /path/to/wso2-is.pem
-zmprov -l mcf zimbraCsrfAllowedRefererHosts your-id-server-hostname
+zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-id-server-hostname
 zmmailboxdctl restart
 ~~~
 

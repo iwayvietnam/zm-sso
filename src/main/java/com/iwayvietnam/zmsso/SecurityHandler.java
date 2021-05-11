@@ -20,10 +20,9 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.saml;
+package com.iwayvietnam.zmsso;
 
-import com.zimbra.common.util.ZimbraLog;
-import com.zimbra.cs.extension.ExtensionException;
+import com.zimbra.common.service.ServiceException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,15 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Saml Metadata Handler
+ * SSO Security Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class SamlMetadataHandler extends SamlBaseHandler {
-    public static final String HANDLER_PATH = "/saml/metadata";
-
-    public SamlMetadataHandler() throws ExtensionException {
-        super();
-    }
+public class SecurityHandler extends BaseSsoHandler {
+    public static final String HANDLER_PATH = "/sso/security";
 
     @Override
     public String getPath() {
@@ -49,14 +44,10 @@ public class SamlMetadataHandler extends SamlBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            ZimbraLog.extensions.debug("Generate saml metadata with: {}", client.getName());
-            configBuilder.clientInit();
-            response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
-            response.getWriter().flush();
-            response.setStatus(HttpServletResponse.SC_OK);
+            doSecurity(request, response);
         }
-        catch (RuntimeException rte) {
-            throw new ServletException(rte);
+        catch (RuntimeException | ServiceException ex) {
+            throw new ServletException(ex);
         }
     }
 
