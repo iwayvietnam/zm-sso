@@ -51,6 +51,7 @@ public class ConfigBuilder {
 
     private static final Map<String, String> properties = new HashMap<>();
     private final Config config;
+    private final ZmLogoutHandler logoutHandler;
 
     private final String casCallbackUrl;
     private final String oidcCallbackUrl;
@@ -71,6 +72,7 @@ public class ConfigBuilder {
         if (hasSamlClient()) {
             openSAMLInitialization();
         }
+        logoutHandler = new ZmLogoutHandler();
         config = buildConfig();
 
         casCallbackUrl = loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL);
@@ -108,6 +110,10 @@ public class ConfigBuilder {
 
     public Client defaultClient() throws ServiceException {
         return config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
+    }
+
+    public ZmLogoutHandler getLogoutHandler() {
+        return logoutHandler;
     }
 
     public void clientInit() {
@@ -170,9 +176,8 @@ public class ConfigBuilder {
         return postLogoutURL;
     }
 
-    private static Config buildConfig() {
+    private Config buildConfig() {
         ZimbraLog.extensions.debug("Build Pac4J config");
-        final var logoutHandler = new ZmLogoutHandler();
         final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         final var config = factory.build();
 
