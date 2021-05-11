@@ -93,7 +93,7 @@ openssl s_client -servername your-keyclock-server-hostname -connect your-keycloc
 * Execute following commands under the `zimbra` user:
 ~~~shell
 zmcertmgr addcacert /path/to/keyclock.pem
-zmprov -l mcf zimbraCsrfAllowedRefererHosts your-keyclock-server-hostname
+zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keyclock-server-hostname
 zmmailboxdctl restart
 ~~~
 
