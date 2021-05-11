@@ -32,6 +32,7 @@ import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
@@ -51,7 +52,7 @@ public class ConfigBuilder {
 
     private static final Map<String, String> properties = new HashMap<>();
     private final Config config;
-    private final ZmLogoutHandler logoutHandler;
+    private final ZmLogoutHandler<? extends WebContext> logoutHandler;
 
     private final String casCallbackUrl;
     private final String oidcCallbackUrl;
@@ -72,7 +73,7 @@ public class ConfigBuilder {
         if (hasSamlClient()) {
             openSAMLInitialization();
         }
-        logoutHandler = new ZmLogoutHandler();
+        logoutHandler = new ZmLogoutHandler<>();
         config = buildConfig();
 
         casCallbackUrl = loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL);

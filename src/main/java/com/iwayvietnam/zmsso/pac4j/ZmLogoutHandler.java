@@ -59,7 +59,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void recordSession(final C context, final String key) {
-        ZimbraLog.extensions.debug("Associates a key with the current web session.");
+        ZimbraLog.extensions.debug("Associates a key with the current web session: %s", key);
         super.recordSession(context, key);
     }
 
@@ -70,7 +70,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionFront(final C context, final String key) {
-        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout.");
+        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout: %s", key);
         super.destroySessionFront(context, key);
         try {
             clearAuthToken(context, key);
@@ -87,7 +87,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     @Override
     public void destroySessionBack(final C context, final String key) {
         super.destroySessionBack(context, key);
-        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout.");
+        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout: %s", key);
         try {
             singleLogout(key);
         } catch (final ServiceException e) {
@@ -96,7 +96,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     }
 
     public void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
-        ZimbraLog.extensions.debug("Single login. account: {} -> session key: {} -> client {}", accountName, key, client);
+        ZimbraLog.extensions.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
         final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
@@ -122,13 +122,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
             final var isAdmin = AuthToken.isAnyAdmin(authToken);
             final var jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
-            ZimbraLog.extensions.debug("Set auth token cookie for account id: {}", authToken.getAccountId());
+            ZimbraLog.extensions.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
         }
     }
 
     private void clearAuthToken(final C context, final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
-        ZimbraLog.extensions.debug("Update sso session logout for account id: {}", accountId);
+        ZimbraLog.extensions.debug("Update sso session logout for account id: %s", accountId);
         if (context instanceof JEEContext) {
             final var jeeCxt = (JEEContext) context;
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
@@ -148,7 +148,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
     private void singleLogout(final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
-            ZimbraLog.extensions.debug("Update sso single logout for account id: {}", accountId);
+            ZimbraLog.extensions.debug("Update sso single logout for account id: %s", accountId);
             final var account = prov.getAccountById(accountId);
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {
