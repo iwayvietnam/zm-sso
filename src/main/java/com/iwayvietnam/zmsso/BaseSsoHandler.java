@@ -26,7 +26,6 @@ import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
-import com.zimbra.cs.extension.ExtensionDispatcherServlet;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
@@ -36,8 +35,8 @@ import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.profile.CommonProfile;
-import org.pac4j.core.profile.factory.ProfileManagerFactory;
-import org.pac4j.core.util.FindBest;
+import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.util.Pac4jConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +58,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         if (!isLoggedIn(request)) {
-            ZimbraLog.extensions.debug("SSO login with: {}", client.getName());
+            ZimbraLog.extensions.debug("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             configBuilder.clientInit();
@@ -71,37 +70,29 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
-        final var defaultUrl = String.format("%s/%s", ExtensionDispatcherServlet.EXTENSION_PATH, SecurityHandler.HANDLER_PATH);
+        ZimbraLog.extensions.debug("SSO callback with: %s", client.getName());
+
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final var saveInSession = configBuilder.getSaveInSession();
         final var multiProfile = configBuilder.getMultiProfile();
         final var renewSession = configBuilder.getRenewSession();
-        ZimbraLog.extensions.debug("SSO callback with: {}", client.getName());
+
         configBuilder.clientInit();
-        DefaultCallbackLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
-    }
+        final var context = new JEEContext(request, response);
+        DefaultCallbackLogic.INSTANCE.perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        ZimbraLog.extensions.debug("SSO callback is performed");
 
-    protected void doSecurity(final HttpServletRequest request, final HttpServletResponse response) throws ServiceException, IOException {
-        if (!isLoggedIn(request)) {
-            ZimbraLog.extensions.debug("SSO security check");
-            final var context = new JEEContext(request, response);
-            final var profileManager = FindBest.profileManagerFactory(null, configBuilder.getConfig(), ProfileManagerFactory.DEFAULT).apply(context);
-            profileManager.get(true).ifPresent(profile -> {
-                ZimbraLog.extensions.debug("Profile: {}", profile);
-                if (profile instanceof CommonProfile) {
-                    final var commonProfile = (CommonProfile) profile;
-                    final var accountName = Optional.ofNullable(commonProfile.getEmail()).orElse(commonProfile.getId());
-                    final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
-                    final var sessionKey = configBuilder.getLogoutHandler().getStore().get(sessionId).orElse(null).toString();
-
-                    try {
-                        configBuilder.getLogoutHandler().singleLogin(context, accountName, sessionKey, commonProfile.getClientName());
-                    } catch (ServiceException e) {
-                        ZimbraLog.extensions.error(e);
-                    }
-                }
-            });
-        }
-        redirectToMail(request, response);
+        final var manager = new ProfileManager<CommonProfile>(context);
+        manager.get(configBuilder.getSaveInSession()).ifPresent(profile -> {
+            final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
+            final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
+            final var sessionKey = (String) configBuilder.getLogoutHandler().getStore().get(sessionId).orElse(sessionId);
+            try {
+                configBuilder.getLogoutHandler().singleLogin(context, accountName, sessionKey, profile.getClientName());
+            } catch (ServiceException e) {
+                ZimbraLog.extensions.error(e);
+            }
+        });
     }
 
     private boolean isLoggedIn(final HttpServletRequest request) {
@@ -111,7 +102,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private void redirectToMail(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServiceException {
         final var redirectUrl = AuthUtil.getRedirectURL(request, Provisioning.getInstance().getLocalServer(), false, true) + AuthUtil.IGNORE_LOGIN_URL;
-        ZimbraLog.extensions.debug("Redirecting to url: {}", redirectUrl);
+        ZimbraLog.extensions.debug("Redirecting to url: %s", redirectUrl);
         response.sendRedirect(redirectUrl);
     }
 }

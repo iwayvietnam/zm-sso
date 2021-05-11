@@ -24,6 +24,7 @@ package com.iwayvietnam.zmsso;
 
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
@@ -66,6 +67,7 @@ public class LogoutHandler extends BaseSsoHandler {
         try {
             configBuilder.clientInit();
             DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
+            ZimbraLog.extensions.debug("Single logout is performed");
         }
         catch (RuntimeException rte) {
             throw new ServletException(rte);
@@ -84,4 +86,5 @@ public class LogoutHandler extends BaseSsoHandler {
             authToken.deRegister();
         }
         ZimbraCookie.clearCookie(response, ZimbraCookie.COOKIE_ZM_AUTH_TOKEN);
-    }}
+    }
+}

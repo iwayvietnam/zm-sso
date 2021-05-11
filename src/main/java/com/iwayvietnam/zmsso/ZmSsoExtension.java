@@ -57,7 +57,6 @@ public class ZmSsoExtension implements ZimbraExtension {
         ZimbraLog.extensions.info("Register sso handlers");
         ExtensionDispatcherServlet.register(this, new LoginHandler());
         ExtensionDispatcherServlet.register(this, new CallbackHandler());
-        ExtensionDispatcherServlet.register(this, new SecurityHandler());
         ExtensionDispatcherServlet.register(this, new LogoutHandler());
 
         try {
