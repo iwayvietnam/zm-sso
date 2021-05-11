@@ -244,7 +244,7 @@ zmmailboxdctl restart
 
 ### Add identity provider hostname to ignore CSRF referer check
 ~~~shell
-zmprov -l mcf zimbraCsrfAllowedRefererHosts idp.server.net
+zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.net
 zmmailboxdctl restart
 ~~~
 A list of hosts like `www.abc.com, www.xyz.com`. These are used while doing CSRF referer check.
