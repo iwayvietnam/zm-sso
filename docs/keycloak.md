@@ -79,7 +79,7 @@ LAUNCH_JBOSS_IN_BACKGROUND=1
 * Sign in to Keyclock Administration Console as an admin by visiting url `https://your-keyclock-server-hostname:9443/auth/admin` from your web browser.
 * On the Main menu, click **Configure > User Federation**
 * Click **Add Provider... -> ldap**. Fill in **Add user federation provider** form like that
-![add-ldap-user-federation](keyclock/add-ldap-user-federation.png)
+![add-ldap-user-federation](keycloak/add-ldap-user-federation.png)
 * Click **Test authenticaion** button to check ldap configuration
 * Click **Save** button to add ldap user federation
 * Click **Synchronize all users** button to synchronize zimbra users to Keyclock users
