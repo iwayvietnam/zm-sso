@@ -98,7 +98,7 @@ The settings loaded from the following places:
 ### Default client configuration
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
 * Specify default pac4j client by setting the value for the **sso.defaultClient** key. Ex: `sso.defaultClient = SAML2Client`
-* Or execute following command with the Zimbra user: `zmlocalconfig -e sso.defaultClient=SAML2Client`
+* Or execute following command with the `zimbra` user: `zmlocalconfig -e sso.defaultClient=SAML2Client`
 
 ### Callback endpoint configuration
 To handle authentication, a callback endpoint is necessary to receive callback calls from the identity server and finish the login process.
@@ -113,7 +113,7 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 * Specify profile should be saved in session by setting the value for the **sso.saveInSession** key.
 * Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key.
-* Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
+* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
 ```shell
 # callback endpoint by using default client. Specified in sso.defaultClient
 zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/callback
@@ -131,15 +131,15 @@ zmlocalconfig -e sso.renewSession=true
 ### Logout endpoint configuration
 To handle the logout, a logout endpoint is necessary to perform:
 * The local logout by removing the pac4j profiles from the session.
-* The central logout by calling the identity provider logout endpoint. This is the Single-Log-Out (SLO) process.
+* The central logout by calling the identity provider logout endpoint. This is the Single LogOut (SLO) process.
 
 **Config**:
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * **sso.localLogout**: It indicates whether a local logout must be performed.
 * **sso.destroySession**: It defines whether we must destroy the web session during the local logout.
 * **sso.centralLogout**: It defines whether a central logout must be performed.
-* **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra
-* Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
+* **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra.
+* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
 ```shell
 zmlocalconfig -e sso.localLogout=true
 zmlocalconfig -e sso.destroySession=true
@@ -166,7 +166,7 @@ Ex: `saml.identityProviderMetadataPath = https://samltest.id/saml/idp`
 Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
 * **saml.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page. 
 It is possible to customize default pac4j behavior using the postLogoutURL property of the SAML2Configuration.
-* Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
+* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
 ```shell
 zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/saml/keystore.jks
 zmlocalconfig -e saml.keystorePassword=samlpasswd
@@ -181,7 +181,7 @@ zmlocalconfig -e saml.postLogoutURL=https://mail.zimbra-server.com/
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.cas-server.com/cas/login`
 * **cas.protocol**: It defines the CAS protocol you want to use. Ex: `cas.protocol = CAS20`
-* Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
+* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
 ```shell
 zmlocalconfig -e cas.loginUrl=https://cas.cas-server.com/cas/login
 zmlocalconfig -e cas.protocol=CAS20
@@ -193,7 +193,7 @@ zmlocalconfig -e cas.protocol=CAS20
 * **oidc.id**: It defines the OpenID client identifier.
 * **oidc.secret**: It defines the OpenID client secret.
 * **oidc.scope**: It defines the OpenID client scope.
-* Or execute following commands to override these settings in **localconfig.xml** with the Zimbra user:
+* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
 ```shell
 zmlocalconfig -e oidc.discoveryUri=https://demo.c2id.com/.well-known/openid-configuration
 zmlocalconfig -e oidc.id=000123
@@ -215,7 +215,7 @@ zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/
 # Specified logout URL
 zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
-* Execute following commands with the Zimbra user for global configuration:
+* Execute following commands with the `zimbra` user for global configuration:
 ```shell
 # SSO login by using default client. Specified in sso.defaultClient
 zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
@@ -228,7 +228,7 @@ zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extens
 # Specified logout URL
 zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
-* Execute the following command with the Zimbra user to restart Zimbra server: `zmcontrol restart`
+* Execute the following command with the `zimbra` user to restart Zimbra server: `zmcontrol restart`
 
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
@@ -250,7 +250,7 @@ zmmailboxdctl restart
 
 ## Tutorials
 * [Single sign on with WSO2 Identity Server (WSO2 IS)](docs/wso2-is.md)
-* [Single sign on with Keyclock](docs/keyclocks.md)
+* [Single sign on with Keycloak](docs/keycloak.md)
 * [Single sign on with Apereo Central Authentication Service (CAS)](docs/cas.md)
 
 Licensing
