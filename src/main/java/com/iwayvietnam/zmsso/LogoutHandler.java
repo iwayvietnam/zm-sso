@@ -28,6 +28,7 @@ import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.util.Pac4jConstants;
@@ -66,7 +67,7 @@ public class LogoutHandler extends BaseSsoHandler {
 
         try {
             configBuilder.clientInit();
-            DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
+            DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), JEESessionStore.INSTANCE, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
             ZimbraLog.extensions.debug("Single logout is performed");
         }
         catch (RuntimeException rte) {

@@ -31,6 +31,7 @@ import com.zimbra.cs.extension.ExtensionHttpHandler;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.context.JEEContext;
+import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
@@ -62,10 +63,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             configBuilder.clientInit();
-            final Optional<RedirectionAction> logoutAction = client.getRedirectionAction(context);
-            logoutAction.ifPresent(action -> {
-                JEEHttpActionAdapter.INSTANCE.adapt(action, context);
-            });
+            final Optional<RedirectionAction> logoutAction = client.getRedirectionAction(context, JEESessionStore.INSTANCE);
+            logoutAction.ifPresent(action -> JEEHttpActionAdapter.INSTANCE.adapt(action, context));
         }
         else {
             redirectToMail(request, response);
@@ -76,20 +75,18 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         ZimbraLog.extensions.debug("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final var saveInSession = configBuilder.getSaveInSession();
-        final var multiProfile = configBuilder.getMultiProfile();
         final var renewSession = configBuilder.getRenewSession();
 
         configBuilder.clientInit();
         final var context = new JEEContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
         ZimbraLog.extensions.debug("SSO callback is performed");
 
-        final var manager = new ProfileManager<CommonProfile>(context);
-        manager.get(saveInSession).ifPresent(profile -> {
+        final var manager = new ProfileManager(context, JEESessionStore.INSTANCE);
+        manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
-            final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
+            final var sessionId = JEESessionStore.INSTANCE.getSessionId(context, true).get();
             final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {
                 logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
