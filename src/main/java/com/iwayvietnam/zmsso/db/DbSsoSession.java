@@ -76,15 +76,15 @@ public final class DbSsoSession {
 
     static DbSsoSession constructSsoSession(DbResults rs) {
         return new DbSsoSession(
-                rs.getString("sso_token"),
-                rs.getString("account_id"),
-                rs.getString("account_name"),
-                rs.getString("protocol"),
-                rs.getString("origin_client_ip"),
-                rs.getString("remote_ip"),
-                rs.getString("user_agent"),
-                (Timestamp) rs.getObject("login_at"),
-                (Timestamp) rs.getObject("logout_at")
+            rs.getString("sso_token"),
+            rs.getString("account_id"),
+            rs.getString("account_name"),
+            rs.getString("protocol"),
+            rs.getString("origin_client_ip"),
+            rs.getString("remote_ip"),
+            rs.getString("user_agent"),
+            (Timestamp) rs.getObject("login_at"),
+            (Timestamp) rs.getObject("logout_at")
         );
     }
 
@@ -129,20 +129,15 @@ public final class DbSsoSession {
         final var inputStream = cl.getResourceAsStream(SCRIPT_FILE);
         try {
             if (inputStream != null) {
-                ZimbraLog.dbconn.debug("Create sso session table");
+                ZimbraLog.extensions.info("Create sso session table");
                 final var script = new String(IOUtils.toByteArray(inputStream));
                 DbUtil.executeScript(DbPool.getConnection(), new StringReader(script));
             } else {
-                final var errorMsg = String.format("Script file '%s' not found in the classpath", SCRIPT_FILE);
-                ZimbraLog.extensions.error(errorMsg);
-                throw ServiceException.NOT_FOUND(errorMsg);
+                throw ServiceException.NOT_FOUND(String.format("Script file '%s' not found in the classpath", SCRIPT_FILE));
             }
         } catch (final IOException e) {
-            ZimbraLog.extensions.error(e);
-            final var errorMsg = String.format("Script file '%s' cannot be loaded.", SCRIPT_FILE);
-            throw ServiceException.FAILURE(errorMsg, e);
+            throw ServiceException.FAILURE(String.format("Script file '%s' cannot be loaded.", SCRIPT_FILE), e);
         }  catch (final SQLException e) {
-            ZimbraLog.extensions.error(e);
             throw ServiceException.FAILURE("Create sso session table", e);
         }
     }
@@ -155,14 +150,14 @@ public final class DbSsoSession {
             final var sql = String.format("INSERT INTO %s (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SELECT_TABLE, INSERT_COLUMNS);
             final var loginAt = new Timestamp(System.currentTimeMillis());
             DbUtil.executeUpdate(sql,
-                    hashedToken,
-                    account.getId(),
-                    account.getName(),
-                    protocol,
-                    origIp,
-                    remoteIp,
-                    userAgent,
-                    loginAt
+                hashedToken,
+                account.getId(),
+                account.getName(),
+                protocol,
+                origIp,
+                remoteIp,
+                userAgent,
+                loginAt
             );
         }
     }
@@ -192,12 +187,12 @@ public final class DbSsoSession {
             }
         }
         final var query = String.format(
-                "SELECT %s FROM %s INNER JOIN (%s) AS joinQuery ON joinQuery.ref_key = %s.%s",
-                SELECT_COLUMNS,
-                SELECT_TABLE,
-                joinQuery,
-                SELECT_TABLE,
-                KEY_COLUMN
+            "SELECT %s FROM %s INNER JOIN (%s) AS joinQuery ON joinQuery.ref_key = %s.%s",
+            SELECT_COLUMNS,
+            SELECT_TABLE,
+            joinQuery,
+            SELECT_TABLE,
+            KEY_COLUMN
         );
         final var rs = DbUtil.executeQuery(query);
         while (rs.next()) {

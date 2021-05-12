@@ -47,7 +47,11 @@ public class CasCallbackHandler extends CasBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        doCallback(request, response, client);
+        try {
+            doCallback(request, response, client);
+        } catch (final RuntimeException ex) {
+            throw new ServletException(ex);
+        }
     }
 
     @Override

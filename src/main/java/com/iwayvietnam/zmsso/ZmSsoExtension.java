@@ -51,7 +51,6 @@ public class ZmSsoExtension implements ZimbraExtension {
 
     @Override
     public void init() throws ExtensionException, ServiceException {
-        ZimbraLog.extensions.info("Create sso session table");
         DbSsoSession.createSsoSessionTable();
 
         ZimbraLog.extensions.info("Register sso handlers");
