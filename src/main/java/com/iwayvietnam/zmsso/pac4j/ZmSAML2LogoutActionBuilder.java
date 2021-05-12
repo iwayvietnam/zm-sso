@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class ZmSAML2LogoutActionBuilder extends SAML2LogoutActionBuilder {
 
-    public ZmSAML2LogoutActionBuilder(SAML2Client client) {
+    public ZmSAML2LogoutActionBuilder(final SAML2Client client) {
         super(client);
     }
 

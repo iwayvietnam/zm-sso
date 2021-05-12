@@ -76,15 +76,15 @@ public final class DbSsoSession {
 
     static DbSsoSession constructSsoSession(DbResults rs) {
         return new DbSsoSession(
-                rs.getString("sso_token"),
-                rs.getString("account_id"),
-                rs.getString("account_name"),
-                rs.getString("protocol"),
-                rs.getString("origin_client_ip"),
-                rs.getString("remote_ip"),
-                rs.getString("user_agent"),
-                (Timestamp) rs.getObject("login_at"),
-                (Timestamp) rs.getObject("logout_at")
+            rs.getString("sso_token"),
+            rs.getString("account_id"),
+            rs.getString("account_name"),
+            rs.getString("protocol"),
+            rs.getString("origin_client_ip"),
+            rs.getString("remote_ip"),
+            rs.getString("user_agent"),
+            (Timestamp) rs.getObject("login_at"),
+            (Timestamp) rs.getObject("logout_at")
         );
     }
 
@@ -155,14 +155,14 @@ public final class DbSsoSession {
             final var sql = String.format("INSERT INTO %s (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SELECT_TABLE, INSERT_COLUMNS);
             final var loginAt = new Timestamp(System.currentTimeMillis());
             DbUtil.executeUpdate(sql,
-                    hashedToken,
-                    account.getId(),
-                    account.getName(),
-                    protocol,
-                    origIp,
-                    remoteIp,
-                    userAgent,
-                    loginAt
+                hashedToken,
+                account.getId(),
+                account.getName(),
+                protocol,
+                origIp,
+                remoteIp,
+                userAgent,
+                loginAt
             );
         }
     }
@@ -192,12 +192,12 @@ public final class DbSsoSession {
             }
         }
         final var query = String.format(
-                "SELECT %s FROM %s INNER JOIN (%s) AS joinQuery ON joinQuery.ref_key = %s.%s",
-                SELECT_COLUMNS,
-                SELECT_TABLE,
-                joinQuery,
-                SELECT_TABLE,
-                KEY_COLUMN
+            "SELECT %s FROM %s INNER JOIN (%s) AS joinQuery ON joinQuery.ref_key = %s.%s",
+            SELECT_COLUMNS,
+            SELECT_TABLE,
+            joinQuery,
+            SELECT_TABLE,
+            KEY_COLUMN
         );
         final var rs = DbUtil.executeQuery(query);
         while (rs.next()) {

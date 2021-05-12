@@ -86,13 +86,14 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
-            final var sessionId = JEESessionStore.INSTANCE.getSessionId(context, true).get();
-            final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
-            try {
-                logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
-            } catch (ServiceException e) {
-                ZimbraLog.extensions.error(e);
-            }
+            JEESessionStore.INSTANCE.getSessionId(context, true).ifPresent((String sessionId) -> {
+                final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
+                try {
+                    logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
+                } catch (ServiceException e) {
+                    ZimbraLog.extensions.error(e);
+                }
+            });
         });
     }
 

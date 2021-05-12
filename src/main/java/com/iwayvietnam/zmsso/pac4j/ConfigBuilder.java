@@ -57,8 +57,6 @@ public class ConfigBuilder {
     private final String oidcCallbackUrl;
     private final String samlCallbackUrl;
 
-    private final Boolean saveInSession;
-    private final Boolean multiProfile;
     private final Boolean renewSession;
 
     private final Boolean localLogout;
@@ -79,8 +77,6 @@ public class ConfigBuilder {
         oidcCallbackUrl = loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL);
         samlCallbackUrl = loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL);
 
-        saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
-        multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
         renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
 
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
@@ -146,14 +142,6 @@ public class ConfigBuilder {
 
     public String getSamlCallbackUrl() {
         return samlCallbackUrl;
-    }
-
-    public Boolean getSaveInSession() {
-        return saveInSession;
-    }
-
-    public Boolean getMultiProfile() {
-        return multiProfile;
     }
 
     public Boolean getRenewSession() {

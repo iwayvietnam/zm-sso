@@ -59,7 +59,7 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void recordSession(WebContext context, SessionStore sessionStore, String key) {
+    public void recordSession(final WebContext context, final SessionStore sessionStore, final String key) {
         ZimbraLog.extensions.debug("Associates a key with the current web session: %s", key);
         super.recordSession(context, sessionStore, key);
     }
