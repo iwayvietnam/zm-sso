@@ -1,6 +1,6 @@
 Single sign on with WSO2 Identity Server (WSO2 IS)
 ==================================================
-WSO2 IS is an API-driven open source IAM product designed to help you build effective CIAM solutions.
+[WSO2 IS](https://is.docs.wso2.com) is an API-driven open source IAM product designed to help you build effective CIAM solutions.
 It is based on open standards such as SAML, OAuth and OIDC with the deployment options of on-premise, cloud, and hybrid.
 It supports complex IAM requirements given its high extensibility.
 
