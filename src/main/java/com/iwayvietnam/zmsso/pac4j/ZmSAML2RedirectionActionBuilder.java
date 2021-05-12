@@ -36,7 +36,7 @@ import java.util.Optional;
  */
 public class ZmSAML2RedirectionActionBuilder extends SAML2RedirectionActionBuilder {
 
-    public ZmSAML2RedirectionActionBuilder(SAML2Client client) {
+    public ZmSAML2RedirectionActionBuilder(final SAML2Client client) {
         super(client);
     }
 

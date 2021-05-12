@@ -11,12 +11,12 @@ import java.util.Optional;
 
 public class ZmSAML2CredentialsExtractor extends SAML2CredentialsExtractor {
 
-    public ZmSAML2CredentialsExtractor(SAML2Client client) {
+    public ZmSAML2CredentialsExtractor(final SAML2Client client) {
         super(client);
     }
 
     @Override
-    public Optional<SAML2Credentials> extract(WebContext context) {
+    public Optional<SAML2Credentials> extract(final WebContext context) {
         final var thread = Thread.currentThread();
         final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());

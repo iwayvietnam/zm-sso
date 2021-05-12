@@ -12,7 +12,7 @@ import java.util.Optional;
 public class ZmOidcLogoutActionBuilder extends OidcLogoutActionBuilder {
     private final String postLogoutURL;
 
-    public ZmOidcLogoutActionBuilder(OidcConfiguration configuration, String postLogoutURL) {
+    public ZmOidcLogoutActionBuilder(final OidcConfiguration configuration, final String postLogoutURL) {
         super(configuration);
         this.postLogoutURL = postLogoutURL;
     }

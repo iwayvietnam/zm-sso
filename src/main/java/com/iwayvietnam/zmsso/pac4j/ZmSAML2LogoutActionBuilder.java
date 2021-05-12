@@ -11,12 +11,12 @@ import java.util.Optional;
 
 public class ZmSAML2LogoutActionBuilder extends SAML2LogoutActionBuilder {
 
-    public ZmSAML2LogoutActionBuilder(SAML2Client client) {
+    public ZmSAML2LogoutActionBuilder(final SAML2Client client) {
         super(client);
     }
 
     @Override
-    public Optional<RedirectionAction> getLogoutAction(WebContext context, UserProfile currentProfile, String targetUrl) {
+    public Optional<RedirectionAction> getLogoutAction(final WebContext context, final UserProfile currentProfile, final String targetUrl) {
         final var thread = Thread.currentThread();
         final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());
