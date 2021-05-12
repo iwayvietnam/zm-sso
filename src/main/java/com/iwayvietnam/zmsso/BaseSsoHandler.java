@@ -34,7 +34,6 @@ import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
-import org.pac4j.core.exception.http.WithLocationAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
