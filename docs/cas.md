@@ -7,3 +7,22 @@ The primary implementation of the protocol is an open-source Java server compone
 
 ### Requirement
 * JDK version version 11 or newer.
+
+### Clone `cas overlay template` & `cas-management-overlay`
+```shell
+mkdir -p /opt/cas
+cd /opt/cas
+git clone https://github.com/apereo/cas-overlay-template.git
+git clone https://github.com/apereo/cas-management-overlay.git
+```
+
+### Deployment configuration
+* Using a text editor to open `/opt/cas/cas-overlay-template/gradle.properties` file.
+* Set **cas.version** to latest stable version (current is 6.3.4). Ex: `cas.version=6.3.4`.
+* Using a text editor to open `/opt/cas/cas-overlay-template/build.gradle` file.
+* Add following content under `dependencies` block
+```
+implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"
+implementation "org.apereo.cas:cas-server-support-saml-idp:${casServerVersion}"
+implementation "org.apereo.cas:cas-server-support-oidc:${casServerVersion}"
+```
