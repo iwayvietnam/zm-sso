@@ -69,7 +69,6 @@ public class ConfigBuilder {
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
-        loadSettingsFromLocalConfig();
         if (hasSamlClient()) {
             openSAMLInitialization();
         }
@@ -120,7 +119,7 @@ public class ConfigBuilder {
     public void clientInit() {
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             if (!client.isInitialized()) {
-                ZimbraLog.extensions.debug("Init saml client");
+                ZimbraLog.extensions.info("Init saml client");
                 client.init();
                 client.setCredentialsExtractor(new ZmSAML2CredentialsExtractor(client));
                 client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
@@ -130,7 +129,7 @@ public class ConfigBuilder {
 
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             if (!client.isInitialized()) {
-                ZimbraLog.extensions.debug("Init oidc client");
+                ZimbraLog.extensions.info("Init oidc client");
                 client.init();
                 client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
             }
@@ -178,29 +177,33 @@ public class ConfigBuilder {
     }
 
     private Config buildConfig() {
-        ZimbraLog.extensions.debug("Build Pac4J config");
+        ZimbraLog.extensions.info("Build Pac4J config");
         final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         final var config = factory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config cas client");
+            ZimbraLog.extensions.info("Config cas client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config oidc client");
+            ZimbraLog.extensions.info("Config oidc client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
+            if (StringUtil.isNullOrEmpty(loadStringProperty(SettingsConstants.ZM_OIDC_SCOPE))) {
+                cfg.setScope(SettingsConstants.ZM_DEFAULT_OIDC_SCOPE);
+            }
+
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
-            ZimbraLog.extensions.debug("Config saml client");
+            ZimbraLog.extensions.info("Config saml client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
+            cfg.setForceServiceProviderMetadataGeneration(true);
+            cfg.setForceKeystoreGeneration(false);
             cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
             cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
-            cfg.setForceServiceProviderMetadataGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_METADATA_GENERATION));
-            cfg.setForceKeystoreGeneration(loadBooleanProperty(SettingsConstants.ZM_SAML_KEYSTORE_GENERATION));
             cfg.setWantsAssertionsSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_ASSERTIONS_SIGNED));
             cfg.setWantsResponsesSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_RESPONSES_SIGNED));
             cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
@@ -213,7 +216,7 @@ public class ConfigBuilder {
     }
 
     private static void openSAMLInitialization() {
-        ZimbraLog.extensions.debug("OpenSAML Initialization and Configuration");
+        ZimbraLog.extensions.info("OpenSAML Initialization and Configuration");
 
         final var thread = Thread.currentThread();
         final var origCl = thread.getContextClassLoader();
@@ -248,7 +251,7 @@ public class ConfigBuilder {
     }
 
     private static void loadSettingsFromProperties() {
-        ZimbraLog.extensions.debug("Load config properties");
+        ZimbraLog.extensions.info("Load config properties");
         try {
             final var confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
             final var prop = new Properties();
@@ -257,31 +260,5 @@ public class ConfigBuilder {
         } catch (IOException e) {
             ZimbraLog.extensions.error(e);
         }
-    }
-
-    private static void loadSettingsFromLocalConfig() {
-        ZimbraLog.extensions.debug("Load settings from local config");
-        Arrays.asList(SettingsConstants.class.getDeclaredFields()).forEach((field) -> {
-            try {
-                final var key = field.get(null).toString();
-                final var value = LC.get(key);
-                if (!StringUtil.isNullOrEmpty(value)) {
-                    properties.put(key, value);
-                }
-            } catch (IllegalAccessException e) {
-                ZimbraLog.extensions.error(e);
-            }
-        });
-        Arrays.asList(PropertiesConstants.class.getDeclaredFields()).forEach((field) -> {
-            try {
-                final var key = field.get(null).toString();
-                final var value = LC.get(key);
-                if (!StringUtil.isNullOrEmpty(value)) {
-                    properties.put(key, value);
-                }
-            } catch (IllegalAccessException e) {
-                ZimbraLog.extensions.error(e);
-            }
-        });
     }
 }
