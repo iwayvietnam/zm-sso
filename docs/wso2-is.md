@@ -9,7 +9,7 @@ It supports complex IAM requirements given its high extensibility.
 ### Requirement
 * JDK version 1.8 or newer.
 
-### Download and unzip latest stable version of WSO2 IS (current is 5.11.0)
+### Download and unzip the latest stable version of WSO2 IS (current is 5.11.0)
 ```shell
 cd /opt
 wget https://github.com/wso2/product-is/releases/download/v5.11.0/wso2is-5.11.0.zip

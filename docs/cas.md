@@ -18,11 +18,12 @@ git clone https://github.com/apereo/cas-management-overlay.git
 
 ### Deployment configuration
 * Using a text editor to open `/opt/cas/cas-overlay-template/gradle.properties` file.
-* Set **cas.version** to latest stable version (current is 6.3.4). Ex: `cas.version=6.3.4`.
+* Set **cas.version** to the latest stable version (current is 6.3.4). Ex: `cas.version=6.3.4`.
 * Using a text editor to open `/opt/cas/cas-overlay-template/build.gradle` file.
 * Add following content under `dependencies` block
 ```
 implementation "org.apereo.cas:cas-server-support-ldap:${casServerVersion}"
 implementation "org.apereo.cas:cas-server-support-saml-idp:${casServerVersion}"
 implementation "org.apereo.cas:cas-server-support-oidc:${casServerVersion}"
+implementation "org.apereo.cas:cas-server-support-yaml-service-registry:${casServerVersion}"
 ```

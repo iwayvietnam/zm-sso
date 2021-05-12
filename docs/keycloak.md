@@ -8,7 +8,7 @@ It makes it easy to secure applications and services with little to no code.
 ### Requirement
 * JDK version 1.8 or newer.
 
-### Download and attract latest stable version of Keycloak (current is 13.0.0)
+### Download and attract the latest stable version of Keycloak (current is 13.0.0)
 ```shell
 cd /opt
 wget https://github.com/keycloak/keycloak/releases/download/13.0.0/keycloak-13.0.0.tar.gz
