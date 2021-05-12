@@ -103,6 +103,7 @@ zmmailboxdctl restart
 * Choose **Metadata File Configuration**, upload service provider metadata file (`metadata.xml`).
   Click **Upload** to register new SAML srvice provider
 * On **Inbound Authentication Configuration -> SAML2 Web SSO Configuration**, click **Edit**
+* Fill **NameID format** with `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`
 * Check **Enable Response Signing** and **Enable Single Logout**
 * Fill **SLO Response URL** and **SLO Request URL** with `https://your-zimbra-hostname/service/extension/saml/callback?client_name=SAML2Client&logoutendpoint=true`
 * Check **Enable Attribute Profile** and **Include Attributes in the Response Always**

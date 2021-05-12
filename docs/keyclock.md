@@ -104,7 +104,7 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **saml.callbackUrl** to `https://your-zimbra-hostname/service/extension/saml/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **saml.identityProviderMetadataPath** to `https://your-keyclock-server-hostname:9443/auth/realms/master/protocol/saml/descriptor`
+* Set **saml.identityProviderMetadataPath** to `https://your-keyclock-server-hostname:9443/auth/realms/name-of-your-realm/protocol/saml/descriptor`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Create SAML client for Zimbra on Keyclock
@@ -113,6 +113,7 @@ zmmailboxdctl restart
 * On the Main menu, click **Configure > Clients**
 * Click **Create** button, click **Select file** to upload service provider metadata file (`metadata.xml`).
   Click **Save** to create new SAML client.
+* Select **Name ID Format** with `email`, Click **Save**.
 * Click **Mappers** tab. Click **Add Builtin** button, select all `builtin`, click **Add selected** button.
 
 #### Testing
@@ -126,7 +127,8 @@ zmmailboxdctl restart
 * On the Main menu, click **Configure > Clients**
 * Click **Create** button, fill **Client ID** with `your-client-id`.
 * Select **Access Type** with **confidential**, fill **Valid Redirect URIs** with `https://your-zimbra-hostname/*`,
-  fill **Backchannel Logout URL** with `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`.
+  fill **Backchannel Logout URL** with `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`,
+  choose **Backchannel Logout Session Required** with `On`.
   Click **Save** button to update settings.
 * Click **Credentials** tab. Select **Access Type** with **Client Authenticator**, click **Regenerate Secret** button to regenerate client secret
 
@@ -136,7 +138,7 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **oidc.discoveryUri** to `https://your-keyclock-server-hostname:9443/auth/realms/master/.well-known/openid-configuration`
+* Set **oidc.discoveryUri** to `https://your-keyclock-server-hostname:9443/auth/realms/name-of-your-realm/.well-known/openid-configuration`
 * Set **oidc.id** to `Client ID`
 * Set **oidc.secret** to `Client Secret`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
