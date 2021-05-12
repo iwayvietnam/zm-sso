@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
+import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.extension.ExtensionException;
 
 import javax.servlet.ServletException;
@@ -47,7 +48,11 @@ public class SamlCallbackHandler extends SamlBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        doCallback(request, response, client);
+        try {
+            doCallback(request, response, client);
+        } catch (final RuntimeException ex) {
+            throw new ServletException(ex);
+        }
     }
 
     @Override

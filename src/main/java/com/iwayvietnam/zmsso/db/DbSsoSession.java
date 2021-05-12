@@ -129,20 +129,15 @@ public final class DbSsoSession {
         final var inputStream = cl.getResourceAsStream(SCRIPT_FILE);
         try {
             if (inputStream != null) {
-                ZimbraLog.dbconn.debug("Create sso session table");
+                ZimbraLog.extensions.info("Create sso session table");
                 final var script = new String(IOUtils.toByteArray(inputStream));
                 DbUtil.executeScript(DbPool.getConnection(), new StringReader(script));
             } else {
-                final var errorMsg = String.format("Script file '%s' not found in the classpath", SCRIPT_FILE);
-                ZimbraLog.extensions.error(errorMsg);
-                throw ServiceException.NOT_FOUND(errorMsg);
+                throw ServiceException.NOT_FOUND(String.format("Script file '%s' not found in the classpath", SCRIPT_FILE));
             }
         } catch (final IOException e) {
-            ZimbraLog.extensions.error(e);
-            final var errorMsg = String.format("Script file '%s' cannot be loaded.", SCRIPT_FILE);
-            throw ServiceException.FAILURE(errorMsg, e);
+            throw ServiceException.FAILURE(String.format("Script file '%s' cannot be loaded.", SCRIPT_FILE), e);
         }  catch (final SQLException e) {
-            ZimbraLog.extensions.error(e);
             throw ServiceException.FAILURE("Create sso session table", e);
         }
     }

@@ -91,9 +91,8 @@ ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-1.0.0-1.el7.noarch.rpm"
 ```
 
 ## Configuration
-The settings loaded from the following places:
-1. An optional **zm.sso.properties** file. The default location of this file is **/opt/zimbra/conf/zm.sso.properties**
-2. But it can be overridden by setting via the **localconfig.xml** file.
+The settings loaded from **zm.sso.properties** file.
+The location of this file is **/opt/zimbra/conf/zm.sso.properties**
 
 ### Default client configuration
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
@@ -113,20 +112,6 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 * Specify profile should be saved in session by setting the value for the **sso.saveInSession** key.
 * Specify multi profiles are supported by setting the value for the **sso.multiProfile** key.
 * Specify the session must be renewed by setting the value for the **sso.renewSession** key.
-* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
-```shell
-# callback endpoint by using default client. Specified in sso.defaultClient
-zmlocalconfig -e sso.callbackUrl=https://mail.zimbra-server.com/service/extension/sso/callback
-# or using SAML client
-zmlocalconfig -e saml.callbackUrl=https://mail.zimbra-server.com/service/extension/saml/callback
-# or using CAS client
-zmlocalconfig -e cas.callbackUrl=https://mail.zimbra-server.com/service/extension/cas/callback
-# or using OpenID Connect client
-zmlocalconfig -e oidc.callbackUrl=https://mail.zimbra-server.com/service/extension/oidc/callback
-zmlocalconfig -e sso.saveInSession=true
-zmlocalconfig -e sso.multiProfile=true
-zmlocalconfig -e sso.renewSession=true
-```
 
 ### Logout endpoint configuration
 To handle the logout, a logout endpoint is necessary to perform:
@@ -139,13 +124,6 @@ To handle the logout, a logout endpoint is necessary to perform:
 * **sso.destroySession**: It defines whether we must destroy the web session during the local logout.
 * **sso.centralLogout**: It defines whether a central logout must be performed.
 * **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra.
-* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
-```shell
-zmlocalconfig -e sso.localLogout=true
-zmlocalconfig -e sso.destroySession=true
-zmlocalconfig -e sso.centralLogout=true
-zmlocalconfig -e sso.postLogoutURL=https://mail.zimbra-server.com/
-```
 
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
@@ -166,26 +144,11 @@ Ex: `saml.identityProviderMetadataPath = https://samltest.id/saml/idp`
 Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
 * **saml.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page. 
 It is possible to customize default pac4j behavior using the postLogoutURL property of the SAML2Configuration.
-* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
-```shell
-zmlocalconfig -e saml.keystorePath=file:/opt/zimbra/conf/saml/keystore.jks
-zmlocalconfig -e saml.keystorePassword=samlpasswd
-zmlocalconfig -e saml.privateKeyPassword=samlpasswd
-zmlocalconfig -e saml.keystoreAlias=samlkey
-zmlocalconfig -e saml.identityProviderMetadataPath=https://samltest.id/saml/idp
-zmlocalconfig -e saml.serviceProviderEntityId=https://mail.zimbra-server.com/service/extension/saml/metadata
-zmlocalconfig -e saml.postLogoutURL=https://mail.zimbra-server.com/
-```
 
 ### Configuration to login with a CAS server.
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
 * **cas.loginUrl**: It defines the login URL of your CAS server. Ex: `cas.loginUrl = https://cas.cas-server.com/cas/login`
 * **cas.protocol**: It defines the CAS protocol you want to use. Ex: `cas.protocol = CAS20`
-* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
-```shell
-zmlocalconfig -e cas.loginUrl=https://cas.cas-server.com/cas/login
-zmlocalconfig -e cas.protocol=CAS20
-```
 
 ### Configuration to login using the OpenID Connect protocol v1.0.
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
@@ -193,13 +156,6 @@ zmlocalconfig -e cas.protocol=CAS20
 * **oidc.id**: It defines the OpenID client identifier.
 * **oidc.secret**: It defines the OpenID client secret.
 * **oidc.scope**: It defines the OpenID client scope.
-* Or execute following commands to override these settings in **localconfig.xml** with the `zimbra` user:
-```shell
-zmlocalconfig -e oidc.discoveryUri=https://demo.c2id.com/.well-known/openid-configuration
-zmlocalconfig -e oidc.id=000123
-zmlocalconfig -e oidc.secret=rlC_8s3oBayCynAO_7UKt34hbEwiiTKx0l7zRcrFY3A
-zmlocalconfig -e oidc.scope=openid email profile
-```
 
 ### Replace login and logout urls
 * Execute following commands with the Zimbra user for domain configuration:

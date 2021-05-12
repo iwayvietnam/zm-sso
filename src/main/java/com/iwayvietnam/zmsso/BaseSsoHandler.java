@@ -34,6 +34,7 @@ import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.session.JEESessionStore;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
+import org.pac4j.core.exception.http.WithLocationAction;
 import org.pac4j.core.http.adapter.JEEHttpActionAdapter;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
@@ -59,12 +60,15 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         if (!isLoggedIn(request)) {
-            ZimbraLog.extensions.debug("SSO login with: %s", client.getName());
+            ZimbraLog.extensions.info("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             configBuilder.clientInit();
-            final Optional<RedirectionAction> logoutAction = client.getRedirectionAction(context, JEESessionStore.INSTANCE);
-            logoutAction.ifPresent(action -> JEEHttpActionAdapter.INSTANCE.adapt(action, context));
+            final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context, JEESessionStore.INSTANCE);
+            loginAction.ifPresent(action -> {
+                ZimbraLog.extensions.debug("Adapt redirection action: %s", action);
+                JEEHttpActionAdapter.INSTANCE.adapt(action, context);
+            });
         }
         else {
             redirectToMail(request, response);
@@ -72,7 +76,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
-        ZimbraLog.extensions.debug("SSO callback with: %s", client.getName());
+        ZimbraLog.extensions.info("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final var renewSession = configBuilder.getRenewSession();
@@ -80,7 +84,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         configBuilder.clientInit();
         final var context = new JEEContext(request, response);
         DefaultCallbackLogic.INSTANCE.perform(context, JEESessionStore.INSTANCE, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
-        ZimbraLog.extensions.debug("SSO callback is performed");
+        ZimbraLog.extensions.info("SSO callback is performed");
 
         final var manager = new ProfileManager(context, JEESessionStore.INSTANCE);
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
