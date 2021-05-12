@@ -6,7 +6,7 @@ It makes it easy to secure applications and services with little to no code.
 ## Install Keycloak
 
 ### Requirement
-* JDK version version 1.8 or newer.
+* JDK version 1.8 or newer.
 
 ### Download and attract latest stable version of Keycloak (current is 13.0.0)
 ```shell

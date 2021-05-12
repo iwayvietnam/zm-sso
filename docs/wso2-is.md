@@ -7,7 +7,7 @@ It supports complex IAM requirements given its high extensibility.
 ## Install WSO2 IS
 
 ### Requirement
-* JDK version version 1.8 or newer.
+* JDK version 1.8 or newer.
 
 ### Download and unzip latest stable version of WSO2 IS (current is 5.11.0)
 ```shell

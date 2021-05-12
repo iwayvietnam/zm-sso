@@ -6,7 +6,7 @@ The primary implementation of the protocol is an open-source Java server compone
 ## Install CAS
 
 ### Requirement
-* JDK version version 11 or newer.
+* JDK version 11 or newer.
 
 ### Clone `cas overlay template` & `cas-management-overlay`
 ```shell
