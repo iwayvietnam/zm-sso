@@ -62,7 +62,10 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             configBuilder.clientInit();
-            JEEHttpActionAdapter.INSTANCE.adapt((RedirectionAction) client.getRedirectionAction(context).get(), context);
+            final Optional<RedirectionAction> logoutAction = client.getRedirectionAction(context);
+            logoutAction.ifPresent(action -> {
+                JEEHttpActionAdapter.INSTANCE.adapt(action, context);
+            });
         }
         else {
             redirectToMail(request, response);
@@ -83,12 +86,13 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         ZimbraLog.extensions.debug("SSO callback is performed");
 
         final var manager = new ProfileManager<CommonProfile>(context);
-        manager.get(configBuilder.getSaveInSession()).ifPresent(profile -> {
+        manager.get(saveInSession).ifPresent(profile -> {
+            final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
             final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
-            final var sessionKey = (String) configBuilder.getLogoutHandler().getStore().get(sessionId).orElse(sessionId);
+            final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {
-                configBuilder.getLogoutHandler().singleLogin(context, accountName, sessionKey, profile.getClientName());
+                logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
             } catch (ServiceException e) {
                 ZimbraLog.extensions.error(e);
             }
