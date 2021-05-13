@@ -23,7 +23,9 @@
 package com.iwayvietnam.zmsso.oidc;
 
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.core.exception.TechnicalException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +52,8 @@ public class OidcLoginHandler extends OidcBaseHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doLogin(request, response, client);
-        } catch (final ServiceException | RuntimeException ex) {
+        } catch (final ServiceException | TechnicalException ex) {
+            ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);
         }
     }

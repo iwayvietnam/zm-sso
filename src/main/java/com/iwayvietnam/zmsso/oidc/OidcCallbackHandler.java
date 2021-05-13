@@ -22,7 +22,9 @@
  */
 package com.iwayvietnam.zmsso.oidc;
 
+import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
+import org.pac4j.core.exception.TechnicalException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +51,8 @@ public class OidcCallbackHandler extends OidcBaseHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doCallback(request, response, client);
-        } catch (final RuntimeException ex) {
+        } catch (final TechnicalException ex) {
+            ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);
         }
     }
