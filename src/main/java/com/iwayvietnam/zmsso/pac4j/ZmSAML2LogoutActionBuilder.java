@@ -21,15 +21,9 @@ public class ZmSAML2LogoutActionBuilder extends SAML2LogoutActionBuilder {
         final var origCl = thread.getContextClassLoader();
         thread.setContextClassLoader(getClass().getClassLoader());
 
-        Optional<RedirectionAction> action = Optional.empty();
-
-        try {
-            action = super.getLogoutAction(context, currentProfile, targetUrl);
-        } catch (final RedirectionAction e) {
-            ZimbraLog.extensions.error(e);
-        } finally {
-            thread.setContextClassLoader(origCl);
-        }
+        ZimbraLog.extensions.debug("Get saml logout action");
+        final var action = super.getLogoutAction(context, currentProfile, targetUrl);
+        thread.setContextClassLoader(origCl);
 
         return action;
     }
