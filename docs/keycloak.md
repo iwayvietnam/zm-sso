@@ -121,6 +121,14 @@ zmmailboxdctl restart
 * Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/saml/login` from your web browser.
 * Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
 
+#### Replace login and logout urls
+* Execute following commands with the `zimbra` user:
+```shell
+zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/saml/login
+zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
+zmmailboxdctl restart
+```
+
 ### Single sign on with OpenID Connect protocol
 #### Create OpenID Connect client for Zimbra on Keycloak
 * Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-server-hostname:9443/auth/admin` from your web browser.
@@ -148,3 +156,11 @@ zmmailboxdctl restart
 #### Testing
 * Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/oidc/login` from your web browser.
 * Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
+
+#### Replace login and logout urls
+* Execute following commands with the `zimbra` user:
+```shell
+zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/oidc/login
+zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
+zmmailboxdctl restart
+```
