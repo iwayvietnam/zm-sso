@@ -196,6 +196,12 @@ public class ConfigBuilder {
             cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
             cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
 
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_RESPONSE_BINDING)).ifPresent(cfg::setResponseBindingType);
+
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
+
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
+
             final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
             cfg.setPostLogoutURL(postLogoutURL);
         });
