@@ -141,6 +141,9 @@
                                 commons-collections,
                                 javax.servlet-api,
                                 junit,
+                                ldaptive,
+                                slf4j-api,
+                                spymemcached,
                                 zimbra-common,
                                 zimbra-client,
                                 zimbra-store

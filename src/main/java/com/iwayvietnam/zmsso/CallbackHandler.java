@@ -49,7 +49,7 @@ public class CallbackHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             final var session = request.getSession();
-            final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse(session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR).toString());
+            final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse((String) session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR));
             final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
             doCallback(request, response, client);
         }
