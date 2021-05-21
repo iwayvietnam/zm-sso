@@ -28,7 +28,6 @@ import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
-import org.pac4j.config.client.PropertiesConstants;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
@@ -36,7 +35,6 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
-import org.pac4j.saml.util.DefaultConfigurationManager;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -69,9 +67,6 @@ public class ConfigBuilder {
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
-        if (hasSamlClient()) {
-            openSAMLInitialization();
-        }
         logoutHandler = new ZmLogoutHandler<>();
         config = buildConfig();
 
@@ -114,26 +109,6 @@ public class ConfigBuilder {
 
     public ZmLogoutHandler getLogoutHandler() {
         return logoutHandler;
-    }
-
-    public void clientInit() {
-        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
-            if (!client.isInitialized()) {
-                ZimbraLog.extensions.info("Init saml client");
-                client.init();
-                client.setCredentialsExtractor(new ZmSAML2CredentialsExtractor(client));
-                client.setRedirectionActionBuilder(new ZmSAML2RedirectionActionBuilder(client));
-                client.setLogoutActionBuilder(new ZmSAML2LogoutActionBuilder(client));
-            }
-        });
-
-        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
-            if (!client.isInitialized()) {
-                ZimbraLog.extensions.info("Init oidc client");
-                client.init();
-                client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
-            }
-        });
     }
 
     public String getCasCallbackUrl() {
@@ -195,6 +170,7 @@ public class ConfigBuilder {
                 cfg.setScope(SettingsConstants.ZM_DEFAULT_OIDC_SCOPE);
             }
 
+            client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config saml client");
@@ -210,38 +186,13 @@ public class ConfigBuilder {
             cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_RESPONSE_BINDING)).ifPresent(cfg::setResponseBindingType);
-
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
-
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
 
             final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
             cfg.setPostLogoutURL(postLogoutURL);
         });
         return config;
-    }
-
-    private static void openSAMLInitialization() {
-        ZimbraLog.extensions.info("OpenSAML Initialization and Configuration");
-
-        final var thread = Thread.currentThread();
-        final var origCl = thread.getContextClassLoader();
-        thread.setContextClassLoader(ConfigBuilder.class.getClassLoader());
-
-        try {
-            new DefaultConfigurationManager().configure();
-        } catch (final RuntimeException e) {
-            ZimbraLog.extensions.error(e);
-        } finally {
-            thread.setContextClassLoader(origCl);
-        }
-    }
-
-    private static boolean hasSamlClient() {
-        return !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PASSWORD)) &&
-               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_PRIVATE_KEY_PASSWORD)) &&
-               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_KEYSTORE_PATH)) &&
-               !StringUtil.isNullOrEmpty(loadStringProperty(PropertiesConstants.SAML_IDENTITY_PROVIDER_METADATA_PATH));
     }
 
     private static String loadStringProperty(final String key) {

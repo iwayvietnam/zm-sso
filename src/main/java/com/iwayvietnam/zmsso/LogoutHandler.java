@@ -66,7 +66,6 @@ public class LogoutHandler extends BaseSsoHandler {
         final var centralLogout = configBuilder.getCentralLogout();
 
         try {
-            configBuilder.clientInit();
             DefaultLogoutLogic.INSTANCE.perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
             ZimbraLog.extensions.info("SSO logout is performed");
         }
