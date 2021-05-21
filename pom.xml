@@ -157,7 +157,6 @@
                                 javax.annotation-api,
                                 javax.servlet-api,
                                 junit,
-                                ldaptive,
                                 slf4j-api,
                                 spymemcached,
                                 spring-beans,
