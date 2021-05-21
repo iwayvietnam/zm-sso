@@ -189,7 +189,7 @@ public class ConfigBuilder {
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
 
-            final var postLogoutURL = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL)).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
+            final var postLogoutURL = Optional.ofNullable(getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
             cfg.setPostLogoutURL(postLogoutURL);
         });
         return config;

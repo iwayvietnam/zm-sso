@@ -25,6 +25,7 @@ package com.iwayvietnam.zmsso.saml;
 import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.saml.exceptions.SAMLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +52,7 @@ public class SamlCallbackHandler extends SamlBaseHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             doCallback(request, response, client);
-        } catch (final TechnicalException ex) {
+        } catch (final RuntimeException ex) {
             ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);
         }
