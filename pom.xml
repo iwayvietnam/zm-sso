@@ -139,8 +139,6 @@
                         <configuration>
                             <excludeArtifactIds>
                                 activation,
-                                antlr,
-                                asm,
                                 bcpkix-jdk15on,
                                 bcprov-jdk15on,
                                 commons-codec,
@@ -151,13 +149,8 @@
                                 guava,
                                 httpcore,
                                 httpclient,
-                                jackson-annotations,
-                                jackson-core,
-                                jackson-databind,
-                                javax.annotation-api,
                                 javax.servlet-api,
                                 junit,
-                                slf4j-api,
                                 spymemcached,
                                 spring-beans,
                                 zimbra-common,
