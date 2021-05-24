@@ -63,6 +63,7 @@ public class ZmSsoExtension implements ZimbraExtension {
             ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
             ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
             ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
+            ExtensionDispatcherServlet.register(this, new SamlSloHandler());
         } catch (ExtensionException e) {
             ZimbraLog.extensions.error(e);
         }
