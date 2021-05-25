@@ -50,7 +50,7 @@ public class OidcCallbackHandler extends OidcBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            doCallback(request, response, client);
+            doCallback(request, response, configBuilder.getConfig(), client);
         } catch (final TechnicalException ex) {
             ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);

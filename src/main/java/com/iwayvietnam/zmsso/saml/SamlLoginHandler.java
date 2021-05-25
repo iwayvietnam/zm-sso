@@ -22,10 +22,11 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
+import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
-import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.saml.client.SAML2Client;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,12 +37,8 @@ import java.io.IOException;
  * Saml SSO Login Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class SamlLoginHandler extends SamlBaseHandler {
+public class SamlLoginHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/saml/login";
-
-    public SamlLoginHandler() throws ExtensionException {
-        super();
-    }
 
     @Override
     public String getPath() {
@@ -51,6 +48,8 @@ public class SamlLoginHandler extends SamlBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
+            final var config = configBuilder.buildConfig();
+            final var client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ServletException("No saml client found"));
             doLogin(request, response, client);
         } catch (final ServiceException | TechnicalException ex) {
             ZimbraLog.extensions.error(ex);

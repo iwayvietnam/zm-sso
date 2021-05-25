@@ -31,6 +31,7 @@ import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
+import org.pac4j.core.config.ConfigFactory;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
@@ -49,12 +50,9 @@ public class ConfigBuilder {
     private static ConfigBuilder instance;
 
     private static final Map<String, String> properties = new HashMap<>();
+    private final ConfigFactory configFactory;
     private final Config config;
     private final ZmLogoutHandler<? extends WebContext> logoutHandler;
-
-    private final String casCallbackUrl;
-    private final String oidcCallbackUrl;
-    private final String samlCallbackUrl;
 
     private final Boolean saveInSession;
     private final Boolean multiProfile;
@@ -67,12 +65,9 @@ public class ConfigBuilder {
 
     private ConfigBuilder() {
         loadSettingsFromProperties();
+        configFactory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         logoutHandler = new ZmLogoutHandler<>();
         config = buildConfig();
-
-        casCallbackUrl = loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL);
-        oidcCallbackUrl = loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL);
-        samlCallbackUrl = loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL);
 
         saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
         multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
@@ -103,24 +98,12 @@ public class ConfigBuilder {
         return config.getClients();
     }
 
-    public Client defaultClient() throws ServiceException {
+    public Client defaultClient(final Config config) throws ServiceException {
         return config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
     }
 
     public ZmLogoutHandler getLogoutHandler() {
         return logoutHandler;
-    }
-
-    public String getCasCallbackUrl() {
-        return casCallbackUrl;
-    }
-
-    public String getOidcCallbackUrl() {
-        return oidcCallbackUrl;
-    }
-
-    public String getSamlCallbackUrl() {
-        return samlCallbackUrl;
     }
 
     public Boolean getSaveInSession() {
@@ -151,15 +134,15 @@ public class ConfigBuilder {
         return postLogoutURL;
     }
 
-    private Config buildConfig() {
+    public Config buildConfig() {
         ZimbraLog.extensions.info("Build Pac4J config");
-        final var factory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
-        final var config = factory.build();
+        final var config = configFactory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config cas client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config oidc client");
@@ -170,6 +153,7 @@ public class ConfigBuilder {
                 cfg.setScope(SettingsConstants.ZM_DEFAULT_OIDC_SCOPE);
             }
 
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
@@ -191,6 +175,8 @@ public class ConfigBuilder {
 
             final var postLogoutURL = Optional.ofNullable(getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
             cfg.setPostLogoutURL(postLogoutURL);
+
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
         });
         return config;
     }

@@ -1,9 +1,10 @@
 package com.iwayvietnam.zmsso.saml;
 
-import com.zimbra.cs.extension.ExtensionException;
+import com.iwayvietnam.zmsso.BaseSsoHandler;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.exception.http.RedirectionActionHelper;
+import org.pac4j.saml.client.SAML2Client;
 import org.pac4j.saml.logout.impl.SAML2LogoutResponseBuilder;
 import org.pac4j.saml.logout.impl.SAML2LogoutResponseMessageSender;
 
@@ -12,12 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class SamlSloHandler extends SamlBaseHandler {
+public class SamlSloHandler extends BaseSsoHandler {
     public static final String HANDLER_PATH = "/saml/slo";
-
-    public SamlSloHandler() throws ExtensionException {
-        super();
-    }
 
     @Override
     public String getPath() {
@@ -26,8 +23,11 @@ public class SamlSloHandler extends SamlBaseHandler {
 
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        final var context = new JEEContext(request, response);
+        final var config = configBuilder.buildConfig();
+        final var client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ServletException("No saml client found"));
         client.init();
+
+        final var context = new JEEContext(request, response);
         final var contextProvider = client.getContextProvider();
         final var logoutProfileHandler = client.getLogoutProfileHandler();
         final var spLogoutResponseBindingType = client.getConfiguration().getSpLogoutResponseBindingType();
