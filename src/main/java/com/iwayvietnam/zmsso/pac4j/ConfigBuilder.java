@@ -98,7 +98,7 @@ public class ConfigBuilder {
         return config.getClients();
     }
 
-    public Client defaultClient(final Config config) throws ServiceException {
+    public Client defaultClient() throws ServiceException {
         return config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
     }
 
@@ -134,7 +134,7 @@ public class ConfigBuilder {
         return postLogoutURL;
     }
 
-    public Config buildConfig() {
+    private Config buildConfig() {
         ZimbraLog.extensions.info("Build Pac4J config");
         final var config = configFactory.build();
 

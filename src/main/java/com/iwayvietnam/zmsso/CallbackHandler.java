@@ -48,11 +48,10 @@ public class CallbackHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            final var config = configBuilder.buildConfig();
             final var session = request.getSession();
             final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse((String) session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR));
-            final var client = config.getClients().findClient(clientName).orElse(configBuilder.defaultClient(config));
-            doCallback(request, response, config, client);
+            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
+            doCallback(request, response, client);
         }
         catch (final ServiceException | TechnicalException ex) {
             ZimbraLog.extensions.error(ex);

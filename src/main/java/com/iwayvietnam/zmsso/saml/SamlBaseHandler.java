@@ -20,45 +20,21 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.oidc;
+package com.iwayvietnam.zmsso.saml;
 
-import com.zimbra.common.util.ZimbraLog;
+import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.cs.extension.ExtensionException;
-import org.pac4j.core.exception.TechnicalException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.pac4j.saml.client.SAML2Client;
 
 /**
- * Oidc SSO Callback Handler
+ * Saml Base Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class OidcCallbackHandler extends OidcBaseHandler {
-    public static final String HANDLER_PATH = "/oidc/callback";
+public abstract class SamlBaseHandler extends BaseSsoHandler {
+    protected final SAML2Client client;
 
-    public OidcCallbackHandler() throws ExtensionException {
+    public SamlBaseHandler() throws ExtensionException {
         super();
-    }
-
-    @Override
-    public String getPath() {
-        return HANDLER_PATH;
-    }
-
-    @Override
-    public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        try {
-            doCallback(request, response, client);
-        } catch (final TechnicalException ex) {
-            ZimbraLog.extensions.error(ex);
-            throw new ServletException(ex);
-        }
-    }
-
-    @Override
-    public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        doPost(request, response);
+        client = configBuilder.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ExtensionException("No saml client found"));
     }
 }

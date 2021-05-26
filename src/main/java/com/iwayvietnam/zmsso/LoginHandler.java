@@ -47,9 +47,8 @@ public class LoginHandler extends BaseSsoHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            final var config = configBuilder.buildConfig();
             final var clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
-            final var client = config.getClients().findClient(clientName).orElse(configBuilder.defaultClient(config));
+            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
             doLogin(request, response, client);
         }
         catch (final ServiceException | TechnicalException ex) {

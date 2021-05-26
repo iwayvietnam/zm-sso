@@ -30,7 +30,6 @@ import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
-import org.pac4j.core.config.Config;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.exception.http.RedirectionAction;
@@ -73,7 +72,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         }
     }
 
-    protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, Config config, final Client client) {
+    protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
         ZimbraLog.extensions.info("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
@@ -82,7 +81,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var renewSession = configBuilder.getRenewSession();
 
         final var context = new JEEContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        DefaultCallbackLogic.INSTANCE.perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
         ZimbraLog.extensions.info("SSO callback is performed");
 
         final var manager = new ProfileManager<CommonProfile>(context);

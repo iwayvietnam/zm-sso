@@ -22,10 +22,9 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
-import com.iwayvietnam.zmsso.BaseSsoHandler;
 import com.zimbra.common.util.ZimbraLog;
+import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.exception.TechnicalException;
-import org.pac4j.saml.client.SAML2Client;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +35,12 @@ import java.io.IOException;
  * Saml Metadata Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-public class SamlMetadataHandler extends BaseSsoHandler {
+public class SamlMetadataHandler extends SamlBaseHandler {
     public static final String HANDLER_PATH = "/saml/metadata";
+
+    public SamlMetadataHandler() throws ExtensionException {
+        super();
+    }
 
     @Override
     public String getPath() {
@@ -48,9 +51,6 @@ public class SamlMetadataHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             ZimbraLog.extensions.info("Generate saml metadata");
-            final var config = configBuilder.buildConfig();
-            final var client = config.getClients().findClient(SAML2Client.class).orElseThrow(() -> new ServletException("No saml client found"));
-
             client.init();
             response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
             response.getWriter().flush();

@@ -50,7 +50,7 @@ public class CasCallbackHandler extends CasBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            doCallback(request, response, configBuilder.getConfig(), client);
+            doCallback(request, response, client);
         } catch (final TechnicalException ex) {
             ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);
