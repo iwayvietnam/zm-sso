@@ -155,6 +155,7 @@ public class ConfigBuilder {
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
+            client.setProfileCreator(new ZmOidcProfileCreator(cfg, client));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config saml client");
