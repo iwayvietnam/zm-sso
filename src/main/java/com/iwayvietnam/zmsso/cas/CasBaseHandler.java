@@ -23,7 +23,6 @@
 package com.iwayvietnam.zmsso.cas;
 
 import com.iwayvietnam.zmsso.BaseSsoHandler;
-import com.zimbra.common.util.StringUtil;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.cas.client.CasClient;
 
@@ -37,9 +36,5 @@ public abstract class CasBaseHandler extends BaseSsoHandler  {
     public CasBaseHandler() throws ExtensionException {
         super();
         client = configBuilder.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
-        final var callbackUrl = configBuilder.getCasCallbackUrl();
-        if (!StringUtil.isNullOrEmpty(callbackUrl)) {
-            client.setCallbackUrl(callbackUrl);
-        }
     }
 }

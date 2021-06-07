@@ -36,7 +36,6 @@ import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.context.JEEContext;
 import org.pac4j.core.context.WebContext;
-import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
 
@@ -48,7 +47,7 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-public final class ZmLogoutHandler extends DefaultLogoutHandler implements LogoutHandler {
+public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
     private static final Provisioning prov = Provisioning.getInstance();
     private static final String X_ORIGINATING_IP_HEADER = LC.zimbra_http_originating_ip_header.value();
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -58,9 +57,10 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param context the web context
      * @param key the key
      */
-    public void recordSession(final WebContext context, final SessionStore sessionStore, final String key) {
+    @Override
+    public void recordSession(final C context, final String key) {
         ZimbraLog.extensions.info("Record sso session");
-        super.recordSession(context, sessionStore, key);
+        super.recordSession(context, key);
         ZimbraLog.extensions.debug("Associates a key with the current web session: %s", key);
     }
 
@@ -70,9 +70,9 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void destroySessionFront(final WebContext context, final SessionStore sessionStore, final String key) {
+    public void destroySessionFront(final C context, final String key) {
         ZimbraLog.extensions.info("Destroy front channel sso session");
-        super.destroySessionFront(context, sessionStore, key);
+        super.destroySessionFront(context, key);
         ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout: %s", key);
         try {
             clearAuthToken(context, key);
@@ -87,9 +87,9 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
      * @param key the key
      */
     @Override
-    public void destroySessionBack(final WebContext context, final SessionStore sessionStore, final String key) {
+    public void destroySessionBack(final C context, final String key) {
         ZimbraLog.extensions.info("Destroy back channel sso session");
-        super.destroySessionBack(context, sessionStore, key);
+        super.destroySessionBack(context, key);
         ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout: %s", key);
         try {
             singleLogout(key);
@@ -98,7 +98,7 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         }
     }
 
-    public void singleLogin(final WebContext context, final String accountName, final String key, final String client) throws ServiceException {
+    public void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
         ZimbraLog.extensions.info("Perform single login for account: %s", accountName);
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
@@ -121,7 +121,7 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         ZimbraLog.extensions.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
     }
 
-    private void setAuthTokenCookie(final WebContext context, final AuthToken authToken) throws ServiceException {
+    private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
         if (context instanceof JEEContext) {
             final var isAdmin = AuthToken.isAnyAdmin(authToken);
             final var jeeCxt = (JEEContext) context;
@@ -130,7 +130,7 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         }
     }
 
-    private void clearAuthToken(final WebContext context, final String key) throws ServiceException {
+    private void clearAuthToken(final C context, final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         ZimbraLog.extensions.debug("Update sso session logout for account id: %s", accountId);
         if (context instanceof JEEContext) {

@@ -23,7 +23,6 @@
 package com.iwayvietnam.zmsso.oidc;
 
 import com.iwayvietnam.zmsso.BaseSsoHandler;
-import com.zimbra.common.util.StringUtil;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.oidc.client.OidcClient;
 
@@ -37,9 +36,5 @@ public abstract class OidcBaseHandler extends BaseSsoHandler {
     public OidcBaseHandler() throws ExtensionException {
         super();
         client = configBuilder.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No oidc client found"));
-        final var callbackUrl = configBuilder.getOidcCallbackUrl();
-        if (!StringUtil.isNullOrEmpty(callbackUrl)) {
-            client.setCallbackUrl(callbackUrl);
-        }
     }
 }
