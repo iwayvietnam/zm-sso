@@ -142,7 +142,10 @@ public class ConfigBuilder {
             ZimbraLog.extensions.info("Config cas client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
+
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
+            final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
+            client.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config oidc client");
@@ -155,7 +158,6 @@ public class ConfigBuilder {
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
-            client.setProfileCreator(new ZmOidcProfileCreator(cfg, client));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config saml client");

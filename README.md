@@ -124,6 +124,7 @@ To handle the logout, a logout endpoint is necessary to perform:
 * **sso.destroySession**: It defines whether we must destroy the web session during the local logout.
 * **sso.centralLogout**: It defines whether a central logout must be performed.
 * **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra.
+* **sso.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page.
 
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
@@ -142,8 +143,6 @@ Ex: `saml.keystorePath = file:/opt/zimbra/conf/saml/keystore.jks`
 Ex: `saml.identityProviderMetadataPath = https://samltest.id/saml/idp`
 * **saml.serviceProviderEntityId**: It defines the entity ID of your application (the Service Provider).
 Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/extension/saml/metadata`
-* **saml.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page. 
-It is possible to customize default pac4j behavior using the postLogoutURL property of the SAML2Configuration.
 
 ### Configuration to login with a CAS server.
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**.
