@@ -97,7 +97,6 @@ The location of this file is **/opt/zimbra/conf/zm.sso.properties**
 ### Default client configuration
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
 * Specify default pac4j client by setting the value for the **sso.defaultClient** key. Ex: `sso.defaultClient = SAML2Client`
-* Or execute following command with the `zimbra` user: `zmlocalconfig -e sso.defaultClient=SAML2Client`
 
 ### Callback endpoint configuration
 To handle authentication, a callback endpoint is necessary to receive callback calls from the identity server and finish the login process.
@@ -123,8 +122,7 @@ To handle the logout, a logout endpoint is necessary to perform:
 * **sso.localLogout**: It indicates whether a local logout must be performed.
 * **sso.destroySession**: It defines whether we must destroy the web session during the local logout.
 * **sso.centralLogout**: It defines whether a central logout must be performed.
-* **sso.centralLogout**: It defines whether logout return url from idp server back to zimbra.
-* **sso.postLogoutURL**: It defines post logout URL. By default at the last step of SP initiated logout user will see a blank page.
+* **sso.postLogoutURL**: It defines whether logout return url from idp server back to zimbra. By default at the last step of SP initiated logout user will see a blank page.
 
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
