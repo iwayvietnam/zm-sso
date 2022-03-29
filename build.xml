@@ -51,6 +51,16 @@
         <delete dir="${dist}"/>
     </target>
 
+    <target name="check-dom4j">
+        <condition property="available-dom4j">
+            <available file="${deps}/dom4j-1.5.2.jar" />
+        </condition>
+    </target>
+    <target name="download-dom4j" depends="check-dom4j" unless="available-dom4j">
+        <get src="https://repo1.maven.org/maven2/dom4j/dom4j/1.5.2/dom4j-1.5.2.jar"
+             dest="${deps}/dom4j-1.5.2.jar" usetimestamp="true"/>
+    </target>
+
     <target name="check-servlet-api">
         <condition property="available-servlet-api">
             <available file="${deps}/javax.servlet-api-3.1.0.jar" />
@@ -121,34 +131,34 @@
              dest="${deps}/commons-io-2.8.0.jar" usetimestamp="true"/>
     </target>
 
-    <target name="check-opensaml-core">
-        <condition property="available-opensaml-core">
-            <available file="${deps}/opensaml-core-3.4.5.jar" />
+    <target name="check-opensaml-api">
+        <condition property="available-opensaml-api">
+            <available file="${deps}/opensaml-saml-api-3.4.5.jar" />
         </condition>
     </target>
-    <target name="download-opensaml-core" depends="check-opensaml-core" unless="available-opensaml-core">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-core/3.4.5/opensaml-core-3.4.5.jar"
-             dest="${deps}/opensaml-core-3.4.5.jar" usetimestamp="true"/>
+    <target name="download-opensaml-api" depends="check-opensaml-api" unless="available-opensaml-api">
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-saml-api/3.4.5/opensaml-saml-api-3.4.5.jar"
+             dest="${deps}/opensaml-saml-api-3.4.5.jar" usetimestamp="true"/>
     </target>
 
-    <target name="check-opensaml-xmlsec-api">
-        <condition property="available-opensaml-xmlsec-api">
-            <available file="${deps}/opensaml-xmlsec-api-3.4.5.jar" />
+    <target name="check-opensaml-messaging">
+        <condition property="available-opensaml-messaging">
+            <available file="${deps}/opensaml-messaging-api-3.4.5.jar" />
         </condition>
     </target>
-    <target name="download-opensaml-xmlsec-api" depends="check-opensaml-xmlsec-api" unless="available-opensaml-xmlsec-api">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-xmlsec-api/3.4.5/opensaml-xmlsec-api-3.4.5.jar"
-             dest="${deps}/opensaml-xmlsec-api-3.4.5.jar" usetimestamp="true"/>
+    <target name="download-opensaml-messaging" depends="check-opensaml-messaging" unless="available-opensaml-messaging">
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-messaging-api/3.4.5/opensaml-messaging-api-3.4.5.jar"
+             dest="${deps}/opensaml-messaging-api-3.4.5.jar" usetimestamp="true"/>
     </target>
 
-    <target name="check-shibboleth-java-support">
-        <condition property="available-shibboleth-java-support">
-            <available file="${deps}/java-support-7.5.1.jar" />
+    <target name="check-apache-httpcore">
+        <condition property="available-apache-httpcore">
+            <available file="${deps}/httpcore-4.4.9.jar" />
         </condition>
     </target>
-    <target name="download-shibboleth-java-support" depends="check-shibboleth-java-support" unless="available-shibboleth-java-support">
-        <get src="https://repo1.maven.org/maven2/net/shibboleth/utilities/java-support/7.5.1/java-support-7.5.1.jar"
-             dest="${deps}/java-support-7.5.1.jar" usetimestamp="true"/>
+    <target name="download-apache-httpcore" depends="check-apache-httpcore" unless="available-apache-httpcore">
+        <get src="https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.9/httpcore-4.4.9.jar"
+             dest="${deps}/httpcore-4.4.9.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-apache-httpclient">
@@ -167,12 +177,13 @@
 
     <target name="download-dependencies"
             depends="create-deps,
+                download-dom4j,
                 download-servlet-api,
+                download-apache-httpcore,
                 download-apache-httpclient,
                 download-commons-io,
-                download-shibboleth-java-support,
-                download-opensaml-core,
-                download-opensaml-xmlsec-api,
+                download-opensaml-api,
+                download-opensaml-messaging,
                 download-pac4j-core,
                 download-pac4j-cas,
                 download-pac4j-oidc,
