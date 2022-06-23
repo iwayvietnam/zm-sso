@@ -9,7 +9,7 @@ URL:            https://gitlab.com/iway/zm-sso
 Source0:        https://gitlab.com/iway/zm-sso/-/archive/%{version}/zm-sso-%{version}.tar.gz
 
 Requires:       zimbra-store >= 8.8
-BuildRequires:  java-1.8.0-openjdk-devel maven
+BuildRequires:  java-11-openjdk-devel maven
 BuildArch:      noarch
 
 %description
