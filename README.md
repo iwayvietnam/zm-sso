@@ -204,6 +204,7 @@ zmmailboxdctl restart
 ## Tutorials
 * [Single sign on with WSO2 Identity Server (WSO2 IS)](docs/wso2-is.md)
 * [Single sign on with Keycloak](docs/keycloak.md)
+* [Single sign on with Azure AD B2C](docs/azure-ad-b2c.md)
 * [Single sign on with Apereo Central Authentication Service (CAS)](docs/cas.md)
 
 Licensing
