@@ -19,15 +19,15 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell
-dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
+dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell
-yum -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
+yum -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
 ```
 * On Debian or Ubuntu
 ```shell
-apt install -y openjdk-11-jdk maven ant git
+apt install -y openjdk-11-jdk maven ant git make
 ```
 
 ### Clone code from git repository
@@ -39,6 +39,7 @@ git clone https://github.com/iwayvietnam/zm-sso.git
 
 ### Build jar file by using Maven
 ```shell
+export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk
 cd ~/projects/zimbra/zm-sso
 mvn clean package
 ```
@@ -60,6 +61,7 @@ The output should be like this:
 
 ### Build rpm package
 ```shell
+export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk
 cd ~/projects/zimbra/zm-sso
 make rpmbuild
 ```
