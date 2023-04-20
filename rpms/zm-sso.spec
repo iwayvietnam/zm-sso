@@ -5,10 +5,10 @@ Summary:        Zimbra Single Sign On (Zm SSO)
 
 Group:          Applications/Internet
 License:        AGPLv3
-URL:            https://gitlab.com/iway/zm-sso
-Source0:        https://gitlab.com/iway/zm-sso/-/archive/%{version}/zm-sso-%{version}.tar.gz
+URL:            https://github.com/iwayvietnam/zm-sso
+Source0:        https://github.com/iwayvietnam/zm-sso/archive/refs/tags/%{version}.tar.gz
 
-Requires:       zimbra-store >= 8.8
+Requires:       zimbra-store = 8.8.15
 BuildRequires:  java-11-openjdk-devel maven
 BuildArch:      noarch
 
@@ -41,5 +41,5 @@ su - zimbra -c "zmprov fc all"
 /opt/zimbra/conf/zm.sso.properties
 
 %changelog
-* Wed May 03 2021 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
-- Initial release 1.0.0 from upstream.
+* Thu Apr 20 2021 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
+- Initial release 1.0.0.
