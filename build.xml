@@ -73,52 +73,52 @@
 
     <target name="check-pac4j-core">
         <condition property="available-pac4j-core">
-            <available file="${deps}/pac4j-core-4.5.4.jar" />
+            <available file="${deps}/pac4j-core-4.5.7.jar" />
         </condition>
     </target>
     <target name="download-pac4j-core" depends="check-pac4j-core" unless="available-pac4j-core">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/4.5.4/pac4j-core-4.5.4.jar"
-             dest="${deps}/pac4j-core-4.5.4.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/4.5.7/pac4j-core-4.5.7.jar"
+             dest="${deps}/pac4j-core-4.5.7.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-cas">
         <condition property="available-pac4j-cas">
-            <available file="${deps}/pac4j-cas-4.5.4.jar" />
+            <available file="${deps}/pac4j-cas-4.5.7.jar" />
         </condition>
     </target>
     <target name="download-pac4j-cas" depends="check-pac4j-cas" unless="available-pac4j-cas">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/4.5.4/pac4j-cas-4.5.4.jar"
-             dest="${deps}/pac4j-cas-4.5.4.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/4.5.7/pac4j-cas-4.5.7.jar"
+             dest="${deps}/pac4j-cas-4.5.7.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-oidc">
         <condition property="available-pac4j-oidc">
-            <available file="${deps}/pac4j-oidc-4.5.4.jar" />
+            <available file="${deps}/pac4j-oidc-4.5.7.jar" />
         </condition>
     </target>
     <target name="download-pac4j-oidc" depends="check-pac4j-oidc" unless="available-pac4j-oidc">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/4.5.4/pac4j-oidc-4.5.4.jar"
-             dest="${deps}/pac4j-oidc-4.5.4.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/4.5.7/pac4j-oidc-4.5.7.jar"
+             dest="${deps}/pac4j-oidc-4.5.7.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-opensamlv3">
         <condition property="available-pac4j-opensamlv3">
-            <available file="${deps}/pac4j-saml-opensamlv3-4.5.4.jar" />
+            <available file="${deps}/pac4j-saml-opensamlv3-4.5.7.jar" />
         </condition>
     </target>
     <target name="download-pac4j-opensamlv3" depends="check-pac4j-opensamlv3" unless="available-pac4j-opensamlv3">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml-opensamlv3/4.5.4/pac4j-saml-opensamlv3-4.5.4.jar"
-             dest="${deps}/pac4j-saml-opensamlv3-4.5.4.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml-opensamlv3/4.5.7/pac4j-saml-opensamlv3-4.5.7.jar"
+             dest="${deps}/pac4j-saml-opensamlv3-4.5.7.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-config">
         <condition property="available-pac4j-config">
-            <available file="${deps}/pac4j-config-4.5.4.jar" />
+            <available file="${deps}/pac4j-config-4.5.7.jar" />
         </condition>
     </target>
     <target name="download-pac4j-config" depends="check-pac4j-config" unless="available-pac4j-config">
-        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/4.5.4/pac4j-config-4.5.4.jar"
-             dest="${deps}/pac4j-config-4.5.4.jar" usetimestamp="true"/>
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/4.5.7/pac4j-config-4.5.7.jar"
+             dest="${deps}/pac4j-config-4.5.7.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-commons-io">
