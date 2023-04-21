@@ -14,20 +14,20 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 * JDK 11 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
-* rpmbuild for rpm package build.
+* rpm-build for rpm package build.
 
 ### Setting up your build system
 * On Fedora or CentOS 8.x or Red Hat EL 7.x
 ```shell
-dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
+dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
 ```
 * On CentOS 7.x or Red Hat EL 7.x
 ```shell
-yum -y install java-11-openjdk java-11-openjdk-devel maven ant git rpmbuild
+yum -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
 ```
 * On Debian or Ubuntu
 ```shell
-apt install -y openjdk-11-jdk maven ant git
+apt install -y openjdk-11-jdk maven ant git make
 ```
 
 ### Clone code from git repository
@@ -75,7 +75,7 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
 cd ~/projects/zimbra/zm-sso
 ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
-scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
+scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/lib/ext-common
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
 ```
 * Restart mailbox to load the extension.

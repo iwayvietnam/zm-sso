@@ -23,10 +23,10 @@ mvn clean package
 
 %install
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
-mkdir -p $RPM_BUILD_ROOT/opt/zimbra/jetty_base/common/lib
+mkdir -p $RPM_BUILD_ROOT/opt/zimbra/lib/ext-common
 mkdir -p $RPM_BUILD_ROOT/opt/zimbra/conf
 cp -R target/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext/zm-sso
-cp -R target/dependencies/*.jar $RPM_BUILD_ROOT/opt/zimbra/jetty_base/common/lib
+cp -R target/dependencies/*.jar $RPM_BUILD_ROOT/opt/zimbra/lib/ext-common
 cp -R conf/zm.sso.properties $RPM_BUILD_ROOT/opt/zimbra/conf
 
 %posttrans
@@ -39,9 +39,9 @@ su - zimbra -c "zmprov fc all"
 
 %files
 /opt/zimbra/lib/ext/zm-sso/*.jar
-/opt/zimbra/jetty_base/common/lib/*.jar
+/opt/zimbra/lib/ext-common/*.jar
 /opt/zimbra/conf/zm.sso.properties
 
 %changelog
-* Thu Apr 20 2021 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
+* Fri Apr 21 2021 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
 - Initial release 1.0.0.
