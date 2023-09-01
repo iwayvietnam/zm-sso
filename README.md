@@ -39,6 +39,7 @@ git clone https://github.com/iwayvietnam/zm-sso.git
 
 ### Build jar file by using Maven
 ```shell
+export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk
 cd ~/projects/zimbra/zm-sso
 mvn clean package
 ```
@@ -60,6 +61,7 @@ The output should be like this:
 
 ### Build rpm package
 ```shell
+export JAVA_HOME=/usr/lib/jvm/jre-11-openjdk
 cd ~/projects/zimbra/zm-sso
 make rpmbuild
 ```
