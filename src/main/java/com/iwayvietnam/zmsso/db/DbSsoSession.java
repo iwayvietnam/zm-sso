@@ -22,10 +22,10 @@
  */
 package com.iwayvietnam.zmsso.db;
 
+import com.iwayvietnam.zmsso.Util.Log;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ByteUtil;
 import com.zimbra.common.util.StringUtil;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.Account;
 import com.zimbra.cs.db.Db;
 import com.zimbra.cs.db.DbPool;
@@ -129,7 +129,7 @@ public final class DbSsoSession {
         final var inputStream = cl.getResourceAsStream(SCRIPT_FILE);
         try {
             if (inputStream != null) {
-                ZimbraLog.extensions.info("Create sso session table");
+                Log.sso.info("Create sso session table");
                 final var script = new String(IOUtils.toByteArray(inputStream));
                 DbUtil.executeScript(DbPool.getConnection(), new StringReader(script));
             } else {
@@ -146,7 +146,7 @@ public final class DbSsoSession {
         final var hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
         final var results = DbUtil.executeQuery(String.format("SELECT %s FROM %s WHERE %s = ?", KEY_COLUMN, SELECT_TABLE, KEY_COLUMN), hashedToken);
         if (!results.next() && !StringUtil.isNullOrEmpty(hashedToken)) {
-            ZimbraLog.dbconn.debug("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken);
+            Log.sso.debug("Insert sso session login for account %s with hashed token %s)", account.getId(), hashedToken);
             final var sql = String.format("INSERT INTO %s (%s) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", SELECT_TABLE, INSERT_COLUMNS);
             final var loginAt = new Timestamp(System.currentTimeMillis());
             DbUtil.executeUpdate(sql,
@@ -166,7 +166,7 @@ public final class DbSsoSession {
         final var hashedToken = ByteUtil.getSHA256Digest(ssoToken.getBytes(), false);
         final var results = DbUtil.executeQuery(String.format("SELECT %s FROM %s WHERE %s = ?", SELECT_COLUMNS, SELECT_TABLE, KEY_COLUMN), hashedToken);
         if (results.next() && results.isNull("logout_at")) {
-            ZimbraLog.dbconn.debug("Update sso session logout with hashed token %s", hashedToken);
+            Log.sso.debug("Update sso session logout with hashed token %s", hashedToken);
             final var sql = String.format("UPDATE %s SET logout_at = ? WHERE %s = ?", SELECT_TABLE, KEY_COLUMN);
             final var logoutAt = new Timestamp(System.currentTimeMillis());
             DbUtil.executeUpdate(sql, logoutAt, hashedToken);

@@ -22,10 +22,10 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.iwayvietnam.zmsso.Util.Log;
 import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
-import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.cas.client.CasClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.core.client.Client;
@@ -135,11 +135,11 @@ public class ConfigBuilder {
     }
 
     private Config buildConfig() {
-        ZimbraLog.extensions.info("Build Pac4J config");
+        Log.sso.info("Build Pac4J config");
         final var config = configFactory.build();
 
         config.getClients().findClient(CasClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.info("Config cas client");
+            Log.sso.info("Config cas client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
 
@@ -148,7 +148,7 @@ public class ConfigBuilder {
             client.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
-            ZimbraLog.extensions.info("Config oidc client");
+            Log.sso.info("Config oidc client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
@@ -160,7 +160,7 @@ public class ConfigBuilder {
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
-            ZimbraLog.extensions.info("Config saml client");
+            Log.sso.info("Config saml client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
             cfg.setForceServiceProviderMetadataGeneration(true);
@@ -197,14 +197,14 @@ public class ConfigBuilder {
     }
 
     private static void loadSettingsFromProperties() {
-        ZimbraLog.extensions.info("Load config properties");
+        Log.sso.info("Load config properties");
         try {
             final var confDir = Paths.get(LC.zimbra_home.value(), "conf").toString();
             final var prop = new Properties();
             prop.load(new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE));
             prop.stringPropertyNames().forEach(key -> properties.put(key, prop.getProperty(key)));
         } catch (IOException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
     }
 }

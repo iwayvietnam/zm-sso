@@ -22,12 +22,12 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
+import com.iwayvietnam.zmsso.Util.Log;
 import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
 import com.zimbra.common.util.ZimbraCookie;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthToken;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.account.Provisioning;
@@ -59,9 +59,9 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void recordSession(final C context, final String key) {
-        ZimbraLog.extensions.info("Record sso session");
+        Log.sso.info("Record sso session");
         super.recordSession(context, key);
-        ZimbraLog.extensions.debug("Associates a key with the current web session: %s", key);
+        Log.sso.debug("Associates a key with the current web session: %s", key);
     }
 
     /**
@@ -71,13 +71,13 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionFront(final C context, final String key) {
-        ZimbraLog.extensions.info("Destroy front channel sso session");
+        Log.sso.info("Destroy front channel sso session");
         super.destroySessionFront(context, key);
-        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a front channel logout: %s", key);
+        Log.sso.debug("Destroys the current web session for the given key for a front channel logout: %s", key);
         try {
             clearAuthToken(context, key);
         } catch (final ServiceException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
     }
 
@@ -88,18 +88,18 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      */
     @Override
     public void destroySessionBack(final C context, final String key) {
-        ZimbraLog.extensions.info("Destroy back channel sso session");
+        Log.sso.info("Destroy back channel sso session");
         super.destroySessionBack(context, key);
-        ZimbraLog.extensions.debug("Destroys the current web session for the given key for a back channel logout: %s", key);
+        Log.sso.debug("Destroys the current web session for the given key for a back channel logout: %s", key);
         try {
             singleLogout(key);
         } catch (final ServiceException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
     }
 
     public void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
-        ZimbraLog.extensions.info("Perform single login for account: %s", accountName);
+        Log.sso.info("Perform single login for account: %s", accountName);
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
         final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
@@ -118,7 +118,7 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         if (!StringUtil.isNullOrEmpty(key)) {
             DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
         }
-        ZimbraLog.extensions.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
+        Log.sso.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
     }
 
     private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
@@ -126,19 +126,19 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
             final var isAdmin = AuthToken.isAnyAdmin(authToken);
             final var jeeCxt = (JEEContext) context;
             authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
-            ZimbraLog.extensions.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
+            Log.sso.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
         }
     }
 
     private void clearAuthToken(final C context, final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
-        ZimbraLog.extensions.debug("Update sso session logout for account id: %s", accountId);
+        Log.sso.debug("Update sso session logout for account id: %s", accountId);
         if (context instanceof JEEContext) {
             final var jeeCxt = (JEEContext) context;
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
             final var optional = Optional.ofNullable(authToken);
             if (optional.isPresent()) {
-                ZimbraLog.extensions.info("Clear auth token for account: %s", authToken.getAccount().getName());
+                Log.sso.info("Clear auth token for account: %s", authToken.getAccount().getName());
                 authToken.encode(jeeCxt.getNativeRequest(), jeeCxt.getNativeResponse(), true);
                 try {
                     authToken.deRegister();
@@ -154,14 +154,14 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
             final var account = prov.getAccountById(accountId);
-            ZimbraLog.extensions.debug("Update sso single logout for account: %s", account.getName());
+            Log.sso.debug("Update sso single logout for account: %s", account.getName());
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {
                 account.setAuthTokenValidityValue(1);
             } else {
                 account.setAuthTokenValidityValue(validityValue + 1);
             }
-            ZimbraLog.extensions.info("Change validity value for account: %s", account.getName());
+            Log.sso.info("Change validity value for account: %s", account.getName());
         }
     }
 }

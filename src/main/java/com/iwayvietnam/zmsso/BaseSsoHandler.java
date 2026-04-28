@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.Util.Log;
 import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
@@ -58,12 +59,12 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         if (!isLoggedIn(request)) {
-            ZimbraLog.extensions.info("SSO login with: %s", client.getName());
+            Log.sso.info("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context);
             loginAction.ifPresent(action -> {
-                ZimbraLog.extensions.debug("Adapt redirection action: %s", action);
+                Log.sso.debug("Adapt redirection action: %s", action);
                 JEEHttpActionAdapter.INSTANCE.adapt(action, context);
             });
         }
@@ -73,7 +74,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
-        ZimbraLog.extensions.info("SSO callback with: %s", client.getName());
+        Log.sso.info("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final var saveInSession = configBuilder.getSaveInSession();

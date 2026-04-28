@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso.saml;
 
-import com.zimbra.common.util.ZimbraLog;
+import com.iwayvietnam.zmsso.Util.Log;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.exception.TechnicalException;
 
@@ -50,14 +50,14 @@ public class SamlMetadataHandler extends SamlBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
-            ZimbraLog.extensions.info("Generate saml metadata");
+            Log.sso.info("Generate saml metadata");
             client.init();
             response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
             response.getWriter().flush();
             response.setStatus(HttpServletResponse.SC_OK);
         }
         catch (TechnicalException rte) {
-            ZimbraLog.extensions.error(rte);
+            Log.sso.error(rte);
             throw new ServletException(rte);
         }
     }

@@ -1,5 +1,5 @@
 Name:           zm-sso
-Version:        1.0.0
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Zimbra Single Sign On (Zm SSO)
 
@@ -8,7 +8,7 @@ License:        AGPLv3
 URL:            https://github.com/iwayvietnam/zm-sso
 Source0:        https://github.com/iwayvietnam/zm-sso/archive/refs/tags/%{version}.tar.gz
 
-Requires:       zimbra-store = 8.8.15
+Requires:       zimbra-store = 10.1.15
 BuildRequires:  java-11-openjdk-devel maven
 BuildArch:      noarch
 
@@ -47,3 +47,5 @@ su - zimbra -c "zmprov fc all"
 - Initial release 1.0.0.
 * Fri Aug 25 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.1-1
 - Initial release 1.0.1.
+* Tue Ap 28 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 2.0.0-1
+- Initial release 2.0.0.
