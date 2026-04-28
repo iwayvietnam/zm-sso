@@ -34,10 +34,10 @@ import com.zimbra.cs.account.Provisioning;
 import com.zimbra.cs.account.auth.AuthContext;
 import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
-import org.pac4j.core.context.JEEContext;
-import org.pac4j.core.context.WebContext;
-import org.pac4j.core.logout.handler.DefaultLogoutHandler;
-import org.pac4j.core.logout.handler.LogoutHandler;
+import org.pac4j.core.context.CallContext;
+import org.pac4j.core.logout.handler.DefaultSessionLogoutHandler;
+import org.pac4j.core.logout.handler.SessionLogoutHandler;
+import org.pac4j.jee.context.JEEContext;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -47,7 +47,7 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHandler<C> implements LogoutHandler<C> {
+public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implements SessionLogoutHandler {
     private static final Provisioning prov = Provisioning.getInstance();
     private static final String X_ORIGINATING_IP_HEADER = LC.zimbra_http_originating_ip_header.value();
     private static final String USER_AGENT_HEADER = "User-Agent";
@@ -58,52 +58,37 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
      * @param key the key
      */
     @Override
-    public void recordSession(final C context, final String key) {
+    public void recordSession(final CallContext context, final String key) {
         Log.sso.info("Record sso session");
         super.recordSession(context, key);
         Log.sso.debug("Associates a key with the current web session: %s", key);
     }
 
     /**
-     * Destroys the current web session for the given key for a front channel logout.
+     * Destroys the current web session for the given key for a front or back channel logout.
      * @param context the web context
      * @param key the key
      */
     @Override
-    public void destroySessionFront(final C context, final String key) {
-        Log.sso.info("Destroy front channel sso session");
-        super.destroySessionFront(context, key);
-        Log.sso.debug("Destroys the current web session for the given key for a front channel logout: %s", key);
+    public void destroySession(final CallContext context, final String key) {
+        Log.sso.info("Destroy sso session");
+        super.destroySession(context, key);
+        Log.sso.debug("Destroys the current web session for the given key: %s", key);
         try {
             clearAuthToken(context, key);
-        } catch (final ServiceException e) {
-            Log.sso.error(e);
-        }
-    }
-
-    /**
-     * Destroys the current web session for the given key for a back channel logout.
-     * @param context the web context
-     * @param key the key
-     */
-    @Override
-    public void destroySessionBack(final C context, final String key) {
-        Log.sso.info("Destroy back channel sso session");
-        super.destroySessionBack(context, key);
-        Log.sso.debug("Destroys the current web session for the given key for a back channel logout: %s", key);
-        try {
             singleLogout(key);
         } catch (final ServiceException e) {
             Log.sso.error(e);
         }
     }
 
-    public void singleLogin(final C context, final String accountName, final String key, final String client) throws ServiceException {
+    public void singleLogin(final CallContext context, final String accountName, final String key, final String client) throws ServiceException {
         Log.sso.info("Perform single login for account: %s", accountName);
         final var authCtxt = new HashMap<String, Object>();
-        final var remoteIp = context.getRemoteAddr();
-        final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
-        final var userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
+        final var webCxt = context.webContext();
+        final var remoteIp = webCxt.getRemoteAddr();
+        final var origIp = webCxt.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
+        final var userAgent = webCxt.getRequestHeader(USER_AGENT_HEADER).orElse(null);
 
         authCtxt.put(AuthContext.AC_ORIGINATING_CLIENT_IP, origIp);
         authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);
@@ -121,20 +106,20 @@ public final class ZmLogoutHandler<C extends WebContext> extends DefaultLogoutHa
         Log.sso.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
     }
 
-    private void setAuthTokenCookie(final C context, final AuthToken authToken) throws ServiceException {
-        if (context instanceof JEEContext) {
+    private void setAuthTokenCookie(final CallContext context, final AuthToken authToken) throws ServiceException {
+        final var webCxt = context.webContext();
+        if (webCxt instanceof JEEContext jeeCxt) {
             final var isAdmin = AuthToken.isAnyAdmin(authToken);
-            final var jeeCxt = (JEEContext) context;
-            authToken.encode(jeeCxt.getNativeResponse(), isAdmin, context.isSecure());
+            authToken.encode(jeeCxt.getNativeResponse(), isAdmin, jeeCxt.isSecure());
             Log.sso.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
         }
     }
 
-    private void clearAuthToken(final C context, final String key) throws ServiceException {
+    private void clearAuthToken(final CallContext context, final String key) throws ServiceException {
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         Log.sso.debug("Update sso session logout for account id: %s", accountId);
-        if (context instanceof JEEContext) {
-            final var jeeCxt = (JEEContext) context;
+        final var webCxt = context.webContext();
+        if (webCxt instanceof JEEContext jeeCxt) {
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
             final var optional = Optional.ofNullable(authToken);
             if (optional.isPresent()) {
