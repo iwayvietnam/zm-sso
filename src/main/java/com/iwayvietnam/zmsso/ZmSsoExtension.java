@@ -27,8 +27,8 @@ import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.iwayvietnam.zmsso.oidc.*;
 import com.iwayvietnam.zmsso.saml.*;
 import com.iwayvietnam.zmsso.service.GetAllSsoSessions;
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionDispatcherServlet;
 import com.zimbra.cs.extension.ExtensionException;
 import com.zimbra.cs.extension.ZimbraExtension;
@@ -53,46 +53,46 @@ public class ZmSsoExtension implements ZimbraExtension {
     public void init() throws ExtensionException, ServiceException {
         DbSsoSession.createSsoSessionTable();
 
-        ZimbraLog.extensions.info("Register sso handlers");
+        Log.sso.info("Register sso handlers");
         ExtensionDispatcherServlet.register(this, new LoginHandler());
         ExtensionDispatcherServlet.register(this, new CallbackHandler());
         ExtensionDispatcherServlet.register(this, new LogoutHandler());
 
         try {
-            ZimbraLog.extensions.info("Register saml sso handlers");
+            Log.sso.info("Register saml sso handlers");
             ExtensionDispatcherServlet.register(this, new SamlMetadataHandler());
             ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
             ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
             ExtensionDispatcherServlet.register(this, new SamlSloHandler());
         } catch (ExtensionException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
 
         try {
-            ZimbraLog.extensions.info("Register cas sso handlers");
+            Log.sso.info("Register cas sso handlers");
             ExtensionDispatcherServlet.register(this, new CasLoginHandler());
             ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
         } catch (ExtensionException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
 
         try {
-            ZimbraLog.extensions.info("Register oidc sso handlers");
+            Log.sso.info("Register oidc sso handlers");
             ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
             ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
         } catch (ExtensionException e) {
-            ZimbraLog.extensions.error(e);
+            Log.sso.error(e);
         }
 
         SoapServlet.addService("AdminServlet", dispatcher -> {
-            ZimbraLog.extensions.info("Register admin soap services");
+            Log.sso.info("Register admin soap services");
             dispatcher.registerHandler(GetAllSsoSessions.GET_ALL_SSO_SESSIONS_REQUEST, new GetAllSsoSessions());
         });
     }
 
     @Override
     public void destroy() {
-        ZimbraLog.extensions.info("Unregister sso extension");
+        Log.sso.info("Unregister sso extension");
         ExtensionDispatcherServlet.unregister(this);
     }
 }

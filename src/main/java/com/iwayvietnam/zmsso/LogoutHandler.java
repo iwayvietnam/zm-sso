@@ -22,9 +22,9 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.AuthTokenException;
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.exception.TechnicalException;
@@ -70,10 +70,10 @@ public class LogoutHandler extends BaseSsoHandler {
             final var context = new JEEContext(request, response);
             final var sessionStore = new JEESessionStore();
             config.getLogoutLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
-            ZimbraLog.extensions.info("SSO logout is performed");
+            Log.sso.info("SSO logout is performed");
         }
         catch (TechnicalException ex) {
-            ZimbraLog.extensions.error(ex);
+            Log.sso.error(ex);
             throw new ServletException(ex);
         }
     }
