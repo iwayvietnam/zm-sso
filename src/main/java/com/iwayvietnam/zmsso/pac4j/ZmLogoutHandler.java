@@ -53,18 +53,6 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
     private static final String USER_AGENT_HEADER = "User-Agent";
 
     /**
-     * Associates a key with the current web session.
-     * @param context the web context
-     * @param key the key
-     */
-    @Override
-    public void recordSession(final CallContext context, final String key) {
-        Log.sso.info("Record sso session");
-        super.recordSession(context, key);
-        Log.sso.debug("Associates a key with the current web session: %s", key);
-    }
-
-    /**
      * Destroys the current web session for the given key for a front or back channel logout.
      * @param context the web context
      * @param key the key
