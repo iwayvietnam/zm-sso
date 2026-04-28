@@ -32,7 +32,6 @@ import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
-import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
@@ -52,7 +51,7 @@ public class ConfigBuilder {
     private static final Map<String, String> properties = new HashMap<>();
     private final ConfigFactory configFactory;
     private final Config config;
-    private final ZmLogoutHandler<? extends WebContext> logoutHandler;
+    private final ZmLogoutHandler logoutHandler;
 
     private final Boolean saveInSession;
     private final Boolean multiProfile;
@@ -66,7 +65,7 @@ public class ConfigBuilder {
     private ConfigBuilder() {
         loadSettingsFromProperties();
         configFactory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
-        logoutHandler = new ZmLogoutHandler<>();
+        logoutHandler = new ZmLogoutHandler();
         config = buildConfig();
 
         saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
@@ -146,6 +145,8 @@ public class ConfigBuilder {
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
             client.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
         config.getClients().findClient(OidcClient.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config oidc client");
@@ -158,6 +159,8 @@ public class ConfigBuilder {
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
         config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
             ZimbraLog.extensions.info("Config saml client");
@@ -180,6 +183,8 @@ public class ConfigBuilder {
             cfg.setPostLogoutURL(postLogoutURL);
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
         return config;
     }
