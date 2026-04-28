@@ -26,7 +26,6 @@ import com.iwayvietnam.zmsso.Util.Log;
 import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.StringUtil;
-import org.pac4j.cas.client.CasClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
@@ -34,8 +33,6 @@ import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.util.Pac4jConstants;
-import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.saml.client.SAML2Client;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -138,7 +135,7 @@ public class ConfigBuilder {
         Log.sso.info("Build Pac4J config");
         final var config = configFactory.build();
 
-        config.getClients().findClient(CasClient.class).ifPresent(client -> {
+        config.getClients().findClient("CasClient").ifPresent(client -> {
             Log.sso.info("Config cas client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
@@ -147,7 +144,7 @@ public class ConfigBuilder {
             final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
             client.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
         });
-        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+        config.getClients().findClient("OidcClient").ifPresent(client -> {
             Log.sso.info("Config oidc client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
@@ -159,7 +156,7 @@ public class ConfigBuilder {
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
             client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
         });
-        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+        config.getClients().findClient("SAML2Client").ifPresent(client -> {
             Log.sso.info("Config saml client");
             final var cfg = client.getConfiguration();
             cfg.setLogoutHandler(logoutHandler);
