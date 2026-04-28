@@ -58,14 +58,12 @@ public class SamlSloHandler extends SamlBaseHandler {
         final var context = new JEEContext(request, response);
         final var sessionStore = new JEESessionStore();
         final var contextProvider = client.getContextProvider();
-//        final var logoutProfileHandler = client.getLogoutProfileHandler();
         final var spLogoutResponseBindingType = client.getConfiguration().getSpLogoutResponseBindingType();
         final var saml2LogoutResponseBuilder = new SAML2LogoutResponseBuilder(spLogoutResponseBindingType);
         final var saml2LogoutResponseMessageSender = new SAML2LogoutResponseMessageSender(client.getSignatureSigningParametersProvider(),
                 spLogoutResponseBindingType, false, client.getConfiguration().isSpLogoutRequestSigned());
 
         final var samlContext = contextProvider.buildContext(new CallContext(context, sessionStore), client);
-//        logoutProfileHandler.receive(samlContext);
         final var logoutResponse = saml2LogoutResponseBuilder.build(samlContext);
         saml2LogoutResponseMessageSender.sendMessage(samlContext, logoutResponse, samlContext.getSAMLBindingContext().getRelayState());
 
