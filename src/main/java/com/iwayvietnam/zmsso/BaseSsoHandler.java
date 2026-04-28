@@ -29,6 +29,7 @@ import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.context.CallContext;
 import org.pac4j.core.engine.DefaultCallbackLogic;
@@ -36,6 +37,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.jee.context.JEEContext;
+import org.pac4j.jee.context.JEEFrameworkParameters;
 import org.pac4j.jee.context.session.JEESessionStore;
 import org.pac4j.jee.http.adapter.JEEHttpActionAdapter;
 
@@ -78,20 +80,21 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         Log.sso.info("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
-        final var saveInSession = configBuilder.getSaveInSession();
-        final var multiProfile = configBuilder.getMultiProfile();
         final var renewSession = configBuilder.getRenewSession();
+
+        final var config = configBuilder.getConfig();
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        final var params = new JEEFrameworkParameters(request, response);
+        config.getCallbackLogic().perform(config, defaultUrl, renewSession, configBuilder.getDefaultClientName(), params);
+        Log.sso.info("SSO callback is performed");
 
         final var context = new JEEContext(request, response);
         final var sessionStore = new JEESessionStore();
-        DefaultCallbackLogic.INSTANCE.perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
-        Log.sso.info("SSO callback is performed");
-
         final var manager = new ProfileManager(context, sessionStore);
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
-            final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
+            final var sessionId = sessionStore.getSessionId(context, true).orElse("");
             final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {
                 logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());

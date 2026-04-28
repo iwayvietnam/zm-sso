@@ -82,13 +82,12 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         }
     }
 
-    public void singleLogin(final CallContext context, final String accountName, final String key, final String client) throws ServiceException {
+    public void singleLogin(final JEEContext context, final String accountName, final String key, final String client) throws ServiceException {
         Log.sso.info("Perform single login for account: %s", accountName);
         final var authCtxt = new HashMap<String, Object>();
-        final var webCxt = context.webContext();
-        final var remoteIp = webCxt.getRemoteAddr();
-        final var origIp = webCxt.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
-        final var userAgent = webCxt.getRequestHeader(USER_AGENT_HEADER).orElse(null);
+        final var remoteIp = context.getRemoteAddr();
+        final var origIp = context.getRequestHeader(X_ORIGINATING_IP_HEADER).orElse(remoteIp);
+        final var userAgent = context.getRequestHeader(USER_AGENT_HEADER).orElse(null);
 
         authCtxt.put(AuthContext.AC_ORIGINATING_CLIENT_IP, origIp);
         authCtxt.put(AuthContext.AC_REMOTE_IP, remoteIp);
@@ -106,13 +105,10 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         Log.sso.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
     }
 
-    private void setAuthTokenCookie(final CallContext context, final AuthToken authToken) throws ServiceException {
-        final var webCxt = context.webContext();
-        if (webCxt instanceof JEEContext jeeCxt) {
-            final var isAdmin = AuthToken.isAnyAdmin(authToken);
-            authToken.encode(jeeCxt.getNativeResponse(), isAdmin, jeeCxt.isSecure());
-            Log.sso.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
-        }
+    private void setAuthTokenCookie(final JEEContext context, final AuthToken authToken) throws ServiceException {
+        final var isAdmin = AuthToken.isAnyAdmin(authToken);
+        authToken.encode(context.getNativeResponse(), isAdmin, context.isSecure());
+        Log.sso.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
     }
 
     private void clearAuthToken(final CallContext context, final String key) throws ServiceException {
