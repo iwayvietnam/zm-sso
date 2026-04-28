@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.Util.Log;
+import com.iwayvietnam.zmsso.util.Log;
 import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.account.*;
@@ -32,7 +32,6 @@ import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.context.CallContext;
-import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.Pac4jConstants;

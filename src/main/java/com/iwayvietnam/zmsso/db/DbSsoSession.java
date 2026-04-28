@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso.db;
 
-import com.iwayvietnam.zmsso.Util.Log;
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ByteUtil;
 import com.zimbra.common.util.StringUtil;

@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.Util.Log;
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.Pac4jConstants;

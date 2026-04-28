@@ -22,7 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.Util.Log;
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraCookie;
 import com.zimbra.cs.account.AuthTokenException;

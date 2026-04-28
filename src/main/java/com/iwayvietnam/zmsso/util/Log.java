@@ -20,7 +20,7 @@
  *
  * Written by Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
-package com.iwayvietnam.zmsso.Util;
+package com.iwayvietnam.zmsso.util;
 
 import com.zimbra.common.util.LogFactory;
 
