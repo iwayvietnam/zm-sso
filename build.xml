@@ -197,7 +197,8 @@
                 download-pac4j-cas,
                 download-pac4j-oidc,
                 download-pac4j-saml,
-                download-pac4j-config"
+                download-pac4j-config,
+                download-pac4j-javaee"
             description="download dependencies">
     </target>
 
