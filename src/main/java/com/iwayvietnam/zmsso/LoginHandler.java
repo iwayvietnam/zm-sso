@@ -22,8 +22,8 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.Pac4jConstants;
 
@@ -52,7 +52,7 @@ public class LoginHandler extends BaseSsoHandler {
             doLogin(request, response, client);
         }
         catch (final ServiceException | TechnicalException ex) {
-            ZimbraLog.extensions.error(ex);
+            Log.sso.error(ex);
             throw new ServletException(ex);
         }
     }

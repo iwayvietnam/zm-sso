@@ -22,8 +22,8 @@
  */
 package com.iwayvietnam.zmsso.cas;
 
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.extension.ExtensionException;
 import org.pac4j.core.exception.TechnicalException;
 
@@ -53,7 +53,7 @@ public class CasLoginHandler extends CasBaseHandler {
         try {
             doLogin(request, response, client);
         } catch (final ServiceException | TechnicalException ex) {
-            ZimbraLog.extensions.error(ex);
+            Log.sso.error(ex);
             throw new ServletException(ex);
         }
     }

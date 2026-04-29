@@ -23,8 +23,8 @@
 package com.iwayvietnam.zmsso;
 
 import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
+import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
-import com.zimbra.common.util.ZimbraLog;
 import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
@@ -58,12 +58,12 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     protected void doLogin(final HttpServletRequest request, final HttpServletResponse response, final Client client) throws IOException, ServiceException {
         if (!isLoggedIn(request)) {
-            ZimbraLog.extensions.info("SSO login with: %s", client.getName());
+            Log.sso.info("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
             final var context = new JEEContext(request, response);
             final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context);
             loginAction.ifPresent(action -> {
-                ZimbraLog.extensions.debug("Adapt redirection action: %s", action);
+                Log.sso.debug("Adapt redirection action: %s", action);
                 JEEHttpActionAdapter.INSTANCE.adapt(action, context);
             });
         }
@@ -73,7 +73,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     }
 
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
-        ZimbraLog.extensions.info("SSO callback with: %s", client.getName());
+        Log.sso.info("SSO callback with: %s", client.getName());
 
         final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
         final var saveInSession = configBuilder.getSaveInSession();
@@ -81,8 +81,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var renewSession = configBuilder.getRenewSession();
 
         final var context = new JEEContext(request, response);
-        DefaultCallbackLogic.INSTANCE.perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
-        ZimbraLog.extensions.info("SSO callback is performed");
+        configBuilder.getConfig().getCallbackLogic().perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        Log.sso.info("SSO callback is performed");
 
         final var manager = new ProfileManager<CommonProfile>(context);
         manager.get(saveInSession).ifPresent(profile -> {
@@ -93,7 +93,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             try {
                 logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
             } catch (ServiceException e) {
-                ZimbraLog.extensions.error(e);
+                Log.sso.error(e);
             }
         });
     }
@@ -105,7 +105,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private void redirectToMail(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServiceException {
         final var redirectUrl = AuthUtil.getRedirectURL(request, Provisioning.getInstance().getLocalServer(), false, true) + AuthUtil.IGNORE_LOGIN_URL;
-        ZimbraLog.extensions.debug("Redirecting to url: %s", redirectUrl);
+        Log.sso.debug("Redirecting to url: %s", redirectUrl);
         response.sendRedirect(redirectUrl);
     }
 }
