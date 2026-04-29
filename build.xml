@@ -57,7 +57,7 @@
         </condition>
     </target>
     <target name="download-dom4j" depends="check-dom4j" unless="available-dom4j">
-        <get src="https://mvnrepository.com/maven2/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar"
+        <get src="https://repo1.maven.org/maven2/org/dom4j/dom4j/2.2.0/dom4j-2.2.0.jar"
              dest="${deps}/dom4j-1.5.2.jar" usetimestamp="true"/>
     </target>
 
@@ -67,7 +67,7 @@
         </condition>
     </target>
     <target name="download-servlet-api" depends="check-servlet-api" unless="available-servlet-api">
-        <get src="https://mvnrepository.com/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar"
+        <get src="https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar"
              dest="${deps}/javax.servlet-api-3.1.0.jar" usetimestamp="true"/>
     </target>
 
@@ -77,7 +77,7 @@
         </condition>
     </target>
     <target name="download-pac4j-core" depends="check-pac4j-core" unless="available-pac4j-core">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-core/5.7.10/pac4j-core-5.7.10.jar"
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-core/5.7.10/pac4j-core-5.7.10.jar"
              dest="${deps}/pac4j-core-5.7.10.jar" usetimestamp="true"/>
     </target>
 
@@ -87,7 +87,7 @@
         </condition>
     </target>
     <target name="download-pac4j-cas" depends="check-pac4j-cas" unless="available-pac4j-cas">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-cas/5.7.10/pac4j-cas-5.7.10.jar"
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-cas/5.7.10/pac4j-cas-5.7.10.jar"
              dest="${deps}/pac4j-cas-5.7.10.jar" usetimestamp="true"/>
     </target>
 
@@ -97,17 +97,17 @@
         </condition>
     </target>
     <target name="download-pac4j-oidc" depends="check-pac4j-oidc" unless="available-pac4j-oidc">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-oidc/5.7.10/pac4j-oidc-5.7.10.jar"
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-oidc/5.7.10/pac4j-oidc-5.7.10.jar"
              dest="${deps}/pac4j-oidc-5.7.10.jar" usetimestamp="true"/>
     </target>
 
     <target name="check-pac4j-saml">
-        <condition property="available-pac4j">
+        <condition property="available-pac4j-saml">
             <available file="${deps}/pac4j-saml-5.7.10.jar" />
         </condition>
     </target>
-    <target name="download-pac4j" depends="check-pac4j" unless="available-pac4j">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-saml/5.7.10/pac4j-saml-5.7.10.jar"
+    <target name="download-pac4j-saml" depends="check-pac4j-saml" unless="available-pac4j-saml">
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-saml/5.7.10/pac4j-saml-5.7.10.jar"
              dest="${deps}/pac4j-saml-5.7.10.jar" usetimestamp="true"/>
     </target>
 
@@ -117,7 +117,7 @@
         </condition>
     </target>
     <target name="download-pac4j-config" depends="check-pac4j-config" unless="available-pac4j-config">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-config/5.7.10/pac4j-config-5.7.10.jar"
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-config/5.7.10/pac4j-config-5.7.10.jar"
              dest="${deps}/pac4j-config-5.7.10.jar" usetimestamp="true"/>
     </target>
 
@@ -127,7 +127,7 @@
         </condition>
     </target>
     <target name="download-pac4j-javaee" depends="check-pac4j-javaee" unless="available-pac4j-javaee">
-        <get src="https://mvnrepository.com/maven2/org/pac4j/pac4j-javaee/5.7.10/pac4j-javaee-5.7.10.jar"
+        <get src="https://repo1.maven.org/maven2/org/pac4j/pac4j-javaee/5.7.10/pac4j-javaee-5.7.10.jar"
              dest="${deps}/pac4j-javaee-5.7.10.jar" usetimestamp="true"/>
     </target>
 
@@ -137,7 +137,7 @@
         </condition>
     </target>
     <target name="download-commons-io" depends="check-commons-io" unless="available-commons-io">
-        <get src="https://mvnrepository.com/maven2/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar"
+        <get src="https://repo1.maven.org/maven2/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar"
              dest="${deps}/commons-io-2.8.0.jar" usetimestamp="true"/>
     </target>
 
@@ -147,7 +147,7 @@
         </condition>
     </target>
     <target name="download-opensaml-api" depends="check-opensaml-api" unless="available-opensaml-api">
-        <get src="https://mvnrepository.com/maven2/org/opensaml/opensaml-saml-api/4.2.0/opensaml-saml-api-4.2.0.jar"
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-saml-api/4.2.0/opensaml-saml-api-4.2.0.jar"
              dest="${deps}/opensaml-saml-api-4.2.0.jar" usetimestamp="true"/>
     </target>
 
@@ -157,7 +157,7 @@
         </condition>
     </target>
     <target name="download-opensaml-messaging" depends="check-opensaml-messaging" unless="available-opensaml-messaging">
-        <get src="https://mvnrepository.com/maven2/org/opensaml/opensaml-messaging-api/4.2.0/opensaml-messaging-api-4.2.0.jar"
+        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-messaging-api/4.2.0/opensaml-messaging-api-4.2.0.jar"
              dest="${deps}/opensaml-messaging-api-4.2.0.jar" usetimestamp="true"/>
     </target>
 
@@ -167,7 +167,7 @@
         </condition>
     </target>
     <target name="download-apache-httpcore" depends="check-apache-httpcore" unless="available-apache-httpcore">
-        <get src="https://mvnrepository.com/maven2/org/apache/httpcomponents/httpcore/4.4.9/httpcore-4.4.9.jar"
+        <get src="https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.9/httpcore-4.4.9.jar"
              dest="${deps}/httpcore-4.4.9.jar" usetimestamp="true"/>
     </target>
 
@@ -177,7 +177,7 @@
         </condition>
     </target>
     <target name="download-apache-httpclient" depends="check-apache-httpclient" unless="available-apache-httpclient">
-        <get src="https://mvnrepository.com/maven2/org/apache/httpcomponents/httpclient/4.5.3/httpclient-4.5.3.jar"
+        <get src="https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.3/httpclient-4.5.3.jar"
              dest="${deps}/httpclient-4.5.3.jar" usetimestamp="true"/>
     </target>
 
@@ -197,7 +197,7 @@
                 download-pac4j-core,
                 download-pac4j-cas,
                 download-pac4j-oidc,
-                download-pac4j,
+                download-pac4j-saml,
                 download-pac4j-config"
             description="download dependencies">
     </target>
