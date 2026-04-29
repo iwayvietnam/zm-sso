@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
-            <artifactId>pac4j-cas</artifactId>
+            <artifactId>pac4j-cas-clientv4</artifactId>
             <version>${pac4j.version}</version>
         </dependency>
         <dependency>
