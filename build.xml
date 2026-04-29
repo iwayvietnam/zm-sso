@@ -25,7 +25,7 @@
         Build file for the Zm SSO.
     </description>
 
-    <property name="version"      value="1.0.0"/>
+    <property name="version"      value="2.0.0"/>
     <property name="release"      value="1"/>
     <property name="lib"          value="lib/"/>
     <property name="deps"         value="deps/"/>
@@ -34,8 +34,8 @@
     <property name="src"          value="src/"/>
     <property name="resources"    value="src/main/resources"/>
     <property name="jar"          value="zm-sso-${version}-${release}.jar"/>
-    <property name="javac.source" value="11"/>
-    <property name="javac.target" value="11"/>
+    <property name="javac.source" value="17"/>
+    <property name="javac.target" value="17"/>
 
     <path id="libraries">
         <fileset dir="${lib}" >
