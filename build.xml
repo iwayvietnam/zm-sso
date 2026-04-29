@@ -34,8 +34,7 @@
     <property name="src"          value="src/"/>
     <property name="resources"    value="src/main/resources"/>
     <property name="jar"          value="zm-sso-${version}-${release}.jar"/>
-    <property name="javac.source" value="17"/>
-    <property name="javac.target" value="17"/>
+    <property name="javac.release" value="17"/>
 
     <path id="libraries">
         <fileset dir="${lib}" >
@@ -147,7 +146,7 @@
         </condition>
     </target>
     <target name="download-opensaml-api" depends="check-opensaml-api" unless="available-opensaml-api">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-saml-api/4.2.0/opensaml-saml-api-4.2.0.jar"
+        <get src="https://build.shibboleth.net/maven/releases/org/opensaml/opensaml-saml-api/4.2.0/opensaml-saml-api-4.2.0.jar"
              dest="${deps}/opensaml-saml-api-4.2.0.jar" usetimestamp="true"/>
     </target>
 
@@ -157,7 +156,7 @@
         </condition>
     </target>
     <target name="download-opensaml-messaging" depends="check-opensaml-messaging" unless="available-opensaml-messaging">
-        <get src="https://repo1.maven.org/maven2/org/opensaml/opensaml-messaging-api/4.2.0/opensaml-messaging-api-4.2.0.jar"
+        <get src="https://build.shibboleth.net/maven/releases/org/opensaml/opensaml-messaging-api/4.2.0/opensaml-messaging-api-4.2.0.jar"
              dest="${deps}/opensaml-messaging-api-4.2.0.jar" usetimestamp="true"/>
     </target>
 
@@ -219,6 +218,7 @@
                destdir="${build}"
                includeantruntime="false"
                debug="true"
+               release="${javac.release}"
                target="${javac.target}" />
     </target>
 
@@ -229,8 +229,7 @@
                includeantruntime="false"
                debug="true"
                debuglevel="lines,vars,source"
-               target="${javac.target}"
-               source="${javac.source}">
+               release="${javac.release}">
             <classpath>
                 <path refid="libraries" />
             </classpath>
