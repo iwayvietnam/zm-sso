@@ -11,23 +11,19 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 
 ## Building Java extension
 ### Requirement
-* JDK 11 or newer.
+* JDK 17 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
 * rpm-build for rpm package build.
 
 ### Setting up your build system
-* On Fedora or CentOS 8.x or Red Hat EL 7.x
+* On Fedora or RockyLinux or AlmaLinux
 ```shell
-dnf -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
-```
-* On CentOS 7.x or Red Hat EL 7.x
-```shell
-yum -y install java-11-openjdk java-11-openjdk-devel maven ant git make rpmdevtools rpm-build
+dnf -y install java-17-openjdk java-17-openjdk-devel maven ant git make rpmdevtools rpm-build
 ```
 * On Debian or Ubuntu
 ```shell
-apt install -y openjdk-11-jdk maven ant git make
+apt install -y openjdk-17-jdk maven ant git make
 ```
 
 ### Clone code from git repository
@@ -44,8 +40,8 @@ mvn clean package
 ```
 The output should be like this:
 ```
---- maven-jar-plugin:3.0.2:jar (default-jar) @ zm-hab ---
-Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-1.0.0-1.jar
+--- jar:3.5.0:jar (default-jar) @ zm-sso ---
+Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-2.0.0-1.jar
 ```
 
 ### Build jar file by using Ant
