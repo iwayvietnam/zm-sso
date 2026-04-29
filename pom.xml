@@ -102,12 +102,10 @@
 
     <build>
         <plugins>
-            <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.5.0</version>
             </plugin>
-            <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.5.0</version>
@@ -138,7 +136,6 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>3.1.4</version>
             </plugin>
-            <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.21.0</version>
