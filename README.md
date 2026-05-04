@@ -73,6 +73,8 @@ ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
 scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
+ssh root@zimbra.server "rm -f /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar"
+
 ```
 * Restart mailbox to load the extension.
 ```shell
