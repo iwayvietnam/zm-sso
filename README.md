@@ -73,7 +73,7 @@ ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
 scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
 scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
 scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
-ssh root@zimbra.server "rm -f /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar"
+ssh root@zimbra.server "mv /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar.bak"
 
 ```
 * Restart mailbox to load the extension.
@@ -84,8 +84,8 @@ ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
 ### Install rpm package
 ```shell
 ssh root@zimbra.server "mkdir -p /tmp/zimbra"
-scp ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm root@zimbra.server:/tmp/zimbra
-ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-1.0.0-1.el7.noarch.rpm"
+scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
+ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
 ```
 
 ## Configuration
@@ -186,7 +186,7 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 This is primarily for allowance of untrusted ssl certificates in external data sources.
 * Export untrusted ssl certificate to the file:
 ~~~shell
-openssl s_client -servername idp.server.net -connect idp.server.net:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+openssl s_client -servername idp.server.com -connect idp.server.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
 ~~~
 * Execute following commands with the Zimbra user:
 ~~~shell
@@ -196,7 +196,7 @@ zmmailboxdctl restart
 
 ### Add identity provider hostname to ignore CSRF referer check
 ~~~shell
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.net
+zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
 zmmailboxdctl restart
 ~~~
 
