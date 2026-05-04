@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.google.common.base.Strings;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.core.exception.TechnicalException;
@@ -50,8 +51,13 @@ public class CallbackHandler extends BaseSsoHandler {
         try {
             final var session = request.getSession();
             final var clientName = Optional.ofNullable(request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER)).orElse((String) session.getAttribute(SSO_CLIENT_NAME_SESSION_ATTR));
-            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
-            doCallback(request, response, client);
+            if (Strings.isNullOrEmpty(clientName)) {
+                doCallback(request, response, configBuilder.defaultClient());
+            }
+            else {
+                final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
+                doCallback(request, response, client);
+            }
         }
         catch (final ServiceException | TechnicalException ex) {
             ZimbraLog.extensions.error(ex);

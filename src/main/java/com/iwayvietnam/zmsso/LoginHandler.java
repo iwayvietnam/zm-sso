@@ -22,6 +22,8 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.core.exception.TechnicalException;
@@ -48,8 +50,13 @@ public class LoginHandler extends BaseSsoHandler {
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         try {
             final var clientName = request.getParameter(Pac4jConstants.DEFAULT_CLIENT_NAME_PARAMETER);
-            final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
-            doLogin(request, response, client);
+            if (Strings.isNullOrEmpty(clientName)) {
+                doLogin(request, response, configBuilder.defaultClient());
+            }
+            else {
+                final var client = configBuilder.getClients().findClient(clientName).orElse(configBuilder.defaultClient());
+                doLogin(request, response, client);
+            }
         }
         catch (final ServiceException | TechnicalException ex) {
             ZimbraLog.extensions.error(ex);
