@@ -46,6 +46,7 @@ import java.util.*;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ConfigBuilder {
+    private static ConfigBuilder instance;
 
     private static final Map<String, String> properties = new HashMap<>();
     private final ConfigFactory configFactory;
@@ -77,12 +78,15 @@ public class ConfigBuilder {
         postLogoutURL = loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL);
     }
 
-    private static final class InstanceHolder {
-        private static final ConfigBuilder instance = new ConfigBuilder();
-    }
-
     public static ConfigBuilder getInstance() {
-        return InstanceHolder.instance;
+        if (instance == null) {
+            synchronized (ConfigBuilder.class) {
+                if (instance == null) {
+                    instance = new ConfigBuilder();
+                }
+            }
+        }
+        return instance;
     }
 
     public Config getConfig() {
