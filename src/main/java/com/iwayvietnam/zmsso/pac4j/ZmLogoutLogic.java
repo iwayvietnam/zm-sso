@@ -57,7 +57,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
         Log.sso.debug("LogoutLogic perform logout");
         HttpAction action;
         try {
-            final String logoutUrlPattern = Objects.requireNonNullElse(inputLogoutUrlPattern, Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE);
+            final var logoutUrlPattern = Objects.requireNonNullElse(inputLogoutUrlPattern, Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE);
             final var localLogout = inputLocalLogout == null || inputLocalLogout;
             final var destroySession = inputDestroySession != null && inputDestroySession;
             final var centralLogout = inputCentralLogout != null && inputCentralLogout;
@@ -105,7 +105,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             }
 
             // central logout
-            if (centralLogout) {
+            if (centralLogout && profiles.size() > 1) {
                 Log.sso.debug("Performing central logout");
                 for (final var profile : profiles) {
                     Log.sso.debug("Profile: {}", profile);

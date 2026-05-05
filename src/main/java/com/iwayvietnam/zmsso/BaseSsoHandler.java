@@ -85,6 +85,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         Log.sso.info("SSO callback is performed");
 
         final var manager = new ProfileManager(context, sessionStore);
+        manager.setConfig(config);
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
