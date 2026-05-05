@@ -62,12 +62,12 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **saml.callbackUrl** to `https://your-zimbra-hostname/service/extension/saml/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **saml.identityProviderMetadataPath** to `https://your-keycloak-hostname:9443/auth/realms/name-of-your-realm/protocol/saml/descriptor`
+* Set **saml.identityProviderMetadataPath** to `http://your-keycloak-hostname:8080/realms/name-of-your-realm/protocol/saml/descriptor`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Create SAML client for Zimbra on Keycloak
 * Copy `entityID` of service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata`.
-* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-hostname:9443/auth/admin` from your web browser.
+* Sign in to Keycloak Administration Console as an admin by visiting url `http://your-keycloak-hostname:8080/admin` from your web browser.
 * On the Main menu, click **Configure > Clients**
 * Click **Create client** button, choose **SAML** Client type and fill `entityID` to **Client ID**, click **Next**.
 * Fill in **Login settings** form like that
@@ -98,14 +98,18 @@ zmmailboxdctl restart
 
 ### Single sign on with OpenID Connect protocol
 #### Create OpenID Connect client for Zimbra on Keycloak
-* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-hostname:9443/auth/admin` from your web browser.
+* Sign in to Keycloak Administration Console as an admin by visiting url `http://your-keycloak-hostname:8080/admin` from your web browser.
 * On the Main menu, click **Configure > Clients**
-* Click **Create** button, fill **Client ID** with `your-client-id`.
-* Select **Access Type** with **confidential**, fill **Valid Redirect URIs** with `https://your-zimbra-hostname/*`,
-  fill **Backchannel Logout URL** with `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`,
-  choose **Backchannel Logout Session Required** with `On`.
+* Click **Create client** button, choose **OpenID Connect** Client type and fill **Client ID** with `your-client-id`, click **Next**.
+* Enable **Client authentication**. click **Next**.
+* Fill in **Login settings** form like that
+![create-oidc-client-login-settings](keycloak/create-oidc-client-login-settings.png)
+* Click **Save** to create new OpenID client.
+* On **Logout settings**, fill **Front-channel Logout URL** with
+  `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`,
+  choose **Front-channel logout session required** with `On`.
   Click **Save** button to update settings.
-* Click **Credentials** tab. Select **Access Type** with **Client Authenticator**, click **Regenerate Secret** button to regenerate client secret
+* Click **Credentials** tab. click **Regenerate** button to regenerate client secret
 
 #### Config Zimbra SSO
 * Using a text editor to open **/opt/zimbra/conf/zm.sso.properties** file.
@@ -113,7 +117,7 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **oidc.discoveryUri** to `https://your-keycloak-hostname:9443/auth/realms/name-of-your-realm/.well-known/openid-configuration`
+* Set **oidc.discoveryUri** to `http://your-keycloak-hostname:8080/realms/name-of-your-realm/.well-known/openid-configuration`
 * Set **oidc.id** to `Client ID`
 * Set **oidc.secret** to `Client Secret`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
