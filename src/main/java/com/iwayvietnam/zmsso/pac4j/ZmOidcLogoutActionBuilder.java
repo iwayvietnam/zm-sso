@@ -45,12 +45,12 @@ public class ZmOidcLogoutActionBuilder extends OidcLogoutActionBuilder {
     }
 
     @Override
-    public Optional<RedirectionAction> getLogoutAction(final WebContext context, final SessionStore sessionStore, final UserProfile currentProfile, final String targetUrl) {
+    public Optional<RedirectionAction> getLogoutAction(final WebContext context, final SessionStore sessionStore, final UserProfile profile, final String targetUrl) {
         if (StringUtil.isNullOrEmpty(targetUrl)) {
-            return super.getLogoutAction(context, sessionStore, currentProfile, postLogoutURL);
+            return super.getLogoutAction(context, sessionStore, profile, postLogoutURL);
         }
         else {
-            return super.getLogoutAction(context, sessionStore, currentProfile, targetUrl);
+            return super.getLogoutAction(context, sessionStore, profile, targetUrl);
         }
     }
 }
