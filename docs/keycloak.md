@@ -18,7 +18,7 @@ tar -xvzf keycloak-26.0.0.tar.gz
 ### Running the Keycloak server in development mode
 ```shell
 cd /opt/keycloak-26.0.0/
-./bin/kc.sh start-dev --http-host=your-keycloak-hostname
+./bin/kc.sh start-dev --http-host=your-keycloak-hostname --http-port=8080
 ```
 
 ### Create an admin user
@@ -29,11 +29,16 @@ Keycloak has no default admin user. You need to create an admin user before you 
 ### Config Keycloak User Federation with Zimbra LDAP
 * Sign in to Keycloak Administration Console as an admin by visiting url `http://your-keycloak-hostname:8080/admin` from your web browser.
 * On the Main menu, click **Configure > User Federation**
-* Click **Add Provider... -> ldap**. Fill in **Add user federation provider** form like that
-![add-ldap-user-federation](keycloak/add-ldap-user-federation.png)
+* Click **Add Provider... -> ldap**.
+* Fill in **Connection and authentication settings** form like that
+![ldap-connection-and-authentication-settings](keycloak/ldap-connection-and-authentication-settings.png)
 * Click **Test authenticaion** button to check ldap configuration
+* Fill in **LDAP searching and updating** form like that
+![ldap-searching-and-updating](keycloak/ldap-searching-and-updating.png)
+* Fill in **Synchronization settings** form like that
+![synchronization-settings](keycloak/synchronization-settings.png)
 * Click **Save** button to add ldap user federation
-* Click **Synchronize all users** button to synchronize zimbra users to Keycloak users
+* Click **Sync all users** button to synchronize zimbra users to Keycloak users
 * On the Main menu, click **Manage > Users** to list users from ldap
 
 ### Config untrusted ssl of Keycloak & Zimbra
@@ -61,13 +66,22 @@ zmmailboxdctl restart
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Create SAML client for Zimbra on Keycloak
-* Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
+* Copy `entityID` of service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata`.
 * Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-hostname:9443/auth/admin` from your web browser.
 * On the Main menu, click **Configure > Clients**
-* Click **Create** button, click **Select file** to upload service provider metadata file `metadata.xml`.
-  Click **Save** to create new SAML client.
-* Select **Name ID Format** with `email`, Click **Save**.
-* Click **Mappers** tab. Click **Add Builtin** button, select all `builtin`, click **Add selected** button.
+* Click **Create client** button, choose **SAML** Client type and fill `entityID` to **Client ID**, click **Next**.
+* Fill in **Login settings** form like that
+![create-saml-client-login-settings](keycloak/create-saml-client-login-settings.png)
+* Click **Save** to create new SAML client.
+* Fill in **SAML capabilities** form like that
+![saml-capabilities](keycloak/saml-capabilities.png)
+* Fill in **Signature and Encryption** form like that
+![signature-and-encryption](keycloak/signature-and-encryption.png)
+* Click **Save**.
+* Click **Advanced** tab.
+* Fill URLs from metadata to **Fine Grain SAML Endpoint Configuration** form like that
+![saml-endpoint-configuration](keycloak/saml-endpoint-configuration.png)
+* Click **Save**.
 
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
