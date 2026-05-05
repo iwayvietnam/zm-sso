@@ -36,6 +36,7 @@ import org.pac4j.core.http.adapter.HttpActionAdapter;
 import org.pac4j.core.util.HttpActionHelper;
 import org.pac4j.core.util.Pac4jConstants;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static org.pac4j.core.util.CommonHelper.*;
@@ -56,14 +57,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
         Log.sso.debug("LogoutLogic perform logout");
         HttpAction action;
         try {
-
-            // default values
-            final String logoutUrlPattern;
-            if (inputLogoutUrlPattern == null) {
-                logoutUrlPattern = Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE;
-            } else {
-                logoutUrlPattern = inputLogoutUrlPattern;
-            }
+            final String logoutUrlPattern = Objects.requireNonNullElse(inputLogoutUrlPattern, Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE);
             final var localLogout = inputLocalLogout == null || inputLocalLogout;
             final var destroySession = inputDestroySession != null && inputDestroySession;
             final var centralLogout = inputCentralLogout != null && inputCentralLogout;
