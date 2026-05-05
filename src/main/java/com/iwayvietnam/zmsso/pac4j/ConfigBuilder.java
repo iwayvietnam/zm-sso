@@ -33,7 +33,6 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
 import org.pac4j.core.engine.DefaultCallbackLogic;
-import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.jee.context.JEEContextFactory;
 import org.pac4j.jee.context.session.JEESessionStoreFactory;

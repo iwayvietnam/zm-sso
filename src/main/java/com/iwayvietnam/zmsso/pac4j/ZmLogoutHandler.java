@@ -105,7 +105,6 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         if (!StringUtil.isNullOrEmpty(key)) {
             DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
         }
-        Log.sso.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
     }
 
     private void setAuthTokenCookie(WebContext context, final AuthToken authToken) throws ServiceException {
@@ -139,7 +138,6 @@ public final class ZmLogoutHandler extends DefaultLogoutHandler implements Logou
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
             final var account = prov.getAccountById(accountId);
-            Log.sso.debug("Update sso single logout for account: %s", account.getName());
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {
                 account.setAuthTokenValidityValue(1);

@@ -41,13 +41,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 
+import static com.iwayvietnam.zmsso.pac4j.SettingsConstants.SSO_CLIENT_NAME_SESSION_ATTR;
+import static com.iwayvietnam.zmsso.pac4j.SettingsConstants.SSO_PROFILE_SESSION_ATTR;
+
 /**
  * Base Sso Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public abstract class BaseSsoHandler extends ExtensionHttpHandler {
-    protected static final String SSO_CLIENT_NAME_SESSION_ATTR = "sso.ClientName";
-
     protected final ConfigBuilder configBuilder;
 
     public BaseSsoHandler() {
@@ -63,7 +64,6 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             final var sessionStore = config.getSessionStoreFactory().newSessionStore();
             final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context, sessionStore);
             loginAction.ifPresent(action -> {
-                Log.sso.debug("Adapt redirection action: %s", action);
                 JEEHttpActionAdapter.INSTANCE.adapt(action, context);
             });
         }
@@ -82,11 +82,12 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var context = config.getWebContextFactory().newContext(request, response);
         final var sessionStore = config.getSessionStoreFactory().newSessionStore();
         config.getCallbackLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
-        Log.sso.info("SSO callback is performed");
+        Log.sso.info("SSO callback is performed with: %s", client.getName());
 
         final var manager = new ProfileManager(context, sessionStore);
         manager.setConfig(config);
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
+            request.getSession().setAttribute(SSO_PROFILE_SESSION_ATTR, profile);
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
             final var sessionId = sessionStore.getSessionId(context, true).orElse("");
@@ -106,7 +107,6 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private void redirectToMail(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServiceException {
         final var redirectUrl = AuthUtil.getRedirectURL(request, Provisioning.getInstance().getLocalServer(), false, true) + AuthUtil.IGNORE_LOGIN_URL;
-        Log.sso.debug("Redirecting to url: %s", redirectUrl);
         response.sendRedirect(redirectUrl);
     }
 }

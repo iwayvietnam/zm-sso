@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.iwayvietnam.zmsso.pac4j.SettingsConstants.SSO_CLIENT_NAME_SESSION_ATTR;
+
 /**
  * SSO Callback Handler
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>

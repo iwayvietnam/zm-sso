@@ -33,12 +33,15 @@ import org.pac4j.core.engine.LogoutLogic;
 import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.exception.http.NoContentAction;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.core.util.HttpActionHelper;
 import org.pac4j.core.util.Pac4jConstants;
+import org.pac4j.jee.context.JEEContext;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import static com.iwayvietnam.zmsso.pac4j.SettingsConstants.SSO_PROFILE_SESSION_ATTR;
 import static org.pac4j.core.util.CommonHelper.*;
 import static org.pac4j.core.util.CommonHelper.assertNotNull;
 
@@ -54,7 +57,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
     public Object perform(final WebContext context, final SessionStore sessionStore, final Config config,
                           final HttpActionAdapter httpActionAdapter, final String defaultUrl, final String inputLogoutUrlPattern,
                           final Boolean inputLocalLogout, final Boolean inputDestroySession, final Boolean inputCentralLogout) {
-        Log.sso.debug("LogoutLogic perform logout");
+        Log.sso.debug("Performing logic logout");
         HttpAction action;
         try {
             final var logoutUrlPattern = Objects.requireNonNullElse(inputLogoutUrlPattern, Pac4jConstants.DEFAULT_LOGOUT_URL_PATTERN_VALUE);
@@ -81,7 +84,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             if (url.isPresent() && Pattern.matches(logoutUrlPattern, url.get())) {
                 redirectUrl = url.get();
             }
-            Log.sso.debug("redirectUrl: {}", redirectUrl);
+            Log.sso.debug("redirectUrl: %s", redirectUrl);
             if (redirectUrl != null) {
                 action = HttpActionHelper.buildRedirectUrlAction(context, redirectUrl);
             } else {
@@ -105,34 +108,61 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             }
 
             // central logout
-            if (centralLogout && profiles.size() > 1) {
+            if (centralLogout) {
                 Log.sso.debug("Performing central logout");
-                for (final var profile : profiles) {
-                    Log.sso.debug("Profile: {}", profile);
-                    final var clientName = profile.getClientName();
-                    if (clientName != null) {
-                        final var client = configClients.findClient(clientName);
-                        if (client.isPresent()) {
-                            String targetUrl = null;
-                            if (redirectUrl != null) {
-                                redirectUrl = enhanceRedirectUrl(config, client.get(), context, sessionStore, redirectUrl);
-                                if (redirectUrl.startsWith(HttpConstants.SCHEME_HTTP) ||
-                                        redirectUrl.startsWith(HttpConstants.SCHEME_HTTPS)) {
-                                    targetUrl = redirectUrl;
+                if (!profiles.isEmpty()) {
+                    for (final var profile : profiles) {
+                        Log.sso.debug("Profile: %s", profile);
+                        final var clientName = profile.getClientName();
+                        if (clientName != null) {
+                            final var client = configClients.findClient(clientName);
+                            if (client.isPresent()) {
+                                String targetUrl = null;
+                                if (redirectUrl != null) {
+                                    redirectUrl = enhanceRedirectUrl(config, client.get(), context, sessionStore, redirectUrl);
+                                    if (redirectUrl.startsWith(HttpConstants.SCHEME_HTTP) ||
+                                            redirectUrl.startsWith(HttpConstants.SCHEME_HTTPS)) {
+                                        targetUrl = redirectUrl;
+                                    }
+                                }
+                                final var logoutAction =
+                                        client.get().getLogoutAction(context, sessionStore, profile, targetUrl);
+                                Log.sso.debug("Logout action: %s", logoutAction);
+                                if (logoutAction.isPresent()) {
+                                    action = logoutAction.get();
+                                    break;
                                 }
                             }
-                            final var logoutAction =
-                                    client.get().getLogoutAction(context, sessionStore, profile, targetUrl);
-                            Log.sso.debug("Logout action: {}", logoutAction);
-                            if (logoutAction.isPresent()) {
-                                action = logoutAction.get();
-                                break;
+                        }
+                    }
+                } else if (context instanceof JEEContext jeeCxt) {
+                    final var session = jeeCxt.getNativeRequest().getSession();
+                    var profile = (UserProfile) session.getAttribute(SSO_PROFILE_SESSION_ATTR);
+                    if (profile != null) {
+                        final var clientName = profile.getClientName();
+                        if (clientName != null) {
+                            Log.sso.debug("Profile: %s", profile);
+                            final var client = configClients.findClient(clientName);
+                            if (client.isPresent()) {
+                                String targetUrl = null;
+                                if (redirectUrl != null) {
+                                    redirectUrl = enhanceRedirectUrl(config, client.get(), context, sessionStore, redirectUrl);
+                                    if (redirectUrl.startsWith(HttpConstants.SCHEME_HTTP) ||
+                                            redirectUrl.startsWith(HttpConstants.SCHEME_HTTPS)) {
+                                        targetUrl = redirectUrl;
+                                    }
+                                }
+                                final var logoutAction =
+                                        client.get().getLogoutAction(context, sessionStore, profile, targetUrl);
+                                Log.sso.debug("Logout action: %s", logoutAction);
+                                if (logoutAction.isPresent()) {
+                                    action = logoutAction.get();
+                                }
                             }
                         }
                     }
                 }
             }
-
         } catch (final RuntimeException e) {
             return handleException(e, httpActionAdapter, context);
         }
