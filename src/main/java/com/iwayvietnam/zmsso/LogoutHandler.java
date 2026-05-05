@@ -69,12 +69,6 @@ public class LogoutHandler extends BaseSsoHandler {
             final var config = configBuilder.getConfig();
             final var context = config.getWebContextFactory().newContext(request, response);
             final var sessionStore = config.getSessionStoreFactory().newSessionStore();
-
-            var profile = request.getSession().getAttribute(SSO_PROFILE_SESSION_ATTR);
-            Log.sso.debug("Get profile from session: %s", profile);
-            var profiles = sessionStore.get(context, Pac4jConstants.USER_PROFILES);
-            Log.sso.debug("Get profile from session store: %s", profiles);
-
             config.getLogoutLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
             Log.sso.info("SSO logout is performed");
         }
