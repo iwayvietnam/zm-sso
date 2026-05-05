@@ -36,6 +36,8 @@ import org.pac4j.core.engine.DefaultCallbackLogic;
 import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.util.Pac4jConstants;
+import org.pac4j.jee.context.JEEContextFactory;
+import org.pac4j.jee.context.session.JEESessionStoreFactory;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
 
@@ -187,6 +189,8 @@ public class ConfigBuilder {
                 saml2Client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
             }
         });
+        config.setSessionStoreFactory(JEESessionStoreFactory.INSTANCE);
+        config.setWebContextFactory(JEEContextFactory.INSTANCE);
         config.setSecurityLogic(DefaultSecurityLogic.INSTANCE);
         config.setCallbackLogic(DefaultCallbackLogic.INSTANCE);
         config.setLogoutLogic(DefaultLogoutLogic.INSTANCE);

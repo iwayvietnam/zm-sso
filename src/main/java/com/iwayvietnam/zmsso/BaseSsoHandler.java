@@ -34,8 +34,6 @@ import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.Pac4jConstants;
-import org.pac4j.jee.context.JEEContext;
-import org.pac4j.jee.context.session.JEESessionStore;
 import org.pac4j.jee.http.adapter.JEEHttpActionAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +58,9 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         if (!isLoggedIn(request)) {
             Log.sso.info("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
-            final var context = new JEEContext(request, response);
-            final var sessionStore = new JEESessionStore();
+            final var config = configBuilder.getConfig();
+            final var context = config.getWebContextFactory().newContext(request, response);
+            final var sessionStore = config.getSessionStoreFactory().newSessionStore();
             final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context, sessionStore);
             loginAction.ifPresent(action -> {
                 Log.sso.debug("Adapt redirection action: %s", action);
@@ -80,8 +79,8 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var renewSession = configBuilder.getRenewSession();
 
         final var config = configBuilder.getConfig();
-        final var context = new JEEContext(request, response);
-        final var sessionStore = new JEESessionStore();
+        final var context = config.getWebContextFactory().newContext(request, response);
+        final var sessionStore = config.getSessionStoreFactory().newSessionStore();
         config.getCallbackLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
         Log.sso.info("SSO callback is performed");
 
