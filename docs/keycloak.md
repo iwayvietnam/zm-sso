@@ -6,77 +6,28 @@ It makes it easy to secure applications and services with little to no code.
 ## Install Keycloak
 
 ### Requirement
-* JDK version 1.8 or newer.
+* JDK version 25 or newer.
 
-### Download and attract the latest stable version of Keycloak (current is 13.0.0)
+### Download and attract the latest stable version of Keycloak (current is 26.0.0)
 ```shell
 cd /opt
-wget https://github.com/keycloak/keycloak/releases/download/13.0.0/keycloak-13.0.0.tar.gz
-tar -xvzf keycloak-13.0.0.tar.gz
+wget https://github.com/keycloak/keycloak/releases/download/26.0.0/keycloak-26.0.0.tar.gz
+tar -xvzf keycloak-26.0.0.tar.gz
 ```
 
-### Deployment configuration
-* Using a text editor to open **/opt/keycloak-13.0.0/standalone/configuration/standalone.xml** file.
-* Config ssl: Fill `generate-self-signed-certificate-host` attribute of `<keystore>` tag with **your-keycloak-server-hostname** under `<server-identities>` tag
-```xml
-<ssl>
-    <keystore path="application.keystore" relative-to="jboss.server.config.dir" keystore-password="password" alias="server" key-password="password" generate-self-signed-certificate-host="your-keycloak-server-hostname"/>
-</ssl>
-```
-* Config tls: Fill `generate-self-signed-certificate-host` attribute of `<key-manager>` tag with **your-keycloak-server-hostname** under `<tls><key-managers>` tag
-```xml
-<key-manager name="applicationKM" key-store="applicationKS" generate-self-signed-certificate-host="your-keycloak-server-hostname">
-    <credential-reference clear-text="password"/>
-</key-manager>
-```
-*Config server hostname: Fill `alias` attribute of `host` tag under `<server name="default-server">` tag with **your-keycloak-server-hostname**
-```xml
-<host name="default-host" alias="your-keycloak-server-hostname">
-    <location name="/" handler="welcome-content"/>
-    <http-invoker security-realm="ApplicationRealm"/>
-</host>
-```
-* Config binding interfaces: Edit `value` attribute of `<inet-address> tag` under `<interfaces>` tag with **your-keycloak-server-ip-address**
-```xml
-<interfaces>
-    <interface name="management">
-        <inet-address value="${jboss.bind.address.management:your-keycloak-server-ip-address}"/>
-        <!--inet-address value="${jboss.bind.address.management:127.0.0.1}"/-->
-    </interface>
-    <interface name="public">
-        <inet-address value="${jboss.bind.address:your-keycloak-server-ip-address}"/>
-    </interface>
-</interfaces>
-```
-* Config socket binding ports: Edit `port` attribute of `socket-binding` tag under `socket-binding-group` tag. Ex:
-```xml
-<socket-binding name="http" port="${jboss.http.port:9080}"/>
-<socket-binding name="https" port="${jboss.https.port:9443}"/>
-```
-
-### Add Server Admin User
+### Running the Keycloak server in development mode
 ```shell
-cd /opt/keycloak-13.0.0/
-./bin/add-user.sh
+cd /opt/keycloak-26.0.0/
+./bin/kc.sh start-dev --http-host=your-keycloak-hostname
 ```
 
-### Add Keycloak Admin User
-```shell
-cd /opt/keycloak-13.0.0/
-./bin/add-user-keycloak.sh -u your-admin-user -p your-admin-password
-```
-
-### Running the Keycloak server
-```shell
-cd /opt/keycloak-13.0.0/
-LAUNCH_JBOSS_IN_BACKGROUND=1
-./bin/standalone.sh
-# Running the Keycloak server on background
-# ./bin/standalone.sh &
-```
+### Create an admin user
+Keycloak has no default admin user. You need to create an admin user before you can start Keycloak.
+* Open `http://your-keycloak-hostname:8080`.
+* Fill in the form with your preferred username and password.
 
 ### Config Keycloak User Federation with Zimbra LDAP
-* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-server-hostname:9443/auth/admin` from your web browser.
+* Sign in to Keycloak Administration Console as an admin by visiting url `http://your-keycloak-hostname:8080/admin` from your web browser.
 * On the Main menu, click **Configure > User Federation**
 * Click **Add Provider... -> ldap**. Fill in **Add user federation provider** form like that
 ![add-ldap-user-federation](keycloak/add-ldap-user-federation.png)
@@ -85,17 +36,19 @@ LAUNCH_JBOSS_IN_BACKGROUND=1
 * Click **Synchronize all users** button to synchronize zimbra users to Keycloak users
 * On the Main menu, click **Manage > Users** to list users from ldap
 
-### Config Keycloak ssl certificate & hostname with Zimbra
+### Config untrusted ssl of Keycloak & Zimbra
 * Export untrusted ssl certificate to the file:
-~~~shell
-openssl s_client -servername your-keycloak-server-hostname -connect your-keycloak-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/keycloak.pem
-~~~
-* Execute following commands under the `zimbra` user:
-~~~shell
+```shell
+openssl s_client -servername your-keycloak-hostname -connect your-keycloak-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/keycloak.pem
+openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
+```
+* In Zimbra server, execute following commands under the `zimbra` user:
+```shell
 zmcertmgr addcacert /path/to/keycloak.pem
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-server-hostname
+zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-hostname
 zmmailboxdctl restart
-~~~
+```
+* In Zimbra server, copy `zimbra.pem` to `/opt/keycloak-26.0.0/conf/truststores`
 
 ### Single sign on with SAML protocol
 #### Config Zimbra SSO
@@ -104,14 +57,14 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **saml.callbackUrl** to `https://your-zimbra-hostname/service/extension/saml/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **saml.identityProviderMetadataPath** to `https://your-keycloak-server-hostname:9443/auth/realms/name-of-your-realm/protocol/saml/descriptor`
+* Set **saml.identityProviderMetadataPath** to `https://your-keycloak-hostname:9443/auth/realms/name-of-your-realm/protocol/saml/descriptor`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Create SAML client for Zimbra on Keycloak
 * Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
-* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-server-hostname:9443/auth/admin` from your web browser.
+* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-hostname:9443/auth/admin` from your web browser.
 * On the Main menu, click **Configure > Clients**
-* Click **Create** button, click **Select file** to upload service provider metadata file (`metadata.xml`).
+* Click **Create** button, click **Select file** to upload service provider metadata file `metadata.xml`.
   Click **Save** to create new SAML client.
 * Select **Name ID Format** with `email`, Click **Save**.
 * Click **Mappers** tab. Click **Add Builtin** button, select all `builtin`, click **Add selected** button.
@@ -119,7 +72,7 @@ zmmailboxdctl restart
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
 * Testing single sign on by visiting url `https://your-zimbra-hostname/service/extension/saml/login` from your web browser.
-* Testing logout & single logout (SLO) by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
+* Testing logout & single logout by visiting url `https://your-zimbra-hostname/service/extension/sso/logout` from your web browser.
 
 #### Replace login and logout urls
 * Execute following commands with the `zimbra` user:
@@ -131,7 +84,7 @@ zmmailboxdctl restart
 
 ### Single sign on with OpenID Connect protocol
 #### Create OpenID Connect client for Zimbra on Keycloak
-* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-server-hostname:9443/auth/admin` from your web browser.
+* Sign in to Keycloak Administration Console as an admin by visiting url `https://your-keycloak-hostname:9443/auth/admin` from your web browser.
 * On the Main menu, click **Configure > Clients**
 * Click **Create** button, fill **Client ID** with `your-client-id`.
 * Select **Access Type** with **confidential**, fill **Valid Redirect URIs** with `https://your-zimbra-hostname/*`,
@@ -146,7 +99,7 @@ zmmailboxdctl restart
 * Set **sso.callbackUrl** to `https://your-zimbra-hostname/service/extension/sso/callback`
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
-* Set **oidc.discoveryUri** to `https://your-keycloak-server-hostname:9443/auth/realms/name-of-your-realm/.well-known/openid-configuration`
+* Set **oidc.discoveryUri** to `https://your-keycloak-hostname:9443/auth/realms/name-of-your-realm/.well-known/openid-configuration`
 * Set **oidc.id** to `Client ID`
 * Set **oidc.secret** to `Client Secret`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
