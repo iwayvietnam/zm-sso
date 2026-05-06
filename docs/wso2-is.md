@@ -115,8 +115,9 @@ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore 
 * Click on **Protocol** tab, tick **Sign SAML responses**, choose **NameID format** with
  `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`,
  choose **Logout method** with `Front Channel HTTP Post`,
- check **Enable Attribute Profile**
-* Click **Update** to update SAML application configuration
+ check **Enable Attribute Profile**. Click **Update**.
+* Click on **User Attributes** tab, add **Email** attribute `http://wso2.org/claims/emailaddress`,
+  choose **Subject attribute** with `http://wso2.org/claims/emailaddress`. Click **Update**.
 
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
