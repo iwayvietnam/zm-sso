@@ -7,17 +7,17 @@ It supports complex IAM requirements given its high extensibility.
 ## Install WSO2 IS
 
 ### Requirement
-* JDK version 1.8 or newer.
+* JDK version 21 or newer.
 
-### Download and unzip the latest stable version of WSO2 IS (current is 5.11.0)
+### Download and unzip the latest stable version of WSO2 IS (current is 7.2.0)
 ```shell
 cd /opt
-wget https://github.com/wso2/product-is/releases/download/v5.11.0/wso2is-5.11.0.zip
-unzip wso2is-5.11.0.zip
+wget https://github.com/wso2/product-is/releases/download/v7.2.0/wso2is-7.2.0.zip
+unzip wso2is-7.2.0.zip
 ```
 
 ### Deployment configuration
-* Using a text editor to open **/opt/wso2is-5.11.0/repository/conf/deployment.toml** file.
+* Using a text editor to open **/opt/wso2is-7.2.0/repository/conf/deployment.toml** file.
 * Edit `hostname` and `node_ip` under `[server]` section
 ```toml
 [server]
@@ -55,16 +55,21 @@ tag_requests = false
 
 ### Running the Identity Server
 ```shell
-cd /opt/wso2is-5.11.0/
+cd /opt/wso2is-7.2.0/
 ./bin/wso2server.sh start
 ```
 
 ### Config IS user store with Zimbra LDAP
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
-* On the Main menu, click **Identity > User Stores > Add**. Fill in **Add New User Store** form like that
-![add-ldap-user-store](wso2-is/add-ldap-user-store.png)
-* Click **Add** button to add ldap user store
-* On the Main menu, click **Identity > Users and Roles > List**
+* On the Main menu, click **User Attributes & Stores > User Stores > New User Store**.
+* Select **Read Only LDAP**
+* Fill in **Add Read Only LDAP User Store - General** form like that
+![add-ldap-user-store-general](add-ldap-user-store-general.png)
+* Fill in **Add Read Only LDAP User Store - Zimbra Ldap** form like that
+![add-ldap-user-store-user](add-ldap-user-store-user.png)
+* Disable **Read Group**, Click **Next**
+* Click **Finish** button to add ldap user store
+* On the Main menu, click **User Managerment > Users**
 * Click **Users** to list users from ldap
 
 ### Add Service Provider for Zimbra Mail Server
@@ -72,17 +77,23 @@ cd /opt/wso2is-5.11.0/
 * On the Main menu, click **Identity > Service Providers > Add**
 * Enter **Service Provider Name** and click **Register** to add service provider
 
-### Config WSO2 IS ssl certificate & hostname with Zimbra
+### Config untrusted ssl certificate of Zimbra & WSO2 IS
+On Zimbra mail server
 * Export untrusted ssl certificate to the file:
-~~~shell
+```shell
 openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/wso2-is.pem
-~~~
+```
 * Execute following commands under the `zimbra` user:
-~~~shell
+```shell
 zmcertmgr addcacert /path/to/wso2-is.pem
 zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-id-server-hostname
 zmmailboxdctl restart
-~~~
+```
+On WSO2 Is server
+* Export untrusted ssl certificate to the file:
+```shell
+openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
+```
 
 ### Single sign on with SAML protocol
 #### Config Zimbra SSO
