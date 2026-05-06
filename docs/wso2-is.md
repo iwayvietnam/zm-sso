@@ -93,6 +93,7 @@ On WSO2 Is server
 * Export untrusted ssl certificate to the file:
 ```shell
 openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
+keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore /opt/wso2is-7.2.0/repository/resources/security/client-truststore.p12 -storepass wso2carbon
 ```
 
 ### Single sign on with SAML protocol
@@ -106,9 +107,8 @@ openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 #### Config SAML service provider
-* Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
-* On the Main menu, click **Identity > Service Providers > List**
+* On the Main menu, click **Applications > New Application**, choose **Traditional Web Application**
 * Click on **Edit** link that corresponds to the service provider for Zimbra Mail Server
 * On **Inbound Authentication Configuration -> SAML2 Web SSO Configuration**, click **Configure**
 * Choose **Metadata File Configuration**, upload service provider metadata file (`metadata.xml`).
@@ -119,6 +119,7 @@ openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:
 * Fill **SLO Response URL** and **SLO Request URL** with `https://your-zimbra-hostname/service/extension/saml/callback?client_name=SAML2Client&logoutendpoint=true`
 * Check **Enable Attribute Profile** and **Include Attributes in the Response Always**
 * Click **Update** to update SAML service provider configuration
+* Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
 
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
