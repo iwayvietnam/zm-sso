@@ -137,11 +137,13 @@ zmmailboxdctl restart
 ### Single sign on with OpenID Connect protocol
 #### Config OpenID Connect service provider
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
-* On the Main menu, click **Identity > Service Providers > List**
-* Click on **Edit** link that corresponds to the service provider for Zimbra Mail Server
-* On **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration**, click **Configure**
-* Fill **Callback Url** with `regexp=https://your-zimbra-hostname(.*)`
-* Check **Enable OIDC Backchannel Logout** and fill **Backchannel Logout Url** with `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`
+* On the Main menu, click **Applications > New Application**, choose **Traditional Web Application**
+* Fill in **Traditional Web Application** form like that
+![create-oidc-application](create-oidc-application.png)
+* On **Protocol** tab, fill **Allowed origins** with `https://your-zimbra-hostname`, fill **Backchannel Logout Url** with
+ `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`, Click **Update**
+* On **User Attributes** tab, check **Email**, check **Assign alternate subject indentifier**,
+  choose **Subject attribute** with `Email`, Click **Update**
 
 #### Config Zimbra SSO
 * Using a text editor to open **/opt/zimbra/conf/zm.sso.properties** file.
@@ -150,8 +152,8 @@ zmmailboxdctl restart
 * Set **oidc.callbackUrl** to `https://your-zimbra-hostname/service/extension/oidc/callback`
 * Set **sso.postLogoutURL** to `https://your-zimbra-hostname/`
 * Set **oidc.discoveryUri** to `https://your-id-server-hostname:9443/oauth2/oidcdiscovery/.well-known/openid-configuration`
-* Set **oidc.id** to `OAuth Client Key`
-* Set **oidc.secret** to `OAuth Client Secret`
+* Set **oidc.id** to `Client ID`
+* Set **oidc.secret** to `Client secret`
 * Restart mailbox under `zimbra` user: `zmmailboxdctl restart`
 
 **Notes**: You can get `OAuth Client Key` and `OAuth Client Secret` from **Inbound Authentication Configuration -> OAuth/OpenID Connect Configuration** on OpenID Connect service provider that you configured
