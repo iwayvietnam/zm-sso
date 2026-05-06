@@ -64,9 +64,9 @@ cd /opt/wso2is-7.2.0/
 * On the Main menu, click **User Attributes & Stores > User Stores > New User Store**.
 * Select **Read Only LDAP**
 * Fill in **Add Read Only LDAP User Store - General** form like that
-![add-ldap-user-store-general](add-ldap-user-store-general.png)
+![add-ldap-user-store-general](wso2-is/add-ldap-user-store-general.png)
 * Fill in **Add Read Only LDAP User Store - Zimbra Ldap** form like that
-![add-ldap-user-store-user](add-ldap-user-store-user.png)
+![add-ldap-user-store-user](wso2-is/add-ldap-user-store-user.png)
 * Disable **Read Group**, Click **Next**
 * Click **Finish** button to add ldap user store
 * On the Main menu, click **User Managerment > Users**
@@ -110,7 +110,7 @@ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore 
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
 * On the Main menu, click **Applications > New Application**, choose **Traditional Web Application**
 * Fill in **Traditional Web Application** form like that
-![create-saml-application](create-saml-application.png)
+![create-saml-application](wso2-is/create-saml-application.png)
 * Click **Create** to create
 * Click on **Protocol** tab, tick **Sign SAML responses**, choose **NameID format** with
  `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`,
@@ -139,7 +139,7 @@ zmmailboxdctl restart
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
 * On the Main menu, click **Applications > New Application**, choose **Traditional Web Application**
 * Fill in **Traditional Web Application** form like that
-![create-oidc-application](create-oidc-application.png)
+![create-oidc-application](wso2-is/create-oidc-application.png)
 * On **Protocol** tab, fill **Allowed origins** with `https://your-zimbra-hostname`, fill **Backchannel Logout Url** with
  `https://your-zimbra-hostname/service/extension/oidc/callback?client_name=OidcClient&logoutendpoint=true`, Click **Update**
 * On **User Attributes** tab, check **Email**, check **Assign alternate subject indentifier**,
