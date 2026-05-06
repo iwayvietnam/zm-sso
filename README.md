@@ -185,26 +185,26 @@ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/exten
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
 * Export untrusted ssl certificate to the file:
-~~~shell
+```shell
 openssl s_client -servername idp.server.com -connect idp.server.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
-~~~
+```
 * Execute following commands with the Zimbra user:
-~~~shell
+```shell
 zmcertmgr addcacert /path/to/cert.pem
 zmmailboxdctl restart
-~~~
+```
 
 ### Add identity provider hostname to ignore CSRF referer check
-~~~shell
+```shell
 zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
 zmmailboxdctl restart
-~~~
+```
 
 ## Tutorials
-* [Single sign on with WSO2 Identity Server (WSO2 IS)](docs/wso2-is.md)
+* [Single sign on with WSO2 Identity Server](docs/wso2-is.md)
 * [Single sign on with Keycloak](docs/keycloak.md)
 * [Single sign on with Azure AD B2C](docs/azure-ad-b2c.md)
-* [Single sign on with Apereo Central Authentication Service (CAS)](docs/cas.md)
+* [Single sign on with Apereo Central Authentication Service](docs/cas.md)
 
 Licensing
 =========
