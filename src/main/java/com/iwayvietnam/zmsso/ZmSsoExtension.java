@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.iwayvietnam.zmsso.util.Log;
 import com.iwayvietnam.zmsso.cas.*;
 import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.iwayvietnam.zmsso.oidc.*;

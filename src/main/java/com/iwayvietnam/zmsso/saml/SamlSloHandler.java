@@ -24,14 +24,7 @@ package com.iwayvietnam.zmsso.saml;
 
 import com.zimbra.cs.extension.ExtensionException;
 import org.opensaml.saml.common.xml.SAMLConstants;
-<<<<<<< HEAD
 import org.pac4j.core.util.HttpActionHelper;
-=======
-import org.pac4j.core.context.CallContext;
-import org.pac4j.core.util.HttpActionHelper;
-import org.pac4j.jee.context.JEEContext;
-import org.pac4j.jee.context.session.JEESessionStore;
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import org.pac4j.saml.logout.impl.SAML2LogoutResponseBuilder;
 import org.pac4j.saml.logout.impl.SAML2LogoutResponseMessageSender;
 
@@ -59,37 +52,25 @@ public class SamlSloHandler extends SamlBaseHandler {
     @Override
     public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         client.init();
-<<<<<<< HEAD
         var config = configBuilder.getConfig();
         final var context = config.getWebContextFactory().newContext(request, response);
         final var sessionStore = config.getSessionStoreFactory().newSessionStore();
-=======
-        final var context = new JEEContext(request, response);
-        final var sessionStore = new JEESessionStore();
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         final var contextProvider = client.getContextProvider();
+        final var logoutProfileHandler = client.getLogoutProfileHandler();
         final var spLogoutResponseBindingType = client.getConfiguration().getSpLogoutResponseBindingType();
         final var saml2LogoutResponseBuilder = new SAML2LogoutResponseBuilder(spLogoutResponseBindingType);
         final var saml2LogoutResponseMessageSender = new SAML2LogoutResponseMessageSender(client.getSignatureSigningParametersProvider(),
                 spLogoutResponseBindingType, false, client.getConfiguration().isSpLogoutRequestSigned());
 
-<<<<<<< HEAD
         final var samlContext = contextProvider.buildContext(client, context, sessionStore);
         logoutProfileHandler.receive(samlContext);
-=======
-        final var samlContext = contextProvider.buildContext(new CallContext(context, sessionStore), client);
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         final var logoutResponse = saml2LogoutResponseBuilder.build(samlContext);
         saml2LogoutResponseMessageSender.sendMessage(samlContext, logoutResponse, samlContext.getSAMLBindingContext().getRelayState());
 
         final var adapter = samlContext.getProfileRequestContextOutboundMessageTransportResponse();
         if (spLogoutResponseBindingType.equalsIgnoreCase(SAMLConstants.SAML2_POST_BINDING_URI)) {
-<<<<<<< HEAD
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(adapter.getOutgoingContent());
-=======
-            throw HttpActionHelper.buildFormPostContentAction(context, adapter.getOutgoingContent());
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         } else {
             throw HttpActionHelper.buildRedirectUrlAction(context, adapter.getRedirectUrl());
         }

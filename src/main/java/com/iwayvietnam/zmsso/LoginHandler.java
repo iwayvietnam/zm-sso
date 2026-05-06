@@ -22,13 +22,10 @@
  */
 package com.iwayvietnam.zmsso;
 
-<<<<<<< HEAD
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-=======
-import com.iwayvietnam.zmsso.util.Log;
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import com.zimbra.common.service.ServiceException;
+import com.zimbra.common.util.ZimbraLog;
 import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.core.util.Pac4jConstants;
 
@@ -62,7 +59,7 @@ public class LoginHandler extends BaseSsoHandler {
             }
         }
         catch (final ServiceException | TechnicalException ex) {
-            Log.sso.error(ex);
+            ZimbraLog.extensions.error(ex);
             throw new ServletException(ex);
         }
     }

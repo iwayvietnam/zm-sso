@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso.pac4j;
 
-import com.iwayvietnam.zmsso.util.Log;
 import com.iwayvietnam.zmsso.db.DbSsoSession;
 import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.localconfig.LC;
@@ -35,16 +34,10 @@ import com.zimbra.cs.account.Provisioning;
 import com.zimbra.cs.account.auth.AuthContext;
 import com.zimbra.cs.service.AuthProvider;
 import com.zimbra.cs.servlet.util.AuthUtil;
-<<<<<<< HEAD
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
 import org.pac4j.core.logout.handler.DefaultLogoutHandler;
 import org.pac4j.core.logout.handler.LogoutHandler;
-=======
-import org.pac4j.core.context.CallContext;
-import org.pac4j.core.logout.handler.DefaultSessionLogoutHandler;
-import org.pac4j.core.logout.handler.SessionLogoutHandler;
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import org.pac4j.jee.context.JEEContext;
 
 import java.util.HashMap;
@@ -55,26 +48,17 @@ import java.util.Optional;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  * Logout url:  https://mail.zimbra-server.com/?loginOp=logout
  */
-<<<<<<< HEAD
 public final class ZmLogoutHandler extends DefaultLogoutHandler implements LogoutHandler {
-=======
-public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implements SessionLogoutHandler {
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
     private static final Provisioning prov = Provisioning.getInstance();
     private static final String X_ORIGINATING_IP_HEADER = LC.zimbra_http_originating_ip_header.value();
     private static final String USER_AGENT_HEADER = "User-Agent";
 
     /**
-<<<<<<< HEAD
      * Destroys the current web session for the given key for a front channel logout.
-=======
-     * Destroys the current web session for the given key for a front or back channel logout.
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
      * @param context the web context
      * @param key the key
      */
     @Override
-<<<<<<< HEAD
     public void destroySessionFront(WebContext context, SessionStore sessionStore, String key) {
         Log.sso.info("Destroy front channel sso session");
         super.destroySessionFront(context, sessionStore, key);
@@ -95,25 +79,13 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         Log.sso.info("Destroy back channel sso session");
         super.destroySessionBack(context, sessionStore, key);
         try {
-=======
-    public void destroySession(final CallContext context, final String key) {
-        Log.sso.info("Destroy sso session");
-        super.destroySession(context, key);
-        Log.sso.debug("Destroys the current web session for the given key: %s", key);
-        try {
-            clearAuthToken(context, key);
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             singleLogout(key);
         } catch (final ServiceException e) {
             Log.sso.error(e);
         }
     }
 
-<<<<<<< HEAD
     public void singleLogin(WebContext context, final String accountName, final String key, final String client) throws ServiceException {
-=======
-    public void singleLogin(final JEEContext context, final String accountName, final String key, final String client) throws ServiceException {
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         Log.sso.info("Perform single login for account: %s", accountName);
         final var authCtxt = new HashMap<String, Object>();
         final var remoteIp = context.getRemoteAddr();
@@ -133,7 +105,6 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         if (!StringUtil.isNullOrEmpty(key)) {
             DbSsoSession.ssoSessionLogin(account, key, client, origIp, remoteIp, userAgent);
         }
-<<<<<<< HEAD
     }
 
     private void setAuthTokenCookie(WebContext context, final AuthToken authToken) throws ServiceException {
@@ -148,22 +119,6 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         Log.sso.debug("Update sso session logout for account id: %s", accountId);
         if (context instanceof JEEContext jeeCxt) {
-=======
-        Log.sso.debug("Single login account: %s -> session key: %s -> client %s", accountName, key, client);
-    }
-
-    private void setAuthTokenCookie(final JEEContext context, final AuthToken authToken) throws ServiceException {
-        final var isAdmin = AuthToken.isAnyAdmin(authToken);
-        authToken.encode(context.getNativeResponse(), isAdmin, context.isSecure());
-        Log.sso.debug("Set auth token cookie for account id: %s", authToken.getAccountId());
-    }
-
-    private void clearAuthToken(final CallContext context, final String key) throws ServiceException {
-        final var accountId = DbSsoSession.ssoSessionLogout(key);
-        Log.sso.debug("Update sso session logout for account id: %s", accountId);
-        final var webCxt = context.webContext();
-        if (webCxt instanceof JEEContext jeeCxt) {
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             final var authToken = AuthUtil.getAuthTokenFromHttpReq(jeeCxt.getNativeRequest(), false);
             final var optional = Optional.ofNullable(authToken);
             if (optional.isPresent()) {
@@ -183,10 +138,6 @@ public final class ZmLogoutHandler extends DefaultSessionLogoutHandler implement
         final var accountId = DbSsoSession.ssoSessionLogout(key);
         if (!StringUtil.isNullOrEmpty(accountId)) {
             final var account = prov.getAccountById(accountId);
-<<<<<<< HEAD
-=======
-            Log.sso.debug("Update sso single logout for account: %s", account.getName());
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             final var validityValue = account.getAuthTokenValidityValue();
             if (validityValue > 99) {
                 account.setAuthTokenValidityValue(1);

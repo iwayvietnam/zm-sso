@@ -35,6 +35,6 @@ public abstract class OidcBaseHandler extends BaseSsoHandler {
 
     public OidcBaseHandler() throws ExtensionException {
         super();
-        client = (OidcClient) configBuilder.getClients().findClient("OidcClient").orElseThrow(() -> new ExtensionException("No oidc client found"));
+        client = configBuilder.getClients().findClient(OidcClient.class).orElseThrow(() -> new ExtensionException("No oidc client found"));
     }
 }

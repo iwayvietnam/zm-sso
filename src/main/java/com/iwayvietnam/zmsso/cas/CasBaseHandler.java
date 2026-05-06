@@ -35,6 +35,6 @@ public abstract class CasBaseHandler extends BaseSsoHandler  {
 
     public CasBaseHandler() throws ExtensionException {
         super();
-        client = (CasClient) configBuilder.getClients().findClient("CasClient").orElseThrow(() -> new ExtensionException("No cas client found"));
+        client = configBuilder.getClients().findClient(CasClient.class).orElseThrow(() -> new ExtensionException("No cas client found"));
     }
 }

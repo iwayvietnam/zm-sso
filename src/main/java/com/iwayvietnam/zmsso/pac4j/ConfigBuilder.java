@@ -32,10 +32,7 @@ import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
-<<<<<<< HEAD
 import org.pac4j.core.engine.DefaultCallbackLogic;
-=======
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.jee.context.JEEContextFactory;
 import org.pac4j.jee.context.session.JEESessionStoreFactory;
@@ -52,13 +49,13 @@ import java.util.*;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ConfigBuilder {
+    private static ConfigBuilder instance;
 
     private static final Map<String, String> properties = new HashMap<>();
     private final ConfigFactory configFactory;
     private final Config config;
     private final ZmLogoutHandler logoutHandler;
 
-    private final String defaultClientName;
     private final Boolean saveInSession;
     private final Boolean multiProfile;
     private final Boolean renewSession;
@@ -73,9 +70,7 @@ public class ConfigBuilder {
         configFactory = new PropertiesConfigFactory(loadStringProperty(SettingsConstants.ZM_SSO_CALLBACK_URL), properties);
         logoutHandler = new ZmLogoutHandler();
         config = buildConfig();
-        config.setSessionLogoutHandler(logoutHandler);
 
-        defaultClientName = loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT);
         saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
         multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
         renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
@@ -86,12 +81,15 @@ public class ConfigBuilder {
         postLogoutURL = loadStringProperty(SettingsConstants.ZM_SSO_POST_LOGOUT_URL);
     }
 
-    private static final class InstanceHolder {
-        private static final ConfigBuilder instance = new ConfigBuilder();
-    }
-
     public static ConfigBuilder getInstance() {
-        return InstanceHolder.instance;
+        if (instance == null) {
+            synchronized (ConfigBuilder.class) {
+                if (instance == null) {
+                    instance = new ConfigBuilder();
+                }
+            }
+        }
+        return instance;
     }
 
     public Config getConfig() {
@@ -103,20 +101,13 @@ public class ConfigBuilder {
     }
 
     public Client defaultClient() throws ServiceException {
-        return config.getClients().findClient(defaultClientName).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
+        return config.getClients().findClient(loadStringProperty(SettingsConstants.ZM_SSO_DEFAULT_CLIENT)).orElseThrow(() -> ServiceException.NOT_FOUND("No default client found"));
     }
 
     public ZmLogoutHandler getLogoutHandler() {
         return logoutHandler;
     }
 
-<<<<<<< HEAD
-=======
-    public String getDefaultClientName() {
-        return defaultClientName;
-    }
-
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
     public Boolean getRenewSession() {
         return renewSession;
     }
@@ -142,7 +133,6 @@ public class ConfigBuilder {
         final var config = configFactory.build();
 
         config.getClients().findClient("CasClient").ifPresent(client -> {
-<<<<<<< HEAD
             if (client instanceof CasClient casClient){
                 Log.sso.info("Config cas client");
                 final var cfg = casClient.getConfiguration();
@@ -160,62 +150,15 @@ public class ConfigBuilder {
                 Log.sso.info("Config oidc client");
                 final var cfg = oidcClient.getConfiguration();
                 cfg.setLogoutHandler(logoutHandler);
-=======
-            if (client instanceof CasClient casClient) {
-                Log.sso.info("Config cas client");
-                final var cfg = casClient.getConfiguration();
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(casClient::setCallbackUrl);
-                final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
-                casClient.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                casClient.setSaveProfileInSession(saveInSession);
-                casClient.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
-            }
-        });
-        config.getClients().findClient("OidcClient").ifPresent(client -> {
-            if (client instanceof OidcClient oidcClient) {
-                Log.sso.info("Config oidc client");
-                final var cfg = oidcClient.getConfiguration();
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
                 cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
                 if (StringUtil.isNullOrEmpty(loadStringProperty(SettingsConstants.ZM_OIDC_SCOPE))) {
                     cfg.setScope(SettingsConstants.ZM_DEFAULT_OIDC_SCOPE);
                 }
 
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(oidcClient::setCallbackUrl);
-<<<<<<< HEAD
                 oidcClient.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(oidcClient.getConfiguration(), getPostLogoutURL()));
                 oidcClient.setMultiProfile(Boolean.TRUE.equals(multiProfile));
                 oidcClient.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
-=======
-                oidcClient.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                oidcClient.setSaveProfileInSession(saveInSession);
-                oidcClient.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(oidcClient.getConfiguration(), getPostLogoutURL()));
-            }
-        });
-        config.getClients().findClient("SAML2Client").ifPresent(client -> {
-            if (client instanceof SAML2Client saml2Client) {
-                Log.sso.info("Config saml client");
-                final var cfg = saml2Client.getConfiguration();
-                cfg.setForceServiceProviderMetadataGeneration(true);
-                cfg.getKeystore().setForceKeystoreGeneration(false);
-                cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
-                cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
-                cfg.setWantsAssertionsSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_ASSERTIONS_SIGNED));
-                cfg.setWantsResponsesSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_RESPONSES_SIGNED));
-                cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
-                cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
-
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_RESPONSE_BINDING)).ifPresent(cfg::setResponseBindingType);
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
-
-                final var postLogoutURL = Optional.ofNullable(getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
-                cfg.setPostLogoutURL(postLogoutURL);
-
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(saml2Client::setCallbackUrl);
-                saml2Client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                saml2Client.setSaveProfileInSession(saveInSession);
->>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             }
         });
         config.getClients().findClient("SAML2Client").ifPresent(client -> {
