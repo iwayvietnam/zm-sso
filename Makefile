@@ -34,7 +34,7 @@ rpmbuild:
 
 install: dist/zm-sso
 	mkdir -p /opt/zimbra/lib/ext/zm-sso
+	cp conf/zm.sso.properties /opt/zimbra/conf
 	cp target/*.jar /opt/zimbra/lib/ext/zm-sso
 	cp target/dependencies/*.jar /opt/zimbra/jetty_base/common/lib
-	cp conf/zm.sso.properties /opt/zimbra/conf
 	su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'
