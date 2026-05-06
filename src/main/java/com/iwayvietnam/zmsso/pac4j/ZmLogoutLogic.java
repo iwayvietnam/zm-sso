@@ -33,6 +33,7 @@ import org.pac4j.core.engine.LogoutLogic;
 import org.pac4j.core.exception.http.HttpAction;
 import org.pac4j.core.exception.http.NoContentAction;
 import org.pac4j.core.http.adapter.HttpActionAdapter;
+import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.profile.UserProfile;
 import org.pac4j.core.util.HttpActionHelper;
 import org.pac4j.core.util.Pac4jConstants;
@@ -75,7 +76,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             assertNotNull("configClients", configClients);
 
             // logic
-            final var manager = getProfileManager(context, sessionStore);
+            final var manager = new ProfileManager(context, sessionStore);
             manager.setConfig(config);
             final var profiles = manager.getProfiles();
             if (profiles.isEmpty() && context instanceof JEEContext jeeCxt) {
