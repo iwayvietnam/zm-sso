@@ -125,7 +125,7 @@ To handle the logout, a logout endpoint is necessary to perform:
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
 ```shell
-mkdir /opt/zimbra/conf/saml
+mkdir -p /opt/zimbra/conf/saml
 keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
