@@ -109,17 +109,14 @@ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore 
 #### Config SAML service provider
 * Sign in to WSO2 Identity Server Management Console as an admin by visiting url `https://your-id-server-hostname:9443` from your web browser.
 * On the Main menu, click **Applications > New Application**, choose **Traditional Web Application**
-* Click on **Edit** link that corresponds to the service provider for Zimbra Mail Server
-* On **Inbound Authentication Configuration -> SAML2 Web SSO Configuration**, click **Configure**
-* Choose **Metadata File Configuration**, upload service provider metadata file (`metadata.xml`).
-  Click **Upload** to register new SAML srvice provider
-* On **Inbound Authentication Configuration -> SAML2 Web SSO Configuration**, click **Edit**
-* Fill **NameID format** with `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`
-* Check **Enable Response Signing** and **Enable Single Logout**
-* Fill **SLO Response URL** and **SLO Request URL** with `https://your-zimbra-hostname/service/extension/saml/callback?client_name=SAML2Client&logoutendpoint=true`
-* Check **Enable Attribute Profile** and **Include Attributes in the Response Always**
-* Click **Update** to update SAML service provider configuration
-* Download SAML service provider metadata at `https://your-zimbra-hostname/service/extension/saml/metadata` to `metadata.xml`.
+* Fill in **Traditional Web Application** form like that
+![create-saml-application](create-saml-application.png)
+* Click **Create** to create
+* Click on **Protocol** tab, tick **Sign SAML responses**, choose **NameID format** with
+ `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`,
+ choose **Logout method** with `Front Channel HTTP Post`,
+ check **Enable Attribute Profile**
+* Click **Update** to update SAML application configuration
 
 #### Testing
 * Testing service provider metadata by visiting url `https://your-zimbra-hostname/service/extension/saml/metadata` from your web browser.
