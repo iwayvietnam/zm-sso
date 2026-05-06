@@ -22,6 +22,7 @@
  */
 package com.iwayvietnam.zmsso;
 
+import com.iwayvietnam.zmsso.util.Log;
 import com.iwayvietnam.zmsso.pac4j.ConfigBuilder;
 import com.iwayvietnam.zmsso.util.Log;
 import com.zimbra.common.service.ServiceException;
@@ -29,11 +30,22 @@ import com.zimbra.cs.account.*;
 import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
+import org.pac4j.core.adapter.FrameworkAdapter;
 import org.pac4j.core.client.Client;
+<<<<<<< HEAD
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.Pac4jConstants;
+=======
+import org.pac4j.core.context.CallContext;
+import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.core.util.Pac4jConstants;
+import org.pac4j.jee.context.JEEContext;
+import org.pac4j.jee.context.JEEFrameworkParameters;
+import org.pac4j.jee.context.session.JEESessionStore;
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import org.pac4j.jee.http.adapter.JEEHttpActionAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,11 +71,19 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         if (!isLoggedIn(request)) {
             Log.sso.info("SSO login with: %s", client.getName());
             request.getSession().setAttribute(SSO_CLIENT_NAME_SESSION_ATTR, client.getName());
+<<<<<<< HEAD
             final var config = configBuilder.getConfig();
             final var context = config.getWebContextFactory().newContext(request, response);
             final var sessionStore = config.getSessionStoreFactory().newSessionStore();
             final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context, sessionStore);
             loginAction.ifPresent(action -> {
+=======
+            final var context = new JEEContext(request, response);
+            final var sessionStore = new JEESessionStore();
+            final var loginAction = client.getRedirectionAction(new CallContext(context, sessionStore));
+            loginAction.ifPresent(action -> {
+                Log.sso.debug("Adapt redirection action: %s", action);
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
                 JEEHttpActionAdapter.INSTANCE.adapt(action, context);
             });
         }
@@ -79,6 +99,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var renewSession = configBuilder.getRenewSession();
 
         final var config = configBuilder.getConfig();
+<<<<<<< HEAD
         final var context = config.getWebContextFactory().newContext(request, response);
         final var sessionStore = config.getSessionStoreFactory().newSessionStore();
         config.getCallbackLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
@@ -88,6 +109,17 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         manager.setConfig(config);
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             request.getSession().setAttribute(SSO_PROFILE_SESSION_ATTR, profile);
+=======
+        FrameworkAdapter.INSTANCE.applyDefaultSettingsIfUndefined(config);
+        final var params = new JEEFrameworkParameters(request, response);
+        config.getCallbackLogic().perform(config, defaultUrl, renewSession, configBuilder.getDefaultClientName(), params);
+        Log.sso.info("SSO callback is performed");
+
+        final var context = new JEEContext(request, response);
+        final var sessionStore = new JEESessionStore();
+        final var manager = new ProfileManager(context, sessionStore);
+        manager.getProfile(CommonProfile.class).ifPresent(profile -> {
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             final var logoutHandler = configBuilder.getLogoutHandler();
             final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
             final var sessionId = sessionStore.getSessionId(context, true).orElse("");
@@ -107,6 +139,10 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
 
     private void redirectToMail(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServiceException {
         final var redirectUrl = AuthUtil.getRedirectURL(request, Provisioning.getInstance().getLocalServer(), false, true) + AuthUtil.IGNORE_LOGIN_URL;
+<<<<<<< HEAD
+=======
+        Log.sso.debug("Redirecting to url: %s", redirectUrl);
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         response.sendRedirect(redirectUrl);
     }
 }

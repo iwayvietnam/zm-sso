@@ -14,7 +14,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
+<<<<<<< HEAD
         <pac4j.version>5.7.10</pac4j.version>
+=======
+        <pac4j.version>6.4.3</pac4j.version>
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         <zimbra.version>10.1.15</zimbra.version>
         <zimbra.lib.dir>${project.basedir}/lib</zimbra.lib.dir>
     </properties>
@@ -42,11 +46,14 @@
             <systemPath>${zimbra.lib.dir}/zimbrastore.jar</systemPath>
         </dependency>
         <dependency>
+<<<<<<< HEAD
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
         </dependency>
         <dependency>
+=======
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>8.0.1</version>
@@ -57,9 +64,30 @@
             <version>2.1.1</version>
         </dependency>
         <dependency>
+<<<<<<< HEAD
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
+=======
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>6.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>6.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>6.0.8</version>
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
@@ -87,6 +115,7 @@
             <version>${pac4j.version}</version>
         </dependency>
         <dependency>
+<<<<<<< HEAD
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>6.0.8</version>
@@ -102,6 +131,8 @@
             <version>3.1.4</version>
         </dependency>
         <dependency>
+=======
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>

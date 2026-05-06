@@ -9,7 +9,11 @@ URL:            https://github.com/iwayvietnam/zm-sso
 Source0:        https://github.com/iwayvietnam/zm-sso/archive/refs/tags/%{version}.tar.gz
 
 Requires:       zimbra-store = 10.1.15
+<<<<<<< HEAD
 BuildRequires:  java-17-openjdk-devel maven
+=======
+BuildRequires:  java-11-openjdk-devel maven
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 BuildArch:      noarch
 
 %description
@@ -47,5 +51,9 @@ su - zimbra -c "zmprov fc all"
 - Initial release 1.0.0.
 * Fri Aug 25 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.1-1
 - Initial release 1.0.1.
+<<<<<<< HEAD
 * Wed Apr 29 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 2.0.0-1
+=======
+* Tue Ap 28 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 2.0.0-1
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 - Initial release 2.0.0.

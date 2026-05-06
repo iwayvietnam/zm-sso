@@ -23,8 +23,12 @@
 package com.iwayvietnam.zmsso.pac4j;
 
 import com.zimbra.common.util.StringUtil;
+<<<<<<< HEAD
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.context.session.SessionStore;
+=======
+import org.pac4j.core.context.CallContext;
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
 import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.profile.UserProfile;
 import org.pac4j.oidc.config.OidcConfiguration;
@@ -45,7 +49,11 @@ public class ZmOidcLogoutActionBuilder extends OidcLogoutActionBuilder {
     }
 
     @Override
+<<<<<<< HEAD
     public Optional<RedirectionAction> getLogoutAction(final WebContext context, final SessionStore sessionStore, final UserProfile profile, final String targetUrl) {
+=======
+    public Optional<RedirectionAction> getLogoutAction(final CallContext context, final UserProfile currentProfile, final String targetUrl) {
+>>>>>>> 4bc505a428da43f3ea8881dd06eedd6ff68f1c6d
         if (StringUtil.isNullOrEmpty(targetUrl)) {
             return super.getLogoutAction(context, sessionStore, profile, postLogoutURL);
         }
