@@ -115,6 +115,8 @@ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore 
 * Click on **Protocol** tab, tick **Sign SAML responses**, choose **NameID format** with
  `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress`,
  choose **Logout method** with `Front Channel HTTP Post`,
+ set both **Single logout response URL** & **Single logout request URL** with
+ `https://your-zimbra-hostname/service/extension/sso/callback?client_name=SAML2Client&logoutendpoint=true`
  check **Enable Attribute Profile**. Click **Update**.
 * Click on **User Attributes** tab, add **Email** attribute `http://wso2.org/claims/emailaddress`,
   choose **Subject attribute** with `http://wso2.org/claims/emailaddress`. Click **Update**.
