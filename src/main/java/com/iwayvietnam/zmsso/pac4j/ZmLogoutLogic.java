@@ -39,6 +39,7 @@ import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.jee.context.JEEContext;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static com.iwayvietnam.zmsso.pac4j.SettingsConstants.SSO_PROFILE_SESSION_ATTR;
@@ -80,7 +81,9 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             if (profiles.isEmpty() && context instanceof JEEContext jeeCxt) {
                 final var session = jeeCxt.getNativeRequest().getSession();
                 var profile = (UserProfile) session.getAttribute(SSO_PROFILE_SESSION_ATTR);
-                profiles.add(profile);
+                Optional.of(profile).ifPresent(profile1 -> {
+                    profiles.add(profile);
+                });
             }
 
             // compute redirection URL
