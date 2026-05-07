@@ -132,52 +132,46 @@ public class ConfigBuilder {
         Log.sso.info("Build Pac4J config");
         final var config = configFactory.build();
 
-        config.getClients().findClient("CasClient").ifPresent(client -> {
-            if (client instanceof CasClient casClient){
-                Log.sso.info("Config cas client");
-                final var cfg = casClient.getConfiguration();
-                cfg.setLogoutHandler(logoutHandler);
+        config.getClients().findClient(CasClient.class).ifPresent(client -> {
+            Log.sso.info("Config cas client");
+            final var cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
 
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(casClient::setCallbackUrl);
-                final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
-                casClient.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
-                casClient.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                casClient.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
-            }
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_CAS_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
+            final var serverLogoutUrl = cfg.computeFinalPrefixUrl(null) + "logout";
+            client.setLogoutActionBuilder(new ZmCasLogoutActionBuilder(serverLogoutUrl, cfg.getPostLogoutUrlParameter(), getPostLogoutURL()));
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
-        config.getClients().findClient("OidcClient").ifPresent(client -> {
-            if (client instanceof OidcClient oidcClient){
-                Log.sso.info("Config oidc client");
-                final var cfg = oidcClient.getConfiguration();
-                cfg.setLogoutHandler(logoutHandler);
+        config.getClients().findClient(OidcClient.class).ifPresent(client -> {
+            Log.sso.info("Config oidc client");
+            final var cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
 
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(oidcClient::setCallbackUrl);
-                oidcClient.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(oidcClient.getConfiguration(), getPostLogoutURL()));
-                oidcClient.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                oidcClient.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
-            }
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
+            client.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(client.getConfiguration(), getPostLogoutURL()));
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
-        config.getClients().findClient("SAML2Client").ifPresent(client -> {
-            if (client instanceof SAML2Client saml2Client){
-                Log.sso.info("Config saml client");
-                final var cfg = saml2Client.getConfiguration();
-                cfg.setLogoutHandler(logoutHandler);
-                cfg.setForceServiceProviderMetadataGeneration(true);
-                cfg.setSignMetadata(true);
-                cfg.setForceKeystoreGeneration(false);
-                cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
-                cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
+        config.getClients().findClient(SAML2Client.class).ifPresent(client -> {
+            Log.sso.info("Config saml client");
+            final var cfg = client.getConfiguration();
+            cfg.setLogoutHandler(logoutHandler);
+            cfg.setForceServiceProviderMetadataGeneration(true);
+            cfg.setSignMetadata(true);
+            cfg.setForceKeystoreGeneration(false);
+            cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
+            cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
 
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
 
-                final var postLogoutURL = Optional.ofNullable(getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
-                cfg.setPostLogoutURL(postLogoutURL);
+            final var postLogoutURL = Optional.ofNullable(getPostLogoutURL()).orElse(Pac4jConstants.DEFAULT_URL_VALUE);
+            cfg.setPostLogoutURL(postLogoutURL);
 
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(saml2Client::setCallbackUrl);
-                saml2Client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
-                saml2Client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
-            }
+            Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
+            client.setMultiProfile(Boolean.TRUE.equals(multiProfile));
+            client.setSaveProfileInSession(Boolean.TRUE.equals(saveInSession));
         });
         config.setSessionStoreFactory(JEESessionStoreFactory.INSTANCE);
         config.setWebContextFactory(JEEContextFactory.INSTANCE);
