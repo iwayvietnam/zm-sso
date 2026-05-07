@@ -54,7 +54,7 @@ zmcertmgr addcacert /path/to/keycloak.pem
 zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-hostname
 zmmailboxdctl restart
 ```
-* In Zimbra server, copy `zimbra.pem` to `/opt/keycloak-26.0.0/conf/truststores`
+* In Keycloak server, copy `zimbra.pem` to `/opt/keycloak-26.0.0/conf/truststores`
 
 ### Single sign on with SAML protocol
 #### Config Zimbra SSO
