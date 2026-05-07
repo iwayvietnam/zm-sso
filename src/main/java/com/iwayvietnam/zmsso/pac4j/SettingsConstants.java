@@ -44,7 +44,6 @@ public final class SettingsConstants {
     public static final String ZM_SSO_CENTRAL_LOGOUT = "sso.centralLogout";
     public static final String ZM_SSO_POST_LOGOUT_URL = "sso.postLogoutURL";
 
-    public static final String ZM_SAML_RESPONSE_BINDING = "saml.responseBindingType";
     public static final String ZM_SAML_LOGOUT_REQUEST_BINDING = "saml.spLogoutRequestBindingType";
     public static final String ZM_SAML_LOGOUT_RESPONSE_BINDING = "saml.spLogoutResponseBindingType";
     public static final String ZM_SAML_LOGOUT_REQUEST_SIGNED = "saml.logoutRequestSigned";

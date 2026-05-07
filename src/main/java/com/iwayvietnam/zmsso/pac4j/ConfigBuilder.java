@@ -168,7 +168,6 @@ public class ConfigBuilder {
                 cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
                 cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
 
-                Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_RESPONSE_BINDING)).ifPresent(cfg::setResponseBindingType);
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_RESPONSE_BINDING)).ifPresent(cfg::setSpLogoutResponseBindingType);
 

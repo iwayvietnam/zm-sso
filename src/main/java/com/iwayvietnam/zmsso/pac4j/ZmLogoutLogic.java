@@ -82,9 +82,7 @@ public class ZmLogoutLogic extends AbstractExceptionAwareLogic implements Logout
             if (profiles.isEmpty() && context instanceof JEEContext jeeCxt) {
                 final var session = jeeCxt.getNativeRequest().getSession();
                 var profile = (UserProfile) session.getAttribute(SSO_PROFILE_SESSION_ATTR);
-                if (profile != null) {
-                    profiles.add(profile);
-                }
+                Optional.ofNullable(profile).ifPresent(profiles::add);
             }
 
             // compute redirection URL
