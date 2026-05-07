@@ -205,7 +205,7 @@ public class ConfigBuilder {
             final var prop = new Properties();
             prop.load(new FileInputStream(confDir + "/" + SettingsConstants.ZM_SSO_SETTINGS_FILE));
             prop.stringPropertyNames().forEach(key -> properties.put(key, prop.getProperty(key)));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.sso.error(e);
         }
     }

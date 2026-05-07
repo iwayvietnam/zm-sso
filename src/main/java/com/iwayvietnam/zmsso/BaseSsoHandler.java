@@ -94,7 +94,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {
                 logoutHandler.singleLogin(context, accountName, sessionKey, profile.getClientName());
-            } catch (ServiceException e) {
+            } catch (final ServiceException e) {
                 Log.sso.error(e);
             }
         });

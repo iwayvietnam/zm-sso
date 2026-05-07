@@ -64,7 +64,7 @@ public class ZmSsoExtension implements ZimbraExtension {
             ExtensionDispatcherServlet.register(this, new SamlLoginHandler());
             ExtensionDispatcherServlet.register(this, new SamlCallbackHandler());
             ExtensionDispatcherServlet.register(this, new SamlSloHandler());
-        } catch (ExtensionException e) {
+        } catch (final ExtensionException e) {
             Log.sso.error(e);
         }
 
@@ -72,7 +72,7 @@ public class ZmSsoExtension implements ZimbraExtension {
             Log.sso.info("Register cas sso handlers");
             ExtensionDispatcherServlet.register(this, new CasLoginHandler());
             ExtensionDispatcherServlet.register(this, new CasCallbackHandler());
-        } catch (ExtensionException e) {
+        } catch (final ExtensionException e) {
             Log.sso.error(e);
         }
 
@@ -80,7 +80,7 @@ public class ZmSsoExtension implements ZimbraExtension {
             Log.sso.info("Register oidc sso handlers");
             ExtensionDispatcherServlet.register(this, new OidcLoginHandler());
             ExtensionDispatcherServlet.register(this, new OidcCallbackHandler());
-        } catch (ExtensionException e) {
+        } catch (final ExtensionException e) {
             Log.sso.error(e);
         }
 

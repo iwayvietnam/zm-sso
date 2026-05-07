@@ -72,7 +72,7 @@ public class LogoutHandler extends BaseSsoHandler {
             config.getLogoutLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
             Log.sso.info("SSO logout is performed");
         }
-        catch (TechnicalException ex) {
+        catch (final TechnicalException ex) {
             Log.sso.error(ex);
             throw new ServletException(ex);
         }
