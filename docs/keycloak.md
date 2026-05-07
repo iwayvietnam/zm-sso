@@ -15,16 +15,17 @@ wget https://github.com/keycloak/keycloak/releases/download/26.0.0/keycloak-26.0
 tar -xvzf keycloak-26.0.0.tar.gz
 ```
 
+### Create a temporary admin user
+```shell
+cd /opt/keycloak-26.0.0/
+./bin/kc.sh bootstrap-admin user
+```
+
 ### Running the Keycloak server in development mode
 ```shell
 cd /opt/keycloak-26.0.0/
 ./bin/kc.sh start-dev --http-host=your-keycloak-hostname --http-port=8080
 ```
-
-### Create an admin user
-Keycloak has no default admin user. You need to create an admin user before you can start Keycloak.
-* Open `http://your-keycloak-hostname:8080`.
-* Fill in the form with your preferred username and password.
 
 ### Config Keycloak User Federation with Zimbra LDAP
 * Sign in to Keycloak Administration Console as an admin by visiting url `http://your-keycloak-hostname:8080/admin` from your web browser.
