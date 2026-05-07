@@ -150,10 +150,6 @@ public class ConfigBuilder {
                 Log.sso.info("Config oidc client");
                 final var cfg = oidcClient.getConfiguration();
                 cfg.setLogoutHandler(logoutHandler);
-                cfg.setWithState(loadBooleanProperty(SettingsConstants.ZM_OIDC_WITH_STATE));
-                if (StringUtil.isNullOrEmpty(loadStringProperty(SettingsConstants.ZM_OIDC_SCOPE))) {
-                    cfg.setScope(SettingsConstants.ZM_DEFAULT_OIDC_SCOPE);
-                }
 
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_OIDC_CALLBACK_URL)).ifPresent(oidcClient::setCallbackUrl);
                 oidcClient.setLogoutActionBuilder(new ZmOidcLogoutActionBuilder(oidcClient.getConfiguration(), getPostLogoutURL()));

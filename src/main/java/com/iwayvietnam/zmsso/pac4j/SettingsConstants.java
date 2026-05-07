@@ -50,10 +50,6 @@ public final class SettingsConstants {
     public static final String ZM_SAML_LOGOUT_REQUEST_SIGNED = "saml.logoutRequestSigned";
     public static final String ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED = "saml.allSignatureValidationDisabled";
 
-    public static final String ZM_OIDC_SCOPE = "oidc.scope";
-    public static final String ZM_DEFAULT_OIDC_SCOPE = "openid email profile";
-    public static final String ZM_OIDC_WITH_STATE = "oidc.withState";
-
     public static final String SSO_CLIENT_NAME_SESSION_ATTR = "sso.ClientName";
     public static final String SSO_PROFILE_SESSION_ATTR = "sso.Profile";
 }
