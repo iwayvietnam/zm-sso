@@ -39,7 +39,7 @@ import com.zimbra.soap.SoapServlet;
  * @author Nguyen Van Nguyen <nguyennv1981@gmail.com>
  */
 public class ZmSsoExtension implements ZimbraExtension {
-    public static final String E_GET_ALL_SSO_SESSIONS_REQUEST = "GetAllSsoSessionsequest";
+    public static final String E_GET_ALL_SSO_SESSIONS_REQUEST = "GetAllSsoSessionsRequest";
     public static final String E_GET_ALL_SSO_SESSIONS_RESPONSE = "GetAllSsoSessionsResponse";
 
     private static final String EXTENSION_NAME = "com_iwayvietnam_zmsso";

@@ -55,8 +55,7 @@ public class SamlMetadataHandler extends SamlBaseHandler {
             response.getWriter().write(client.getServiceProviderMetadataResolver().getMetadata());
             response.getWriter().flush();
             response.setStatus(HttpServletResponse.SC_OK);
-        }
-        catch (final TechnicalException rte) {
+        } catch (final TechnicalException rte) {
             Log.sso.error(rte);
             throw new ServletException(rte);
         }
