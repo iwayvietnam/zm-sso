@@ -167,13 +167,10 @@ public class ConfigBuilder {
                 final var cfg = saml2Client.getConfiguration();
                 cfg.setLogoutHandler(logoutHandler);
                 cfg.setForceServiceProviderMetadataGeneration(true);
+                cfg.setSignMetadata(true);
                 cfg.setForceKeystoreGeneration(false);
-                cfg.setAuthnRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_AUTHN_REQUEST_SIGNED));
                 cfg.setSpLogoutRequestSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_SIGNED));
-                cfg.setWantsAssertionsSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_ASSERTIONS_SIGNED));
-                cfg.setWantsResponsesSigned(loadBooleanProperty(SettingsConstants.ZM_SAML_WANTS_RESPONSES_SIGNED));
                 cfg.setAllSignatureValidationDisabled(loadBooleanProperty(SettingsConstants.ZM_SAML_ALL_SIGNATURE_VALIDATION_DISABLED));
-                cfg.setForceAuth(loadBooleanProperty(SettingsConstants.ZM_SAML_FORCE_AUTH));
 
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_RESPONSE_BINDING)).ifPresent(cfg::setResponseBindingType);
                 Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_LOGOUT_REQUEST_BINDING)).ifPresent(cfg::setSpLogoutRequestBindingType);
