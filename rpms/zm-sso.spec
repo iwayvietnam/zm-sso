@@ -1,5 +1,5 @@
 Name:           zm-sso
-Version:        1.0.2
+Version:        1.0.1
 Release:        1%{?dist}
 Summary:        Zimbra Single Sign On (Zm SSO)
 
@@ -120,7 +120,5 @@ su - zimbra -c "zmprov fc all"
 %changelog
 * Fri Apr 21 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
 - Initial release 1.0.0.
-* Fri Aug 25 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.1-1
+* Fri May 08 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.1-1
 - Release 1.0.1.
-* Fri May 08 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.2-1
-- Release 1.0.2.
