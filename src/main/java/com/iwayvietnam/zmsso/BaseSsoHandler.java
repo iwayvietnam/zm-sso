@@ -81,13 +81,22 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var renewSession = configBuilder.getRenewSession();
 
         final var context = new JEEContext(request, response);
-        configBuilder.getConfig().getCallbackLogic().perform(context, configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, multiProfile, saveInSession, renewSession, client.getName());
+        configBuilder.getConfig().getCallbackLogic().perform(
+            context,
+            configBuilder.getConfig(),
+            JEEHttpActionAdapter.INSTANCE,
+            defaultUrl,
+            multiProfile,
+            saveInSession,
+            renewSession,
+            client.getName()
+        );
         Log.sso.info("SSO callback is performed");
 
         final var manager = new ProfileManager<CommonProfile>(context);
         manager.get(saveInSession).ifPresent(profile -> {
             final var logoutHandler = configBuilder.getLogoutHandler();
-            final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getId());
+            final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getUsername());
             final var sessionId = context.getSessionStore().getOrCreateSessionId(context);
             final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {

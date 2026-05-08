@@ -65,7 +65,16 @@ public class LogoutHandler extends BaseSsoHandler {
         final var centralLogout = configBuilder.getCentralLogout();
 
         try {
-            configBuilder.getConfig().getLogoutLogic().perform(new JEEContext(request, response), configBuilder.getConfig(), JEEHttpActionAdapter.INSTANCE, defaultUrl, logoutUrlPattern, localLogout, destroySession, centralLogout);
+            configBuilder.getConfig().getLogoutLogic().perform(
+                new JEEContext(request, response),
+                configBuilder.getConfig(),
+                JEEHttpActionAdapter.INSTANCE,
+                defaultUrl,
+                logoutUrlPattern,
+                localLogout,
+                destroySession,
+                centralLogout
+            );
             Log.sso.info("SSO logout is performed");
         }
         catch (TechnicalException ex) {
