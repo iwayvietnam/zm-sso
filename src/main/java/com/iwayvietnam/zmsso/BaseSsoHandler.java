@@ -62,8 +62,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
             final var config = configBuilder.getConfig();
             final var context = config.getWebContextFactory().newContext(request, response);
             final var sessionStore = config.getSessionStoreFactory().newSessionStore();
-            final Optional<RedirectionAction> loginAction = client.getRedirectionAction(context, sessionStore);
-            loginAction.ifPresent(action -> {
+            client.getRedirectionAction(context, sessionStore).ifPresent(action -> {
                 JEEHttpActionAdapter.INSTANCE.adapt(action, context);
             });
         }
@@ -81,7 +80,15 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         final var config = configBuilder.getConfig();
         final var context = config.getWebContextFactory().newContext(request, response);
         final var sessionStore = config.getSessionStoreFactory().newSessionStore();
-        config.getCallbackLogic().perform(context, sessionStore, config, JEEHttpActionAdapter.INSTANCE, defaultUrl, renewSession, client.getName());
+        config.getCallbackLogic().perform(
+            context,
+            sessionStore,
+            config,
+            JEEHttpActionAdapter.INSTANCE,
+            defaultUrl,
+            renewSession,
+            client.getName()
+        );
         Log.sso.info("SSO callback is performed with: %s", client.getName());
 
         final var manager = new ProfileManager(context, sessionStore);
