@@ -98,11 +98,11 @@ su - zimbra -c "zmprov fc all"
 /opt/zimbra/jetty_base/common/lib/opensaml-storage-impl-3.4.6.jar
 /opt/zimbra/jetty_base/common/lib/opensaml-xmlsec-api-3.4.6.jar
 /opt/zimbra/jetty_base/common/lib/opensaml-xmlsec-impl-3.4.6.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-cas-4.5.7.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-config-4.5.7.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-core-4.5.7.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-oidc-4.5.7.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-saml-opensamlv3-4.5.7.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-cas-4.5.10.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-config-4.5.10.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-core-4.5.10.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-oidc-4.5.10.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-saml-opensamlv3-4.5.10.jar
 /opt/zimbra/jetty_base/common/lib/serializer-2.7.2.jar
 /opt/zimbra/jetty_base/common/lib/spring-core-5.2.20.RELEASE.jar
 /opt/zimbra/jetty_base/common/lib/spring-jcl-5.2.20.RELEASE.jar
