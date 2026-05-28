@@ -9,7 +9,7 @@ URL:            https://github.com/iwayvietnam/zm-sso
 Source0:        https://github.com/iwayvietnam/zm-sso/archive/refs/tags/%{version}.tar.gz
 
 Requires:       zimbra-store = 8.8.15
-BuildRequires:  java-11-openjdk-devel maven
+BuildRequires:  maven
 BuildArch:      noarch
 
 %description
