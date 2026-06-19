@@ -96,7 +96,9 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
         manager.getProfile(CommonProfile.class).ifPresent(profile -> {
             request.getSession().setAttribute(SSO_PROFILE_SESSION_ATTR, profile);
             final var logoutHandler = configBuilder.getLogoutHandler();
-            final var accountName = Optional.ofNullable(profile.getEmail()).orElse(profile.getUsername());
+            final var nameAttr = configBuilder.getAccountNameAttr();
+            final var accountName = Optional.ofNullable((String) profile.getAttribute(nameAttr))
+                    .orElse(profile.getUsername());
             final var sessionId = sessionStore.getSessionId(context, true).orElse("");
             final var sessionKey = (String) logoutHandler.getStore().get(sessionId).orElse(sessionId);
             try {
