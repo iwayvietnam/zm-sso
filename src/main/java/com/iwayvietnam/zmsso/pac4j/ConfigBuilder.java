@@ -33,6 +33,9 @@ import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.config.ConfigFactory;
 import org.pac4j.core.context.WebContext;
+import org.pac4j.core.engine.DefaultCallbackLogic;
+import org.pac4j.core.engine.DefaultLogoutLogic;
+import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.util.Pac4jConstants;
 import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.saml.client.SAML2Client;
@@ -187,6 +190,9 @@ public class ConfigBuilder {
 
             Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SAML_CALLBACK_URL)).ifPresent(client::setCallbackUrl);
         });
+        config.setCallbackLogic(DefaultCallbackLogic.INSTANCE);
+        config.setLogoutLogic(DefaultLogoutLogic.INSTANCE);
+        config.setSecurityLogic(DefaultSecurityLogic.INSTANCE);
         return config;
     }
 
