@@ -61,7 +61,6 @@ public class ConfigBuilder {
     private final Boolean saveInSession;
     private final Boolean multiProfile;
     private final Boolean renewSession;
-    private final String accountNameAttr;
 
     private final Boolean localLogout;
     private final Boolean destroySession;
@@ -77,7 +76,6 @@ public class ConfigBuilder {
         saveInSession = loadBooleanProperty(SettingsConstants.ZM_SSO_SAVE_IN_SESSION);
         multiProfile = loadBooleanProperty(SettingsConstants.ZM_SSO_MULTI_PROFILE);
         renewSession = loadBooleanProperty(SettingsConstants.ZM_SSO_RENEW_SESSION);
-        accountNameAttr = Optional.ofNullable(loadStringProperty(SettingsConstants.ZM_SSO_ACCOUNT_NAME_ATTR)).orElse(CommonProfileDefinition.EMAIL);
 
         localLogout = loadBooleanProperty(SettingsConstants.ZM_SSO_LOCAL_LOGOUT);
         destroySession = loadBooleanProperty(SettingsConstants.ZM_SSO_DESTROY_SESSION);
@@ -122,10 +120,6 @@ public class ConfigBuilder {
 
     public Boolean getRenewSession() {
         return renewSession;
-    }
-
-    public String getAccountNameAttr() {
-        return accountNameAttr;
     }
 
     public Boolean getLocalLogout() {
