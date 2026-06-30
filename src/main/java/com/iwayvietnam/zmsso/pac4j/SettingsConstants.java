@@ -38,6 +38,7 @@ public final class SettingsConstants {
     public static final String ZM_SSO_SAVE_IN_SESSION = "sso.saveInSession";
     public static final String ZM_SSO_MULTI_PROFILE = "sso.multiProfile";
     public static final String ZM_SSO_RENEW_SESSION = "sso.renewSession";
+    public static final String ZM_SSO_ACCOUNT_NAME_ATTR = "sso.accountNameAttr";
 
     public static final String ZM_SSO_LOCAL_LOGOUT = "sso.localLogout";
     public static final String ZM_SSO_DESTROY_SESSION = "sso.destroySession";
