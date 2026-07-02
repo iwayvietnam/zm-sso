@@ -39,7 +39,7 @@ su - zimbra -c "zmprov fc all"
 
 %files
 /opt/zimbra/conf/zm.sso.properties
-/opt/zimbra/lib/ext/zm-sso/*.jar
+/opt/zimbra/lib/ext/zm-sso/zm-sso-1.0.1-1.jar
 /opt/zimbra/jetty_base/common/lib/accessors-smart-1.2.jar
 /opt/zimbra/jetty_base/common/lib/antlr-2.7.7.jar
 /opt/zimbra/jetty_base/common/lib/asm-5.0.4.jar
