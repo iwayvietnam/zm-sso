@@ -83,18 +83,17 @@ su - zimbra -c "zmprov fc all"
 /opt/zimbra/jetty_base/common/lib/opensaml-storage-impl-4.2.0.jar
 /opt/zimbra/jetty_base/common/lib/opensaml-xmlsec-api-4.2.0.jar
 /opt/zimbra/jetty_base/common/lib/opensaml-xmlsec-impl-4.2.0.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-cas-clientv4-5.7.10.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-config-5.7.10.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-core-5.7.10.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-javaee-5.7.10.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-oidc-5.7.10.jar
-/opt/zimbra/jetty_base/common/lib/pac4j-saml-5.7.10.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-cas-clientv4-5.8.0.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-config-5.8.0.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-core-5.8.0.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-javaee-5.8.0.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-oidc-5.8.0.jar
+/opt/zimbra/jetty_base/common/lib/pac4j-saml-5.8.0.jar
 /opt/zimbra/jetty_base/common/lib/spring-beans-5.3.24.jar
 /opt/zimbra/jetty_base/common/lib/spring-core-5.3.24.jar
 /opt/zimbra/jetty_base/common/lib/spring-jdbc-6.0.8.jar
 /opt/zimbra/jetty_base/common/lib/spring-orm-6.0.8.jar
 /opt/zimbra/jetty_base/common/lib/spring-tx-6.0.8.jar
-/opt/zimbra/jetty_base/common/lib/stax2-api-3.1.4.jar
 /opt/zimbra/jetty_base/common/lib/velocity-engine-core-2.3.jar
 /opt/zimbra/jetty_base/common/lib/woodstox-core-6.2.6.jar
 /opt/zimbra/jetty_base/common/lib/xmlsec-2.3.0.jar
@@ -104,6 +103,7 @@ su - zimbra -c "zmprov fc all"
 * Fri Apr 21 2023 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.0-1
 - Initial release 1.0.0.
 * Fri May 08 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 1.0.1-1
-- Initial release 1.0.1.
-* Fri May 08 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 2.0.0-1
-- Initial release 2.0.0.
+- Update pac4j to version 4.5.10.
+* Thu Jul 02 2026 Nguyen Van Nguyen <nguyennv1981@gmail.com> - 2.0.0-1
+- Update pac4j to version 5.8.0.
+- Update zimbra to version 10.x.
