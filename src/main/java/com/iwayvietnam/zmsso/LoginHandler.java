@@ -22,7 +22,6 @@
  */
 package com.iwayvietnam.zmsso;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.common.util.ZimbraLog;

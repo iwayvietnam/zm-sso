@@ -30,7 +30,6 @@ import com.zimbra.cs.extension.ExtensionHttpHandler;
 
 import com.zimbra.cs.servlet.util.AuthUtil;
 import org.pac4j.core.client.Client;
-import org.pac4j.core.exception.http.RedirectionAction;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.profile.ProfileManager;
 import org.pac4j.core.util.Pac4jConstants;
