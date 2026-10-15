@@ -74,7 +74,7 @@ public abstract class BaseSsoHandler extends ExtensionHttpHandler {
     protected void doCallback(final HttpServletRequest request, final HttpServletResponse response, final Client client) {
         Log.sso.info("SSO callback with: %s", client.getName());
 
-        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE;
+        final var defaultUrl = Pac4jConstants.DEFAULT_URL_VALUE + "?client=advanced";
         final var renewSession = configBuilder.getRenewSession();
 
         final var config = configBuilder.getConfig();
