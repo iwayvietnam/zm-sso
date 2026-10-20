@@ -11,7 +11,7 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 
 ## Building Java extension
 ### Requirement
-* JDK 11 or newer.
+* JDK 17 or newer.
 * Apache Maven 3.5 or newer for Maven build.
 * Apache Ant 1.x for Ant build.
 * rpm-build for rpm package build.
@@ -45,7 +45,7 @@ mvn clean package
 The output should be like this:
 ```
 --- maven-jar-plugin:3.0.2:jar (default-jar) @ zm-hab ---
-Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-1.0.0-1.jar
+Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-2.0.0-1.jar
 ```
 
 ### Build jar file by using Ant
@@ -55,7 +55,7 @@ ant jar
 ```
 The output should be like this:
 ```
-[jar] Building jar: ~/projects/zimbra/zm-sso/dist/zm-sso-1.0.0-1.jar
+[jar] Building jar: ~/projects/zimbra/zm-sso/dist/zm-sso-2.0.0-1.jar
 ```
 
 ### Build rpm package
@@ -65,7 +65,7 @@ make rpmbuild
 ```
 The output should be like this:
 ```
-Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
+Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm
 ```
 
 ## Installation
@@ -86,8 +86,8 @@ ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
 ### Install rpm package
 ```shell
 ssh root@zimbra.server "mkdir -p /tmp/zimbra"
-scp ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm root@zimbra.server:/tmp/zimbra
-ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-1.0.0-1.el7.noarch.rpm"
+scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
+ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
 ```
 
 ## Configuration
