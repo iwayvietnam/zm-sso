@@ -51,7 +51,7 @@ ant jar
 ```
 The output should be like this:
 ```
-[jar] Building jar: ~/projects/zimbra/zm-sso/dist/zm-sso-1.0.0-1.jar
+[jar] Building jar: ~/projects/zimbra/zm-sso/dist/zm-sso-2.0.0-1.jar
 ```
 
 ### Build rpm package
@@ -61,7 +61,7 @@ make rpmbuild
 ```
 The output should be like this:
 ```
-Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-1.0.0-1.el7.noarch.rpm
+Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm
 ```
 
 ## Installation

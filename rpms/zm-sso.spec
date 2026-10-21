@@ -8,7 +8,7 @@ License:        AGPLv3
 URL:            https://github.com/iwayvietnam/zm-sso
 Source0:        https://github.com/iwayvietnam/zm-sso/archive/refs/tags/%{version}.tar.gz
 
-Requires:       zimbra-store >= 10.0.0
+Requires:       zimbra-store = 10.1.15
 BuildRequires:  java-17-openjdk-devel maven
 BuildArch:      noarch
 
