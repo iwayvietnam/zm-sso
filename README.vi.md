@@ -168,7 +168,7 @@ Ví dụ: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service
 * **oidc.scope**: Xác định phạm vi (scope) cho khách hàng OpenID.
 
 ### Thay thế các URL đăng nhập và đăng xuất
-* Thực thi các lệnh sau với tư cách người dùng Zimbra để cấu hình tên miền (domain):
+* Thực thi các lệnh sau với tư cách người dùng `zimbra` để cấu hình tên miền (domain):
 
 ```shell
 # Đăng nhập SSO sử dụng client mặc định (được chỉ định trong sso.defaultClient)

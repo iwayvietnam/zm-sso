@@ -168,7 +168,7 @@ Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/exten
 * **oidc.scope**: It defines the OpenID client scope.
 
 ### Replace login and logout urls
-* Execute following commands with the Zimbra user for domain configuration:
+* Execute following commands with the `zimbra` user for domain configuration:
 
 ```shell
 # SSO login by using default client. Specified in sso.defaultClient
