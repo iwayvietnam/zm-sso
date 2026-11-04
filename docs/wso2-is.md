@@ -9,28 +9,34 @@ It supports complex IAM requirements given its high extensibility.
 ### Requirement
 * JDK version 21 or newer.
 
-### Download and unzip the latest stable version of WSO2 IS (current is 7.2.0)
+### Download and unzip the latest stable version of WSO2 IS (current is 7.3.0)
+
 ```shell
-cd /opt
-wget https://github.com/wso2/product-is/releases/download/v7.2.0/wso2is-7.2.0.zip
-unzip wso2is-7.2.0.zip
+$ cd /opt
+$ wget https://github.com/wso2/product-is/releases/download/v7.3.0/wso2is-7.3.0.zip
+$ unzip wso2is-7.3.0.zip
 ```
 
 ### Deployment configuration
-* Using a text editor to open **/opt/wso2is-7.2.0/repository/conf/deployment.toml** file.
+* Using a text editor to open **/opt/wso2is-7.3.0/repository/conf/deployment.toml** file.
 * Edit `hostname` and `node_ip` under `[server]` section
+
 ```toml
 [server]
 hostname = "your id server hostname"
 node_ip = "your id server ip address"
 ```
+
 * Edit `username` and `password` under `[super_admin]` section
+
 ```toml
 [super_admin]
 username = "your admin user"
 password = "your admin password"
 ```
+
 * Add following content like that.
+
 ```toml
 [cors]
 allow_generic_http_requests = true
@@ -54,9 +60,10 @@ tag_requests = false
 ```
 
 ### Running the Identity Server
+
 ```shell
-cd /opt/wso2is-7.2.0/
-./bin/wso2server.sh start
+$ cd /opt/wso2is-7.3.0/
+$ ./bin/wso2server.sh start
 ```
 
 ### Config IS user store with Zimbra LDAP
@@ -78,22 +85,35 @@ cd /opt/wso2is-7.2.0/
 * Enter **Service Provider Name** and click **Register** to add service provider
 
 ### Config untrusted ssl certificate of Zimbra & WSO2 IS
-On Zimbra mail server
+**On Zimbra mail server**
+
 * Export untrusted ssl certificate to the file:
+
 ```shell
-openssl s_client -servername your-id-server-hostname -connect your-id-server-hostname:9443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/wso2-is.pem
+$ openssl s_client -servername your-id-server-hostname \
+  -connect your-id-server-hostname:9443 </dev/null | \
+  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/wso2-is.pem
 ```
+
 * Execute following commands under the `zimbra` user:
+
 ```shell
-zmcertmgr addcacert /path/to/wso2-is.pem
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-id-server-hostname
-zmmailboxdctl restart
+$ zmcertmgr addcacert /path/to/wso2-is.pem
+$ zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-id-server-hostname
+$ zmmailboxdctl restart
 ```
-On WSO2 Is server
+
+**On WSO2 Is server**
+
 * Export untrusted ssl certificate to the file:
+
 ```shell
-openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
-keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore /opt/wso2is-7.2.0/repository/resources/security/client-truststore.p12 -storepass wso2carbon
+$ openssl s_client -servername your-zimbra-hostname \
+  -connect your-zimbra-hostname:443 </dev/null | \
+  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
+$ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem \
+  -keystore /opt/wso2is-7.3.0/repository/resources/security/client-truststore.p12 \
+  -storepass wso2carbon
 ```
 
 ### Single sign on with SAML protocol
@@ -128,6 +148,7 @@ keytool -import -alias your-zimbra-hostname -file /path/to/zimbra.pem -keystore 
 
 #### Replace login and logout urls
 * Execute following commands with the `zimbra` user:
+
 ```shell
 zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/saml/login
 zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
@@ -164,6 +185,7 @@ zmmailboxdctl restart
 
 #### Replace login and logout urls
 * Execute following commands with the `zimbra` user:
+
 ```shell
 zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/oidc/login
 zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout

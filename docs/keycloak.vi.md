@@ -8,25 +8,25 @@ Giải pháp này giúp bảo mật các ứng dụng và dịch vụ một các
 ### Yêu cầu
 * JDK phiên bản 21 trở lên.
 
-### Tải xuống và giải nén phiên bản ổn định mới nhất của Keycloak (hiện tại là 26.0.0)
+### Tải xuống và giải nén phiên bản ổn định mới nhất của Keycloak (hiện tại là 26.8.1)
 
 ```shell
 $ cd /opt
-$ wget https://github.com/keycloak/keycloak/releases/download/26.0.0/keycloak-26.0.0.tar.gz
-$ tar -xvzf keycloak-26.0.0.tar.gz
+$ wget https://github.com/keycloak/keycloak/releases/download/26.8.1/keycloak-26.8.1.tar.gz
+$ tar -xvzf keycloak-26.8.1.tar.gz
 ```
 
 ### Tạo người dùng quản trị tạm thời
 
 ```shell
-$ cd /opt/keycloak-26.0.0/
+$ cd /opt/keycloak-26.8.1/
 $ ./bin/kc.sh bootstrap-admin user
 ```
 
 ### Chạy máy chủ Keycloak ở chế độ phát triển
 
 ```shell
-$ cd /opt/keycloak-26.0.0/
+$ cd /opt/keycloak-26.8.1/
 $ ./bin/kc.sh start-dev --http-host=your-keycloak-hostname --http-port=8080
 ```
 
@@ -65,7 +65,7 @@ $ zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-hostname
 $ zmmailboxdctl restart
 ```
 
-* Trên máy chủ Keycloak, hãy sao chép tệp `zimbra.pem` vào thư mục `/opt/keycloak-26.0.0/conf/truststores`
+* Trên máy chủ Keycloak, hãy sao chép tệp `zimbra.pem` vào thư mục `/opt/keycloak-26.8.1/conf/truststores`
 
 ### Đăng nhập một lần (SSO) với giao thức SAML
 #### Cấu hình SSO cho Zimbra

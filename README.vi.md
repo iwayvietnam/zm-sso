@@ -221,10 +221,8 @@ zmmailboxdctl restart
 ```
 
 ## Hướng dẫn
-* [Đăng nhập một lần (Single Sign-On) với WSO2 Identity Server](docs/wso2-is.md)
-* [Đăng nhập một lần (Single Sign-On) với Keycloak](docs/keycloak.md)
-* [Đăng nhập một lần (Single Sign-On) với Azure AD B2C](docs/azure-ad-b2c.md)
-* [Đăng nhập một lần (Single Sign-On) với Apereo Central Authentication Service](docs/cas.md)
+* [Đăng nhập một lần (Single Sign-On) với Keycloak](docs/keycloak.vi.md)
+* [Đăng nhập một lần (Single Sign-On) với WSO2 Identity Server](docs/wso2-is.vi.md)
 
 Giấy phép
 =========
