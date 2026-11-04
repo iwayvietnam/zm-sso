@@ -63,8 +63,8 @@ Kết quả đầu ra sẽ như sau:
 ### Xây dựng gói rpm
 
 ```shell
-cd ~/projects/zimbra/zm-sso
-make rpmbuild
+$ cd ~/projects/zimbra/zm-sso
+$ make rpmbuild
 ```
 
 Kết quả đầu ra sẽ như sau:
@@ -78,26 +78,26 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm
 * Sao chép tệp mở rộng .jar vào máy chủ Zimbra
 
 ```shell
-cd ~/projects/zimbra/zm-sso
-ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
-scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
-scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
-scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
-ssh root@zimbra.server "mv /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar.bak"
+$ cd ~/projects/zimbra/zm-sso
+$ ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
+$ scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
+$ scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
+$ scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
+$ ssh root@zimbra.server "mv /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar.bak"
 ```
 
 * Khởi động lại hộp thư để tải tiện ích mở rộng.
 
 ```shell
-ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
+$ ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
 ```
 
 ### Cài đặt gói rpm
 
 ```shell
-ssh root@zimbra.server "mkdir -p /tmp/zimbra"
-scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
-ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
+$ ssh root@zimbra.server "mkdir -p /tmp/zimbra"
+$ scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
+$ ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
 ```
 
 ## Cấu hình
@@ -137,8 +137,10 @@ Các thiết lập được tải từ tệp **zm.sso.properties**. Vị trí c�
 **Trước tiên**, nếu chưa có, bạn cần tạo một kho khóa (keystore) để phục vụ các thao tác ký và mã hóa. Ví dụ:
 
 ```shell
-mkdir -p /opt/zimbra/conf/saml
-keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
+$ mkdir -p /opt/zimbra/conf/saml
+$ keytool -genkeypair -alias samlkey -keypass samlpasswd \
+  -keystore /opt/zimbra/conf/saml/keystore.jks \
+  -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
 **Cấu hình**:
@@ -169,31 +171,31 @@ Ví dụ: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service
 * Thực thi các lệnh sau với tư cách người dùng Zimbra để cấu hình tên miền (domain):
 
 ```shell
-# SSO login by using default client. Specified in sso.defaultClient
-zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
-# or SSO login by using SAML client
+# Đăng nhập SSO sử dụng client mặc định (được chỉ định trong sso.defaultClient)
+$ zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+# Hoặc đăng nhập SSO sử dụng client SAML
 # zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
-# or SSO login by using CAS client
+# Hoặc đăng nhập SSO sử dụng client CAS
 # zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/cas/login
-# or SSO login by using OpenID Connect client
+# Hoặc đăng nhập SSO sử dụng client OpenID Connect
 # zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
-# Specified logout URL
-zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
+# Chỉ định URL đăng xuất
+$ zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 
 * Thực thi các lệnh sau với người dùng `zimbra` để thực hiện cấu hình toàn cục:
 
 ```shell
-# SSO login by using default client. Specified in sso.defaultClient
-zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
-# or SSO login by using SAML client
+# Đăng nhập SSO sử dụng client mặc định (được chỉ định trong sso.defaultClient)
+$ zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+# Hoặc đăng nhập SSO sử dụng client SAML
 # zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
-# or SSO login by using CAS client
+# Hoặc đăng nhập SSO sử dụng client CAS
 # zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/cas/login
-# or SSO login by using OpenID Connect client
+# Hoặc đăng nhập SSO sử dụng client OpenID Connect
 # zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
-# Specified logout URL
-zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
+# Chỉ định URL đăng xuất
+$ zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 
 * Thực thi lệnh sau với người dùng `zimbra` để khởi động lại máy chủ Zimbra: `zmcontrol restart`
@@ -203,21 +205,23 @@ Việc này chủ yếu nhằm cho phép sử dụng các chứng chỉ SSL khô
 * Xuất chứng chỉ SSL không đáng tin cậy ra tệp:
 
 ```shell
-openssl s_client -servername idp.server.com -connect idp.server.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+$ openssl s_client -servername idp.server.com \
+  -connect idp.server.com:443 </dev/null | \
+  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
 ```
 
 * Thực thi các lệnh sau với người dùng Zimbra:
 
 ```shell
-zmcertmgr addcacert /path/to/cert.pem
-zmmailboxdctl restart
+$ zmcertmgr addcacert /path/to/cert.pem
+$ zmmailboxdctl restart
 ```
 
 ### Thêm tên máy chủ của nhà cung cấp danh tính vào danh sách bỏ qua kiểm tra referer để phòng chống CSRF
 
 ```shell
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
-zmmailboxdctl restart
+$ zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
+$ zmmailboxdctl restart
 ```
 
 ## Hướng dẫn
