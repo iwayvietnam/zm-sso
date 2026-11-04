@@ -9,22 +9,25 @@ It makes it easy to secure applications and services with little to no code.
 * JDK version 21 or newer.
 
 ### Download and attract the latest stable version of Keycloak (current is 26.0.0)
+
 ```shell
-cd /opt
-wget https://github.com/keycloak/keycloak/releases/download/26.0.0/keycloak-26.0.0.tar.gz
-tar -xvzf keycloak-26.0.0.tar.gz
+$ cd /opt
+$ wget https://github.com/keycloak/keycloak/releases/download/26.0.0/keycloak-26.0.0.tar.gz
+$ tar -xvzf keycloak-26.0.0.tar.gz
 ```
 
 ### Create a temporary admin user
+
 ```shell
-cd /opt/keycloak-26.0.0/
-./bin/kc.sh bootstrap-admin user
+$ cd /opt/keycloak-26.0.0/
+$ ./bin/kc.sh bootstrap-admin user
 ```
 
 ### Running the Keycloak server in development mode
+
 ```shell
-cd /opt/keycloak-26.0.0/
-./bin/kc.sh start-dev --http-host=your-keycloak-hostname --http-port=8080
+$ cd /opt/keycloak-26.0.0/
+$ ./bin/kc.sh start-dev --http-host=your-keycloak-hostname --http-port=8080
 ```
 
 ### Config Keycloak User Federation with Zimbra LDAP
@@ -44,16 +47,24 @@ cd /opt/keycloak-26.0.0/
 
 ### Config untrusted ssl of Keycloak & Zimbra
 * Export untrusted ssl certificate to the file:
+
 ```shell
-openssl s_client -servername your-keycloak-hostname -connect your-keycloak-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/keycloak.pem
-openssl s_client -servername your-zimbra-hostname -connect your-zimbra-hostname:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
+$ openssl s_client -servername your-keycloak-hostname \
+ -connect your-keycloak-hostname:443 </dev/null | \
+ sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/keycloak.pem
+$ openssl s_client -servername your-zimbra-hostname \
+  -connect your-zimbra-hostname:443 </dev/null | \
+  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/zimbra.pem
 ```
+
 * In Zimbra server, execute following commands under the `zimbra` user:
+
 ```shell
-zmcertmgr addcacert /path/to/keycloak.pem
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-hostname
-zmmailboxdctl restart
+$ zmcertmgr addcacert /path/to/keycloak.pem
+$ zmprov -l mcf +zimbraCsrfAllowedRefererHosts your-keycloak-hostname
+$ zmmailboxdctl restart
 ```
+
 * In Keycloak server, copy `zimbra.pem` to `/opt/keycloak-26.0.0/conf/truststores`
 
 ### Single sign on with SAML protocol
@@ -91,10 +102,11 @@ zmmailboxdctl restart
 
 #### Replace login and logout urls
 * Execute following commands with the `zimbra` user:
+
 ```shell
-zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/saml/login
-zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
-zmmailboxdctl restart
+$ zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/saml/login
+$ zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
+$ zmmailboxdctl restart
 ```
 
 ### Single sign on with OpenID Connect protocol
@@ -131,8 +143,9 @@ zmmailboxdctl restart
 
 #### Replace login and logout urls
 * Execute following commands with the `zimbra` user:
+
 ```shell
-zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/oidc/login
-zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
-zmmailboxdctl restart
+$ zmprov mcf zimbraWebClientLoginURL https://your-zimbra-hostname/service/extension/oidc/login
+$ zmprov mcf zimbraWebClientLogoutURL https://your-zimbra-hostname/service/extension/sso/logout
+$ zmmailboxdctl restart
 ```
