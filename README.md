@@ -3,8 +3,7 @@ Zimbra Single Sign On (Zm SSO)
 Zm SSO is the Zimbra Collaboration Open Source Edition extension for single sign-on authentication to the Zimbra Web Client.  
 Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserved.
 
-* Using framework: [pac4j](https://www.pac4j.org) is an easy and powerful security engine for Java to authenticate users,
-  get their profiles and manage authorizations in order to secure web applications and web services.
+* Using framework: [pac4j](https://www.pac4j.org) is an easy and powerful security engine for Java to authenticate users, get their profiles and manage authorizations in order to secure web applications and web services.
 * Supported authentication mechanisms: [SAML](http://www.pac4j.org/docs/clients/saml.html) -
   [CAS](http://www.pac4j.org/docs/clients/cas.html) -
   [OpenID Connect](http://www.pac4j.org/docs/clients/openid-connect.html)
@@ -18,48 +17,60 @@ Copyright (C) 2020-present iWay Vietnam and/or its affiliates. All rights reserv
 
 ### Setting up your build system
 * On Fedora or RockyLinux or AlmaLinux
+
+
 ```shell
-dnf -y install java-17-openjdk java-17-openjdk-devel maven ant git make rpmdevtools rpm-build
+$ dnf -y install java-17-openjdk java-17-openjdk-devel maven ant git make rpmdevtools rpm-build
+
 ```
 * On Debian or Ubuntu
 ```shell
-apt install -y openjdk-17-jdk maven ant git make
+$ apt install -y openjdk-17-jdk maven ant git make
 ```
 
 ### Clone code from git repository
+
 ```shell
-mkdir -p ~/projects/zimbra
-cd ~/projects/zimbra
-git clone https://github.com/iwayvietnam/zm-sso.git
+$ mkdir -p ~/projects/zimbra
+$ cd ~/projects/zimbra
+$ git clone https://github.com/iwayvietnam/zm-sso.git
 ```
 
 ### Build jar file by using Maven
+
 ```shell
-cd ~/projects/zimbra/zm-sso
-mvn clean package
+$ cd ~/projects/zimbra/zm-sso
+$ mvn clean package
 ```
 The output should be like this:
+
 ```
 --- jar:3.5.0:jar (default-jar) @ zm-sso ---
 Building jar: ~/projects/zimbra/zm-sso/target/zm-sso-2.0.0-1.jar
 ```
 
 ### Build jar file by using Ant
+
 ```shell
-cd ~/projects/zimbra/zm-sso
-ant jar
+$ cd ~/projects/zimbra/zm-sso
+$ ant jar
+
 ```
 The output should be like this:
+
 ```
 [jar] Building jar: ~/projects/zimbra/zm-sso/dist/zm-sso-2.0.0-1.jar
 ```
 
 ### Build rpm package
+
 ```shell
-cd ~/projects/zimbra/zm-sso
-make rpmbuild
+% cd ~/projects/zimbra/zm-sso
+$ make rpmbuild
 ```
+
 The output should be like this:
+
 ```
 Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm
 ```
@@ -67,30 +78,31 @@ Wrote: ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm
 ## Installation
 ### Install jar extension
 * Copy jar extension to zimbra server
-```shell
-cd ~/projects/zimbra/zm-sso
-ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
-scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
-scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
-scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
-ssh root@zimbra.server "mv /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar.bak"
 
+```shell
+$ cd ~/projects/zimbra/zm-sso
+$ ssh root@zimbra.server "mkdir -p /opt/zimbra/lib/ext/zm-sso"
+$ scp target/*.jar root@zimbra.server:/opt/zimbra/lib/ext/zm-sso
+$ scp target/dependencies/*.jar root@zimbra.server:/opt/zimbra/jetty_base/common/lib
+$ scp conf/zm.sso.properties root@zimbra.server:/opt/zimbra/conf
+$ ssh root@zimbra.server "mv /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar /opt/zimbra/jetty_base/common/lib/commons-codec-1.14.jar.bak"
 ```
+
 * Restart mailbox to load the extension.
 ```shell
-ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
+$ ssh root@zimbra.server "su - zimbra -c '/opt/zimbra/bin/zmmailboxdctl restart'"
 ```
 
 ### Install rpm package
+
 ```shell
-ssh root@zimbra.server "mkdir -p /tmp/zimbra"
-scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
-ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
+$ ssh root@zimbra.server "mkdir -p /tmp/zimbra"
+$ scp ~/rpmbuild/RPMS/noarch/zm-sso-2.0.0-1.el9.noarch.rpm root@zimbra.server:/tmp/zimbra
+$ ssh root@zimbra.server "rpm -Uvh /tmp/zimbra/zm-sso-2.0.0-1.el9.noarch.rpm"
 ```
 
 ## Configuration
-The settings loaded from **zm.sso.properties** file.
-The location of this file is **/opt/zimbra/conf/zm.sso.properties**
+The settings loaded from **zm.sso.properties** file. The location of this file is **/opt/zimbra/conf/zm.sso.properties**
 
 ### Default client configuration
 * Using a text editor to open **zm.sso.properties** in **/opt/zimbra/conf**. Ex: `vi /opt/zimbra/conf/zm.sso.properties`
@@ -112,6 +124,7 @@ To handle authentication, a callback endpoint is necessary to receive callback c
 
 ### Logout endpoint configuration
 To handle the logout, a logout endpoint is necessary to perform:
+
 * The local logout by removing the pac4j profiles from the session.
 * The central logout by calling the identity provider logout endpoint. This is the Single LogOut (SLO) process.
 
@@ -124,9 +137,10 @@ To handle the logout, a logout endpoint is necessary to perform:
 
 ### Configuration with any SAML identity provider using the SAML v2.0 protocol.
 **First**, if you don’t have one, you need to generate a keystore for all signature and encryption operations. Ex:
+
 ```shell
-mkdir -p /opt/zimbra/conf/saml
-keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
+$ mkdir -p /opt/zimbra/conf/saml
+$ keytool -genkeypair -alias samlkey -keypass samlpasswd -keystore /opt/zimbra/conf/saml/keystore.jks -storepass samlpasswd -keyalg RSA -keysize 2048 -validity 3650
 ```
 
 **Config**:
@@ -155,9 +169,10 @@ Ex: `saml.serviceProviderEntityId = https://mail.zimbra-server.com/service/exten
 
 ### Replace login and logout urls
 * Execute following commands with the Zimbra user for domain configuration:
+
 ```shell
 # SSO login by using default client. Specified in sso.defaultClient
-zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+$ zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
 # or SSO login by using SAML client
 # zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
 # or SSO login by using CAS client
@@ -165,12 +180,13 @@ zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/
 # or SSO login by using OpenID Connect client
 # zmprov md yourdomain.com zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
 # Specified logout URL
-zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
+$ zmprov md yourdomain.com zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
 * Execute following commands with the `zimbra` user for global configuration:
+
 ```shell
 # SSO login by using default client. Specified in sso.defaultClient
-zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
+$ zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/sso/login
 # or SSO login by using SAML client
 # zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/saml/login
 # or SSO login by using CAS client
@@ -178,26 +194,34 @@ zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extens
 # or SSO login by using OpenID Connect client
 # zmprov mcf zimbraWebClientLoginURL https://mail.zimbra-server.com/service/extension/oidc/login
 # Specified logout URL
-zmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
+$ szmprov mcf zimbraWebClientLogoutURL https://mail.zimbra-server.com/service/extension/sso/logout
 ```
+
 * Execute the following command with the `zimbra` user to restart Zimbra server: `zmcontrol restart`
 
 ### Import untrusted ssl certificate to the cacerts file
 This is primarily for allowance of untrusted ssl certificates in external data sources.
+
 * Export untrusted ssl certificate to the file:
+
 ```shell
-openssl s_client -servername idp.server.com -connect idp.server.com:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
+$ openssl s_client -servername idp.server.com \
+  -connect idp.server.com:443 </dev/null | \
+  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >/path/to/cert.pem
 ```
+
 * Execute following commands with the Zimbra user:
+
 ```shell
-zmcertmgr addcacert /path/to/cert.pem
-zmmailboxdctl restart
+$ zmcertmgr addcacert /path/to/cert.pem
+$ zmmailboxdctl restart
 ```
 
 ### Add identity provider hostname to ignore CSRF referer check
+
 ```shell
-zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
-zmmailboxdctl restart
+$ zmprov -l mcf +zimbraCsrfAllowedRefererHosts idp.server.com
+$ zmmailboxdctl restart
 ```
 
 ## Tutorials
