@@ -6,5 +6,5 @@
 /out/
 /target/
 /deps/
-.pdf
-.zip
+*.pdf
+*.zip
