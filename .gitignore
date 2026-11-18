@@ -1,7 +1,10 @@
 /.idea/
+/.vscode/
 /build/
 /deps/
 /dist/
 /out/
 /target/
 /deps/
+*.pdf
+*.zip
