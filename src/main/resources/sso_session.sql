@@ -11,6 +11,5 @@ CREATE TABLE IF NOT EXISTS sso_session (
 
     PRIMARY KEY (sso_token, account_id),
     UNIQUE INDEX i_sso_token (sso_token),
-    INDEX i_account_id (account_id),
-    CONSTRAINT fk_sso_session_mailbox_id FOREIGN KEY (account_id) REFERENCES mailbox(account_id) ON DELETE CASCADE
+    INDEX i_account_id (account_id)
 ) ENGINE = InnoDB;
